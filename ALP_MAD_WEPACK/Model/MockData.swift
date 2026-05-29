@@ -77,18 +77,18 @@ struct MockData {
     // ==========================================
     static let samplePackingItems: [PackingItem] = [
         // Kategori Clothing
-        PackingItem(id: "ITEM_1", tripId: "TRIP_BALI_2026", name: "Beach Outfit (4 sets)", category: .clothing, isPacked: true, assignedTo: "Everyone"),
-        PackingItem(id: "ITEM_2", tripId: "TRIP_BALI_2026", name: "Swimwear 🩱", category: .clothing, isPacked: false, assignedTo: "Everyone"),
+        PackingItem(id: "ITEM_1", tripId: "TRIP_BALI_2026", name: "Beach Outfit (4 sets)", category: .clothing, isPacked: true, assignedTo: ["Everyone"]),
+        PackingItem(id: "ITEM_2", tripId: "TRIP_BALI_2026", name: "Swimwear 🩱", category: .clothing, isPacked: false, assignedTo: ["Everyone"]),
         
         // Kategori Electronics
-        PackingItem(id: "ITEM_3", tripId: "TRIP_BALI_2026", name: "MacBook & Charger", category: .electronics, isPacked: true, assignedTo: "USER_CACA_123"),
-        PackingItem(id: "ITEM_4", tripId: "TRIP_BALI_2026", name: "Powerbank 20k mAh", category: .electronics, isPacked: false, assignedTo: "USER_ANGEL_456"),
+        PackingItem(id: "ITEM_3", tripId: "TRIP_BALI_2026", name: "MacBook & Charger", category: .electronics, isPacked: true, assignedTo: ["USER_CACA_123"]),
+        PackingItem(id: "ITEM_4", tripId: "TRIP_BALI_2026", name: "Powerbank 20k mAh", category: .electronics, isPacked: false, assignedTo: ["USER_ANGEL_456"]),
         
         // Kategori Medical
-        PackingItem(id: "ITEM_5", tripId: "TRIP_BALI_2026", name: "Tolakan Angin & Obat Pribadi", category: .medical, isPacked: true, assignedTo: "Everyone"),
+        PackingItem(id: "ITEM_5", tripId: "TRIP_BALI_2026", name: "Tolakan Angin & Obat Pribadi", category: .medical, isPacked: true, assignedTo: ["Everyone"]),
         
         // Kategori Documents
-        PackingItem(id: "ITEM_6", tripId: "TRIP_BALI_2026", name: "KTP & Tiket Pesawat di Apple Wallet", category: .documents, isPacked: true, assignedTo: "Everyone")
+        PackingItem(id: "ITEM_6", tripId: "TRIP_BALI_2026", name: "KTP & Tiket Pesawat di Apple Wallet", category: .documents, isPacked: true, assignedTo: ["Everyone"])
     ]
     
     // ==========================================
