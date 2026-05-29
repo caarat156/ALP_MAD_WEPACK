@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import FirebaseAuth
+
 class AuthViewModel: ObservableObject {
     // --- STATE LOGIN ---
     @Published var loginEmail = ""
