@@ -17,7 +17,7 @@ struct TripCardComponent: View {
             ZStack(alignment: .top) {
                 LinearGradient(colors: [Color(red: 0.15, green: 0.30, blue: 0.50), Color.black.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
                     .frame(height: 130)
-                    .cornerRadius(16, corners: [.topLeft, .topRight])
+//                    .cornerRadius(16, corners: [.topLeft, .topRight])
                 
                 HStack {
                     // Logika penanda Owner Trip berdasarkan OwnerID di MockData
@@ -96,7 +96,7 @@ struct TripCardComponent: View {
             }
             .padding(16)
             .background(Color.white)
-            .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
+//            .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
         }
         .padding(.horizontal)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)

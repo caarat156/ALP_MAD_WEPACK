@@ -11,7 +11,7 @@ import SwiftUI
 struct ALP_MAD_WEPACKApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTripView()
         }
     }
 }

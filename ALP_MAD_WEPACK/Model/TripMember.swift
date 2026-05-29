@@ -13,3 +13,4 @@ struct TripMember: Identifiable, Codable {
     var role: String            // "Owner" atau "Member"
     var packingProgress: Double // Progress koper dia sendiri (0.0 - 1.0)
 }
+
