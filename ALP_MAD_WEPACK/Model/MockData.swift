@@ -23,7 +23,7 @@ struct MockData {
         id: "USER_CACA_123",
         name: "Caca Clarissa",
         email: "caca.clarissa@student.uc.ac.id",
-        headline: "Travel Logistics Enthusiast 🎒",
+        headline: "Travel Logistics Enthusiast ",
         avatarUrl: nil,
         totalTrips: 3,
         totalItemsPacked: 45
@@ -35,7 +35,7 @@ struct MockData {
     static let sampleTrips: [Trip] = [
         Trip(
             id: "TRIP_BALI_2026",
-            name: "Graduation Trip Bali 🏖️",
+            name: "Graduation Trip Bali ",
             destination: "Ubud & Seminyak, Bali",
             startDate: createDate(daysAhead: 14), // 2 minggu lagi
             endDate: createDate(daysAhead: 18),
@@ -45,7 +45,7 @@ struct MockData {
         ),
         Trip(
             id: "TRIP_JOGJA_2026",
-            name: "Yogyakarta Culinary Run 🍜",
+            name: "Yogyakarta Culinary Run ",
             destination: "Malioboro, Yogyakarta",
             startDate: createDate(daysAhead: 45),
             endDate: createDate(daysAhead: 48),
@@ -60,37 +60,15 @@ struct MockData {
     // ==========================================
     static let sampleActivities: [ItineraryActivity] = [
         // Day 1 Bali
+        // Contoh penulisan di MockData kamu agar tidak error:
         ItineraryActivity(
-            id: "ACT_1",
-            tripId: "TRIP_BALI_2026",
-            name: "Flight to Ngurah Rai Airport",
-            time: createDate(daysAhead: 14, hour: 8, minute: 0),
-            location: "Juanda T2 -> DPS",
-            type: .transport
-        ),
-        ItineraryActivity(
-            id: "ACT_2",
-            tripId: "TRIP_BALI_2026",
-            name: "Lunch at Ayam Betutu Khas Gilimanuk",
-            time: createDate(daysAhead: 14, hour: 12, minute: 30),
-            location: "Tuban, Badung",
-            type: .food
-        ),
-        ItineraryActivity(
-            id: "ACT_3",
-            tripId: "TRIP_BALI_2026",
-            name: "Check-in Aksari Resort Ubud",
-            time: createDate(daysAhead: 14, hour: 15, minute: 0),
-            location: "Tegalalang, Ubud",
+            id: "1",
+            tripId: "bali",
+            name: "Arrival & Check-in",
+            startTime: Date(),            // diubah jadi startTime
+            endTime: Date().addingTimeInterval(3600), // diubah jadi endTime (opsional)
+            location: "Kuta Villa",
             type: .lodging
-        ),
-        ItineraryActivity(
-            id: "ACT_4",
-            tripId: "TRIP_BALI_2026",
-            name: "Sunset view & Chill",
-            time: createDate(daysAhead: 14, hour: 17, minute: 30),
-            location: "Cretya Ubud",
-            type: .leisure
         )
     ]
     

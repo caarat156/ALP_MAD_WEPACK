@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit // 📢 Diperlukan untuk menggunakan UIImage
 
 struct Trip: Identifiable, Codable {
     var id: String
@@ -16,7 +17,10 @@ struct Trip: Identifiable, Codable {
     var ownerId: String
     var memberIds: [String]
     var groupProgress: Double
- 
+    
+    // 📢 Menyimpan gambar kustom yang di-input oleh user sendiri
+    var customImage: Data?
+
     var dateRangeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"

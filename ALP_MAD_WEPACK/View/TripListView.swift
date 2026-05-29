@@ -18,48 +18,58 @@ struct TripListView: View {
                 Color(red: 0.96, green: 0.97, blue: 0.98)
                     .ignoresSafeArea()
                 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                VStack(spacing: 0) {
+                    
+                    // --- HEADER SECTION (DI LUAR SCROLLVIEW AGAR AMAN) ---
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("My Trips")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                            Text("\(viewModel.trips.count) trips total")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        Spacer()
                         
-                        // --- HEADER SECTION ---
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("My Trips")
-                                    .font(.system(size: 28, weight: .bold))
-                                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                Text("\(viewModel.trips.count) trips total")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
+                        // 📢 Tombol New Trip menggunakan Button bawaan SwiftUI agar areanya presisi & tidak bentrok
+                        Button(action: {
+                            isShowingAddTrip = true // Mengunci pemicu modal AddTrip
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "plus")
+                                Text("New Trip")
                             }
-                            Spacer()
-                            
-                            // Tombol Tambah Trip Baru
-                            Button(action: { isShowingAddTrip.toggle() }) {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "plus")
-                                    Text("New Trip")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color(red: 0.08, green: 0.15, blue: 0.25))
+                            .cornerRadius(20)
+                        }
+                        // Mencegah modifier tombol menyebar kemana-mana
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 15)
+                    .background(Color.white) // Memberi efek header atas solid rapi
+                    
+                    // --- AREA SCROLL KHUSUS UNTUK CARD SAJA ---
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            ForEach(viewModel.trips) { trip in
+                                // Klik Card Trip -> Navigasi masuk ke TripDetailOverviewView
+                                NavigationLink(destination: TripDetailOverviewView(trip: trip, viewModel: viewModel)) {
+                                    TripCardComponent(trip: trip, viewModel: viewModel)
                                 }
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
-                                .background(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                .cornerRadius(20)
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 10)
-                        
-                        // --- LOOPING CARD TRIP ---
-                        ForEach(viewModel.trips) { trip in
-                            NavigationLink(destination: TripDetailOverviewView(trip: trip, viewModel: viewModel)) {
-                                TripCardComponent(trip: trip, viewModel: viewModel)
-                            }
-                            .buttonStyle(PlainButtonStyle()) // Menjaga warna card asli figma
-                        }
+                        .padding(.top, 15)
                     }
                 }
             }
+            // 📢 JALUR MODAL NYA DI SINI
             .sheet(isPresented: $isShowingAddTrip) {
                 AddTripModalView(viewModel: viewModel)
             }
