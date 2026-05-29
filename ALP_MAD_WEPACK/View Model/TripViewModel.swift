@@ -4,6 +4,12 @@
 //
 //  Created by MacintoshHD on 29/05/26.
 //
+//
+//   TripViewModel.swift
+//   ALP_MAD_WEPACK
+//
+//   Created by MacintoshHD on 29/05/26.
+//
 
 import SwiftUI
 import Observation
@@ -14,6 +20,10 @@ class TripViewModel {
     var trips: [Trip] = MockData.sampleTrips
     var activities: [ItineraryActivity] = MockData.sampleActivities
     
+    // 🔑 ID USER YANG SEDANG LOGIN (Dinamis)
+    // Nilai default ini akan otomatis berubah saat sistem login kamu berhasil mengubah nilai ini
+    var currentUserID: String = "USER_ACTIVE"
+    
     // Fungsi untuk menghitung sisa hari secara otomatis berdasarkan tanggal saat ini
     func calculateDaysAway(from startDate: Date) -> Int {
         let calendar = Calendar.current
@@ -23,22 +33,33 @@ class TripViewModel {
         return max(0, components.day ?? 0)
     }
     
-    // LOGIKA: Fungsi formal untuk menambahkan Trip baru dari Form ke dalam list
-    func createNewTrip(name: String, destination: String, start: Date, end: Date) {
+    // 📢 SOLUSI DUPLIKASI: Hanya ada SATU fungsi formal untuk membuat Trip Baru
+    // Fungsi ini menangani teks input, validasi kosong, gambar kustom, DAN User ID Login dinamis!
+    func createNewTrip(name: String, destination: String, start: Date, end: Date, imageData: Data? = nil) {
+        // Validasi input agar tidak memasukkan data kosong
         guard !name.isEmpty && !destination.isEmpty else { return }
         
         let newTrip = Trip(
-            id: "TRIP_\(UUID().uuidString.prefix(6))", // Membuat ID acak formal
+            id: "TRIP_\(UUID().uuidString.prefix(6))", // Membuat ID unik acak
             name: name,
             destination: destination,
             startDate: start,
             endDate: end,
-            ownerId: "USER_CACA_123", // Default user aktif
-            memberIds: ["USER_CACA_123"],
-            groupProgress: 0.0 // Trip baru dimulai dari 0%
+            ownerId: currentUserID,      // 🔑 Menggunakan ID user yang sedang login secara dinamis!
+            memberIds: [currentUserID],  // Otomatis pembuat langsung masuk jadi member pertama
+            groupProgress: 0.0,          // Trip baru dimulai dari progress 0%
+            customImage: imageData       // Menyimpan data gambar kustom dari galeri jika ada
         )
         
-        // Memasukkan trip baru ke urutan paling atas list
+        // Memasukkan trip baru ke urutan paling atas list agar langsung kelihatan oleh user
         trips.insert(newTrip, at: 0)
+    }
+    
+    // 🔥 Fungsi untuk menambahkan Aktivitas Baru ke Itinerary
+    func addActivity(_ activity: ItineraryActivity) {
+        activities.append(activity)
+        
+        // Urutkan aktivitas secara otomatis dari jam paling pagi ke malam
+        activities.sort { $0.startTime < $1.startTime }
     }
 }
