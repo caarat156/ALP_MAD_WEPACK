@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 enum PackingCategory: String, Codable, CaseIterable {
     case clothing = "Clothing"
     case electronics = "Electronics"
@@ -24,12 +23,11 @@ enum PackingCategory: String, Codable, CaseIterable {
         }
     }
 }
-
 struct PackingItem: Identifiable, Codable {
     var id: String
     var tripId: String
     var name: String
     var category: PackingCategory
     var isPacked: Bool
-    var assignedTo: String
+    var assignedTo: [String]
 }
