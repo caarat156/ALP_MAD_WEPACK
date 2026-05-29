@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    // 📢 Inisialisasi ViewModel utama di sini sekali saja
+    // Karena pakai @Observable, kita gunakan @State untuk menyimpannya
+    @State private var viewModel = TripViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        // Langsung arahkan ke TripListView sebagai halaman pertama saat aplikasi dibuka
+        TripListView()
+            // Kita bisa menggunakan .environment jika ingin melempar viewModel ke seluruh anak view,
+            // tapi karena di kodemu kamu oper manual lewat parameter, ini sudah cukup.
     }
 }
 

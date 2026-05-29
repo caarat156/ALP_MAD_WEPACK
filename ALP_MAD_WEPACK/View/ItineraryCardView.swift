@@ -8,11 +8,98 @@
 import SwiftUI
 
 struct ItineraryCardView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    let activity: ItineraryActivity
+    
+    private var categoryColor: Color {
+        switch activity.type {
+        case .transport: return Color.blue.opacity(0.7)
+        case .food: return Color.orange.opacity(0.7)
+        case .lodging: return Color.cyan.opacity(0.7)
+        case .leisure: return Color.green.opacity(0.7)
+        case .attraction: return Color.purple.opacity(0.7)
+        }
     }
-}
-
-#Preview {
-    ItineraryCardView()
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 0) {
+            
+            // Kolom Kiri: Waktu Mulai (Menggunakan startTimeString yang baru)
+            VStack(spacing: 0) {
+                Text(activity.startTimeString) // <-- BERUBAH DI SINI
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.7))
+                    .frame(width: 50, alignment: .trailing)
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 8)
+                
+                Rectangle()
+                    .fill(Color.gray.opacity(0.12))
+                    .frame(width: 2)
+                    .frame(maxHeight: .infinity)
+            }
+            
+            // Kolom Tengah: Dot Timeline
+            Circle()
+                .fill(categoryColor)
+                .frame(width: 12, height: 12)
+                .padding(.top, 4)
+                .padding(.trailing, 16)
+            
+            // Kolom Kanan: Card Aktivitas
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 14) {
+                    Image(systemName: activity.type.iconName)
+                        .font(.system(size: 18))
+                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                        .frame(width: 50, height: 50)
+                        .background(Color.gray.opacity(0.08))
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(activity.name)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .font(.system(size: 10))
+                            Text(activity.location)
+                                .font(.system(size: 12, weight: .medium))
+                                .lineLimit(1)
+                        }
+                        .foregroundColor(.gray.opacity(0.8))
+                    }
+                    
+                    Spacer()
+                    
+                    Text(activity.type.rawValue)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.7))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.gray.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                
+                // MENGGUNAKAN DATA ASLI: Jika ada endTimeString dari model, tampilkan teks "until [jam]"
+                if let endTimeString = activity.endTimeString { // <-- BERUBAH DI SINI
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 10))
+                        Text("until \(endTimeString)") // Menampilkan data asli
+                    }
+                    .foregroundColor(.gray.opacity(0.8))
+                    .padding(.leading, 64)
+                }
+            }
+            .padding(16)
+            .background(Color.white)
+            .cornerRadius(20)
+            .shadow(color: Color.black.opacity(0.025), radius: 10, x: 0, y: 5)
+            .padding(.bottom, 20)
+        }
+    }
 }
