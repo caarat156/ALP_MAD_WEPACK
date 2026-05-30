@@ -128,7 +128,7 @@ struct MemberAssignedItemsView: View {
         // Load dan filter data saat halaman muncul
         .onAppear {
             assignedItems = MockData.samplePackingItems.filter { item in
-                item.assignedTo == "Everyone" || item.assignedTo == member.id
+                item.assignedTo == ["Everyone"] || item.assignedTo == [member.id]
             }
         }
     }
