@@ -23,6 +23,7 @@
 		5DB5AF5F2FC97ECE00E48D11 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF5E2FC97ECE00E48D11 /* FirebaseMessaging */; };
 		5DB5AF612FC97ECE00E48D11 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF602FC97ECE00E48D11 /* FirebaseStorage */; };
 		5DB5AF632FC97ECE00E48D11 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF622FC97ECE00E48D11 /* FirebaseStorageCombine-Community */; };
+		5DB5AF652FC97FF800E48D11 /* GoogleService-Info 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		5D99FF052FC031B6002F660F /* ALP_MAD_WEPACK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ALP_MAD_WEPACK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D99FF122FC031B7002F660F /* ALP_MAD_WEPACKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALP_MAD_WEPACKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D99FF1C2FC031B7002F660F /* ALP_MAD_WEPACKUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALP_MAD_WEPACKUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info 2.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -190,6 +192,7 @@
 				3FD9C8902FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppTests */,
 				3FD9C89A2FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppUITests */,
 				5D99FF062FC031B6002F660F /* Products */,
+				5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -449,6 +452,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DB5AF652FC97FF800E48D11 /* GoogleService-Info 2.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
