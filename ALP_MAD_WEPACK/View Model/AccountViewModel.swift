@@ -7,82 +7,132 @@
 
 import Foundation
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 import PhotosUI
+
 class AccountViewModel: ObservableObject {
-    // --- DATA PROFIL UTAMA ---
-    @Published var name: String = "Caca"
-    @Published var username: String = "caca_wepack" // Hapus tanda '@' di sini karena nanti di UI sudah otomatis ditambahin prefix "@"
-    @Published var email: String = "caca@student.uc.ac.id"
-    @Published var phone: String = "+62 812 3456 7890" // Sekarang data phone sudah ada di ViewModel
-    @Published var bio: String = "Ready for the next adventure! ✈️"
-    
-    // FOTO PROFIL
+    // --- STATE DATA PROFIL (TAMPILAN) ---
+    @Published var name: String = "Loading..."
+    @Published var username: String = "Loading..."
+    @Published var email: String = "Loading..."
     @Published var profileImage: UIImage? = nil
-    @Published var photosPickerItem: PhotosPickerItem? = nil {
-        didSet {
-            loadImageFromPicker()
-        }
-    }
     
-    // DATA STATISTIK
-    @Published var totalTrips: Int = 3
-    @Published var totalItemsPacked: Int = 12
-    
-    // STATE MODAL / FORM EDIT (Lengkap untuk semua fields)
-    @Published var showEditSheet: Bool = false
+    // --- STATE DATA FORM EDIT ---
     @Published var editedName: String = ""
     @Published var editedUsername: String = ""
     @Published var editedEmail: String = ""
     @Published var editedPhone: String = ""
     @Published var editedBio: String = ""
     
-    // Fungsi mencatat data lama ke data edit sebelum form dibuka
-    func prepareEditForm() {
-        editedName = name
-        editedUsername = username
-        editedEmail = email
-        editedPhone = phone
-        editedBio = bio
-    }
-    
-    // Fungsi buat mindahin data dari form edit ke data utama pas tombol "Save Changes" ditekan
-    func saveProfile() {
-        let trimmedName = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedName.isEmpty {
-            name = trimmedName
-        }
-        
-        let trimmedUsername = editedUsername.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedUsername.isEmpty {
-            username = trimmedUsername
-        }
-        
-        let trimmedEmail = editedEmail.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedEmail.isEmpty {
-            email = trimmedEmail
-        }
-        
-        phone = editedPhone
-        bio = editedBio
-    }
-    
-    var avatarInitials: String {
-        return String(name.prefix(1)).uppercased()
-    }
-    
-    private func loadImageFromPicker() {
-        guard let item = photosPickerItem else { return }
-        item.loadTransferable(type: Data.self) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let data):
-                    if let data = data, let uiImage = UIImage(data: data) {
-                        self.profileImage = uiImage
-                    }
-                case .failure(let error):
-                    print("Error loading image: \(error.localizedDescription)")
+    // --- STATE FOTO GALERI ---
+    @Published var selectedPhotoItem: PhotosPickerItem? = nil {
+        didSet {
+            if let selectedPhotoItem {
+                Task {
+                    await loadSelectedPhoto(selectedPhotoItem)
                 }
             }
+        }
+    }
+    
+    // --- STATE STATUS ---
+    @Published var isLoading = false
+    @Published var errorMessage: String? = nil
+    
+    // Logika Inisial Avatar
+    var avatarInitials: String {
+        let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if cleanName.isEmpty || cleanName == "Loading..." { return "?" }
+        let components = cleanName.split(separator: " ")
+        let initials = components.compactMap { $0.first }.prefix(2)
+        return String(initials).uppercased()
+    }
+    
+    init() {
+        fetchUserData()
+    }
+    
+    // --- FUNGSI TARIK DATA DARI FIRESTORE ---
+    func fetchUserData() {
+        guard let currentUser = Auth.auth().currentUser else { return }
+        
+        isLoading = true
+        let db = Firestore.firestore()
+        
+        db.collection("users").document(currentUser.uid).getDocument { [weak self] document, error in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                if let error = error {
+                    self?.errorMessage = error.localizedDescription
+                    print("Error fetch data: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let document = document, document.exists, let data = document.data() {
+                    let fetchedName = data["name"] as? String ?? "No Name"
+                    let fetchedUsername = data["username"] as? String ?? "@username"
+                    let fetchedEmail = currentUser.email ?? (data["email"] as? String ?? "No Email")
+                    let fetchedPhone = data["phone"] as? String ?? ""
+                    let fetchedBio = data["bio"] as? String ?? ""
+                    
+                    self?.name = fetchedName
+                    self?.username = fetchedUsername
+                    self?.email = fetchedEmail
+                    
+                    // Isi form edit otomatis dengan data yang ditarik dari database
+                    self?.editedName = fetchedName
+                    self?.editedUsername = fetchedUsername.replacingOccurrences(of: "@", with: "")
+                    self?.editedEmail = fetchedEmail
+                    self?.editedPhone = fetchedPhone
+                    self?.editedBio = fetchedBio
+                }
+            }
+        }
+    }
+    
+    // --- FUNGSI SAVE EDIT KE FIRESTORE ---
+    func saveProfile() {
+        guard let currentUser = Auth.auth().currentUser else { return }
+        let db = Firestore.firestore()
+        
+        // Format username agar selalu ada '@' di depannya
+        let finalUsername = editedUsername.hasPrefix("@") ? editedUsername : "@\(editedUsername)"
+        
+        let updatedData: [String: Any] = [
+            "name": editedName,
+            "username": finalUsername,
+            "email": editedEmail,
+            "phone": editedPhone,
+            "bio": editedBio
+        ]
+        
+        db.collection("users").document(currentUser.uid).updateData(updatedData) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error saving profile: \(error.localizedDescription)")
+                } else {
+                    print("Profile updated successfully!")
+                    // Update tampilan UI secara langsung setelah berhasil
+                    self?.name = self?.editedName ?? ""
+                    self?.username = finalUsername
+                    self?.email = self?.editedEmail ?? ""
+                }
+            }
+        }
+    }
+    
+    // --- FUNGSI MENGUBAH ITEM GALERI JADI GAMBAR UI ---
+    @MainActor
+    private func loadSelectedPhoto(_ photoItem: PhotosPickerItem) async {
+        do {
+            if let data = try await photoItem.loadTransferable(type: Data.self),
+               let image = UIImage(data: data) {
+                self.profileImage = image
+            }
+        } catch {
+            print("Gagal memuat foto: \(error.localizedDescription)")
         }
     }
 }

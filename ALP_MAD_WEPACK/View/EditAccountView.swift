@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+
 struct EditAccountView: View {
     @ObservedObject var viewModel: AccountViewModel
     @Environment(\.dismiss) var dismiss
@@ -39,7 +40,8 @@ struct EditAccountView: View {
                     
                     // --- 2. PHOTO PICKER SECTION ---
                     VStack(spacing: 12) {
-                        PhotosPicker(selection: $viewModel.photosPickerItem, matching: .images) {
+                        // TYPO DIPERBAIKI DI SINI: menggunakan selectedPhotoItem
+                        PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
                             ZStack(alignment: .bottomTrailing) {
                                 if let profileImage = viewModel.profileImage {
                                     Image(uiImage: profileImage)
@@ -75,13 +77,9 @@ struct EditAccountView: View {
                     
                     // --- 3. INPUT FIELDS SECTION ---
                     VStack(spacing: 18) {
-                        // Dipasangkan ke data edited masing-masing field
                         CustomInputField(label: "FULL NAME", text: $viewModel.editedName)
-                        
                         CustomInputField(label: "USERNAME", text: $viewModel.editedUsername, prefix: "@")
-                        
                         CustomInputField(label: "EMAIL", text: $viewModel.editedEmail)
-                        
                         CustomInputField(label: "PHONE NUMBER", text: $viewModel.editedPhone)
                         
                         // Bio menggunakan area yang lebih tinggi
@@ -121,7 +119,7 @@ struct EditAccountView: View {
                 }
                 
                 Button(action: {
-                    // Memicu pemindahan data dari penampung sementara ke utama
+                    // Memicu pemindahan data ke Firestore
                     viewModel.saveProfile()
                     dismiss()
                 }) {
@@ -133,7 +131,6 @@ struct EditAccountView: View {
                         .background(navyColor)
                         .cornerRadius(15)
                 }
-                // Validasi agar tombol tidak bisa ditekan kalau nama kosong
                 .disabled(viewModel.editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .opacity(viewModel.editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1.0)
             }
@@ -144,6 +141,7 @@ struct EditAccountView: View {
         }
     }
 }
+
 // MARK: - Komponen Input Field Kustom
 struct CustomInputField: View {
     var label: String
@@ -179,6 +177,7 @@ struct CustomInputField: View {
         }
     }
 }
+
 #Preview {
     EditAccountView(viewModel: AccountViewModel())
 }

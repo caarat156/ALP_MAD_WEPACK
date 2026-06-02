@@ -1,46 +1,66 @@
-//
-//  PackingViewModel.swift
-//  ALP_MAD_WEPACK
-//
-//  Created by Anastasia on 29/05/26.
-//
-
 import Foundation
 import SwiftUI
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+import FirebaseAuth
+
 class PackingViewModel: ObservableObject {
     // --- STATE DATA ---
-    @Published var packingItems: [PackingItem] = MockData.samplePackingItems
+    @Published var packingItems: [PackingItem] = [] // Sekarang kosong di awal
+    @Published var tripMembers: [TripMember] = []   // Data member asli
     @Published var showAddItemSheet = false
     
-    // --- STATE FORM INPUT (LOGIC MULTI-SELECT) ---
+    // --- STATE FORM INPUT ---
     @Published var newItemName = ""
     @Published var selectedCategory: PackingCategory = .clothing
-    @Published var assignmentType: AssignmentType = .everyone // Default: Everyone
-    @Published var selectedMemberIds: Set<String> = []        // Menampung banyak member terpilih
+    @Published var assignmentType: AssignmentType = .everyone
+    @Published var selectedMemberIds: Set<String> = []
     
     enum AssignmentType {
         case everyone
         case custom
     }
     
-    // --- KALKULASI DATA ---
-    var packedCount: Int {
-        packingItems.filter { $0.isPacked }.count
+    private let db = Firestore.firestore()
+    
+    init() {
+        fetchPackingItems()
+        fetchTripMembers()
     }
     
-    var progressPercentage: Int {
-        guard !packingItems.isEmpty else { return 0 }
-        return Int(Double(packedCount) / Double(packingItems.count) * 100)
+    // --- FUNGSI FETCH REAL-TIME ---
+    func fetchPackingItems() {
+        db.collection("packing_items")
+            .whereField("tripId", isEqualTo: "TRIP_BALI_2026") // Ganti dengan ID trip aktifmu
+            .addSnapshotListener { querySnapshot, error in
+                if let error = error {
+                    print("Error getting packing items: \(error)")
+                    return
+                }
+                
+                self.packingItems = querySnapshot?.documents.compactMap { document in
+                    try? document.data(as: PackingItem.self)
+                } ?? []
+            }
+    }
+    
+    func fetchTripMembers() {
+        // Asumsi data member ada di collection "users" atau subcollection "members"
+        db.collection("users").getDocuments { snapshot, _ in
+            self.tripMembers = snapshot?.documents.compactMap { doc in
+                try? doc.data(as: TripMember.self)
+            } ?? []
+        }
     }
     
     // --- FUNCTIONS ---
     func toggleItemPacked(item: PackingItem) {
-        if let index = packingItems.firstIndex(where: { $0.id == item.id }) {
-            packingItems[index].isPacked.toggle()
-        }
+        guard let id = item.id else { return }
+        let newStatus = !item.isPacked
+        
+        db.collection("packing_items").document(id).updateData(["isPacked": newStatus])
     }
     
-    // Logika pilih/batal pilih member di grid
     func toggleMemberSelection(id: String) {
         if selectedMemberIds.contains(id) {
             selectedMemberIds.remove(id)
@@ -53,12 +73,10 @@ class PackingViewModel: ObservableObject {
         let trimmedName = newItemName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
         
-        // Tentukan isi array berdasarkan opsi yang dipilih
         let finalAssignees = assignmentType == .everyone ? ["Everyone"] : Array(selectedMemberIds)
-        if assignmentType == .custom && finalAssignees.isEmpty { return } // Gak bisa save kalau custom tapi kosong
         
         let newItem = PackingItem(
-            id: "ITEM_\(UUID().uuidString.prefix(5))",
+            id: nil, // Biarkan Firestore yang buat ID
             tripId: "TRIP_BALI_2026",
             name: trimmedName,
             category: selectedCategory,
@@ -66,8 +84,12 @@ class PackingViewModel: ObservableObject {
             assignedTo: finalAssignees
         )
         
-        packingItems.append(newItem)
-        resetForm()
+        do {
+            _ = try db.collection("packing_items").addDocument(from: newItem)
+            resetForm()
+        } catch {
+            print("Error saving item: \(error)")
+        }
     }
     
     func resetForm() {
@@ -77,9 +99,10 @@ class PackingViewModel: ObservableObject {
         selectedMemberIds = []
     }
     
-    // Fungsi mengambil inisial nama member untuk bulatan kecil di list (misal: "Caca" -> "C")
+    // --- HELPER FUNCTIONS (Update untuk baca data Firebase) ---
     func getInisial(for id: String) -> String {
-        if let member = MockData.sampleTripMembers.first(where: { $0.id == id }) {
+        // Sekarang mencari di tripMembers yang kita ambil dari Firebase
+        if let member = tripMembers.first(where: { $0.id == id }) {
             let cleanName = member.name.replacingOccurrences(of: " (You)", with: "")
             return String(cleanName.prefix(1)).uppercased()
         }
@@ -87,11 +110,7 @@ class PackingViewModel: ObservableObject {
     }
     
     func getBadgeColor(for id: String) -> Color {
-        switch id {
-        case "USER_CACA_123": return .blue
-        case "USER_ANGEL_456": return .purple
-        case "USER_NDUT_789": return .indigo
-        default: return .teal
-        }
+        // Kamu bisa simpan warna di Firestore atau tentukan logikanya di sini
+        return .blue
     }
 }

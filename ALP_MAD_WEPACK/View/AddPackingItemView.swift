@@ -6,12 +6,20 @@
 //
 
 import SwiftUI
+
 struct AddPackingItemView: View {
     @ObservedObject var viewModel: PackingViewModel
     @Environment(\.dismiss) var dismiss
     
     // Layout grid untuk kategori (2 kolom)
     let categoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
+    
+    // VARIABEL BANTUAN UNTUK MENGATASI ERROR "COMPILER UNABLE TO TYPE-CHECK"
+    var isFormValid: Bool {
+        let isNameFilled = !viewModel.newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let isCustomValid = viewModel.assignmentType == .custom ? !viewModel.selectedMemberIds.isEmpty : true
+        return isNameFilled && isCustomValid
+    }
     
     var body: some View {
         NavigationStack {
@@ -31,7 +39,7 @@ struct AddPackingItemView: View {
                             .cornerRadius(10)
                     }
                     
-                    // 2. PILIHAN KATEGORI (GRID 2x2 SEPERTI DI VIDEO)
+                    // 2. PILIHAN KATEGORI
                     VStack(alignment: .leading, spacing: 8) {
                         Text("CATEGORY *")
                             .font(.caption)
@@ -62,7 +70,7 @@ struct AddPackingItemView: View {
                         }
                     }
                     
-                    // 3. WHO BRINGS THIS? (TOMBOL EVERYONE / CUSTOM)
+                    // 3. WHO BRINGS THIS?
                     VStack(alignment: .leading, spacing: 12) {
                         Text("WHO BRINGS THIS? *")
                             .font(.caption)
@@ -79,7 +87,6 @@ struct AddPackingItemView: View {
                                     .foregroundColor(viewModel.assignmentType == .everyone ? .black : .gray)
                                     .fontWeight(viewModel.assignmentType == .everyone ? .bold : .regular)
                             }
-                            .background(viewModel.assignmentType == .everyone ? Color.white : Color.clear)
                             .cornerRadius(8)
                             .shadow(color: viewModel.assignmentType == .everyone ? .black.opacity(0.05) : .clear, radius: 2)
                             
@@ -92,7 +99,6 @@ struct AddPackingItemView: View {
                                     .foregroundColor(viewModel.assignmentType == .custom ? .black : .gray)
                                     .fontWeight(viewModel.assignmentType == .custom ? .bold : .regular)
                             }
-                            .background(viewModel.assignmentType == .custom ? Color.white : Color.clear)
                             .cornerRadius(8)
                             .shadow(color: viewModel.assignmentType == .custom ? .black.opacity(0.05) : .clear, radius: 2)
                         }
@@ -101,7 +107,7 @@ struct AddPackingItemView: View {
                         .cornerRadius(12)
                     }
                     
-                    // 4. SELECTION MEMBER GRID (HANYA MUNCUL JIKA KLIK CUSTOM)
+                    // 4. SELECTION MEMBER GRID
                     if viewModel.assignmentType == .custom {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("SELECT MEMBERS")
@@ -110,12 +116,12 @@ struct AddPackingItemView: View {
                                 .foregroundColor(.gray)
                             
                             HStack(spacing: 20) {
+                                // ERROR MOCKDATA BIASANYA MUNCUL DARI BARIS INI
                                 ForEach(MockData.sampleTripMembers) { member in
                                     let isSelected = viewModel.selectedMemberIds.contains(member.id)
                                     
                                     VStack(spacing: 6) {
                                         ZStack(alignment: .topTrailing) {
-                                            // Lingkaran Inisial Nama (Bulatan Besar)
                                             Text(viewModel.getInisial(for: member.id))
                                                 .font(.headline)
                                                 .fontWeight(.bold)
@@ -124,7 +130,6 @@ struct AddPackingItemView: View {
                                                 .background(viewModel.getBadgeColor(for: member.id))
                                                 .clipShape(Circle())
                                             
-                                            // Badge Centang Kecil di Pojok Atas Bulatan (Persis di Videomu)
                                             if isSelected {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(.teal)
@@ -144,7 +149,7 @@ struct AddPackingItemView: View {
                                 }
                             }
                         }
-                        .transition(.opacity.combined(with: .move(edge: .top))) // Animasi muncul yang smooth
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
                 .padding()
@@ -164,12 +169,13 @@ struct AddPackingItemView: View {
                         dismiss()
                     }
                     .fontWeight(.bold)
-                    .disabled(viewModel.newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (viewModel.assignmentType == .custom && viewModel.selectedMemberIds.isEmpty))
+                    .disabled(!isFormValid) // Jauh lebih bersih dan tidak bikin Xcode bingung!
                 }
             }
         }
     }
 }
+
 #Preview {
     AddPackingItemView(viewModel: PackingViewModel())
 }
