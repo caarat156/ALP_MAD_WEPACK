@@ -59,9 +59,10 @@ struct TripListView: View {
                         VStack(alignment: .leading, spacing: 20) {
                             ForEach(viewModel.trips) { trip in
                                 // Klik Card Trip -> Navigasi masuk ke TripDetailOverviewView
-                                NavigationLink(destination: TripDetailOverviewView(trip: trip, viewModel: viewModel)) {
-                                    TripCardComponent(trip: trip, viewModel: viewModel)
-                                }
+                                    .navigationDestination(for: Trip.self) { selectedTrip in
+                                                    // 📢 5. GANTI MENGARAH KE MAIN TRIP VIEW
+                                                    MainTripView(trip: selectedTrip, viewModel: viewModel)
+                                                }
                                 .buttonStyle(PlainButtonStyle())
                             }
                         }

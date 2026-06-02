@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct MainTripView: View {
-    // Tambahkan variabel ini di dalam struct MainTripView (di atas var body: some View)
-    let trip = MockData.sampleTrips[0]
+    // 📢 1. HAPUS MOCK DATA. Ganti jadi variabel dinamis yang dilempar dari TripListView
+    let trip: Trip
+    var viewModel: TripViewModel
+    
+    // 📢 2. Tambahkan Environment untuk fungsi tombol Back
+    @Environment(\.dismiss) var dismiss
 
-    // Fungsi helper untuk memformat tanggal (taruh juga di dalam struct MainTripView)
     func formatTripDate(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
         let startStr = formatter.string(from: start)
-        formatter.dateFormat = "d, yyyy"
+        formatter.dateFormat = "MMM d, yyyy" // Tambah yyyy biar rapi
         let endStr = formatter.string(from: end)
-        return "\(startStr)–\(endStr)"
+        return "\(startStr) – \(endStr)"
     }
     
     var body: some View {
@@ -29,27 +32,38 @@ struct MainTripView: View {
             // ==========================================
             HStack {
                 Button(action: {
-                    // Aksi tombol back
+                    dismiss() // 📢 3. Aktifkan tombol back
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                         .padding(.trailing, 8)
                 }
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    // Mengambil nama trip dari MockData
-                    Text(trip.name)
-                        .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
+                    HStack(spacing: 4) {
+                        Text(trip.destination.lowercased().contains("bali") ? "🌴" : "✈️")
+                        Text(trip.name)
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                    }
                     
-                    // Mengambil destinasi dan tanggal dari MockData
                     Text("\(trip.destination) • \(formatTripDate(start: trip.startDate, end: trip.endDate))")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
                 
                 Spacer()
+                
+                // (Opsional) Tambahan icon notifikasi & profil biar persis Figma SS3
+                HStack(spacing: 12) {
+                    Image(systemName: "bell")
+                        .foregroundColor(.gray)
+                    Circle()
+                        .fill(Color(red: 0.08, green: 0.15, blue: 0.25))
+                        .frame(width: 30, height: 30)
+                        .overlay(Text("RF").font(.system(size: 10, weight: .bold)).foregroundColor(.white))
+                }
             }
             .padding()
             .background(Color.white)
@@ -60,44 +74,44 @@ struct MainTripView: View {
             // SHARED BOTTOM NAVBAR (TAB VIEW)
             // ==========================================
             TabView {
+                // 📢 4. MASUKKAN VIEW ASLINYA KE DALAM TAB
                 // Tab 1: Overview
-                Text("Halaman Overview")
+                TripDetailOverviewView(trip: trip, viewModel: viewModel)
                     .tabItem {
                         Image(systemName: "square.grid.2x2")
                         Text("Overview")
                     }
                 
-                // Tab 2: Packing (Tugas Temanmu)
-                Text("Halaman Packing")
+                // Tab 2: Packing (Tugasmu nanti)
+                Text("Halaman Packing") // Nanti ganti dengan View buatanmu
                     .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")
                     }
                 
-                // Tab 3: Itinerary (Tugas Temanmu)
-                Text("Halaman Itinerary")
+                // Tab 3: Itinerary
+                ItineraryView(viewModel: viewModel, trip: trip)
                     .tabItem {
                         Image(systemName: "calendar")
                         Text("Itinerary")
                     }
                 
-                // Tab 4: Members (Tugas Kamu)
-                // Memanggil View Member yang ada di file terpisah
-                MemberPageView()
+                // Tab 4: Members (Tugas Member 3)
+                Text("MemberPageView") // Nanti ganti dengan MemberPageView()
                     .tabItem {
                         Image(systemName: "person.2")
                         Text("Members")
                     }
                 
-                // Tab 5: Account (Budget Dihapus)
+                // Tab 5: Account
                 Text("Halaman Account")
                     .tabItem {
                         Image(systemName: "person.crop.circle")
                         Text("Account")
                     }
             }
-            .accentColor(Color(red: 37/255, green: 45/255, blue: 67/255)) // Warna biru gelap saat tab aktif
+            .accentColor(Color(red: 37/255, green: 45/255, blue: 67/255))
         }
-        .navigationBarHidden(true) // Menyembunyikan navbar bawaan Apple
+        .navigationBarHidden(true)
     }
 }
