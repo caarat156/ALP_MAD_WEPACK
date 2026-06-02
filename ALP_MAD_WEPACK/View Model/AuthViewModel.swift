@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 class AuthViewModel: ObservableObject {
     // --- STATE LOGIN ---
@@ -28,9 +29,11 @@ class AuthViewModel: ObservableObject {
     
     // Inisialisasi awal untuk mengecek status login user secara otomatis
     init() {
-        // Jika di device sudah pernah login sebelumnya, Firebase akan otomatis mengingat session user
-        if Auth.auth().currentUser != nil {
-            self.isAuthenticated = true
+        // Listener ini akan terus memantau apakah ada user yang sedang aktif
+        Auth.auth().addStateDidChangeListener { [weak self] auth, user in
+            DispatchQueue.main.async {
+                self?.isAuthenticated = (user != nil)
+            }
         }
     }
     
@@ -55,7 +58,6 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
         
         Auth.auth().signIn(withEmail: loginEmail, password: loginPassword) { authResult, error in
-            // Kembalikan ke main thread untuk mengupdate UI
             DispatchQueue.main.async {
                 self.isLoading = false
                 
@@ -63,8 +65,7 @@ class AuthViewModel: ObservableObject {
                     // Firebase memberikan pesan error bawaan (misal: password salah atau email tidak terdaftar)
                     self.errorMessage = error.localizedDescription
                 } else {
-                    // Berhasil login!
-                    self.isAuthenticated = true
+                    // Berhasil login! (Status isAuthenticated akan otomatis diubah oleh listener di init)
                     print("User Berhasil Login dengan UID: \(authResult?.user.uid ?? "")")
                 }
             }
@@ -78,23 +79,41 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
         
         Auth.auth().createUser(withEmail: registerEmail, password: registerPassword) { authResult, error in
-            DispatchQueue.main.async {
-                if let error = error {
+            if let error = error {
+                DispatchQueue.main.async {
                     self.isLoading = false
                     self.errorMessage = error.localizedDescription
-                } else {
-                    // Berhasil membuat akun di Firebase Auth!
-                    print("User Baru Terdaftar dengan UID: \(authResult?.user.uid ?? "")")
-                    
-                    // TIPS TAMBAHAN: Update nama user di profil Firebase Auth
-                    let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
-                    changeRequest?.displayName = self.registerName
-                    
-                    changeRequest?.commitChanges { error in
+                }
+            } else {
+                guard let user = authResult?.user else { return }
+                print("User Baru Terdaftar dengan UID: \(user.uid)")
+                
+                // 1. Update Display Name di profil Firebase Auth bawaan
+                let changeRequest = user.createProfileChangeRequest()
+                changeRequest.displayName = self.registerName
+                
+                changeRequest.commitChanges { error in
+                    // 2. Simpan Data Lengkap (Termasuk Username) ke Firebase Firestore
+                    let db = Firestore.firestore()
+                    db.collection("users").document(user.uid).setData([
+                        "name": self.registerName,
+                        "username": self.registerUsername,
+                        "email": self.registerEmail,
+                        "joinedDate": Timestamp(date: Date())
+                    ]) { firestoreError in
                         DispatchQueue.main.async {
                             self.isLoading = false
-                            // Setelah sukses simpan nama, langsung tandai user telah terautentikasi
-                            self.isAuthenticated = true
+                            
+                            if let firestoreError = firestoreError {
+                                self.errorMessage = firestoreError.localizedDescription
+                                print("Gagal menyimpan data ke Firestore: \(firestoreError.localizedDescription)")
+                            } else {
+                                print("Berhasil menyimpan profil lengkap ke Firestore!")
+                                // Jika sukses, loading berhenti.
+                                // Untuk 'self.isAuthenticated = true' tidak perlu diketik ulang karena
+                                // listener `addStateDidChangeListener` di init() akan otomatis
+                                // mendeteksi user masuk dan langsung mengarahkan layar ke MainTripView.
+                            }
                         }
                     }
                 }
@@ -106,11 +125,14 @@ class AuthViewModel: ObservableObject {
     func logout() {
         do {
             try Auth.auth().signOut()
-            self.isAuthenticated = false
+            // Listener di init() otomatis mendeteksi signout dan membuat isAuthenticated = false
             
             // Bersihkan sisa data form demi keamanan
             self.loginEmail = ""
             self.loginPassword = ""
+            self.registerName = ""
+            self.registerUsername = ""
+            self.registerEmail = ""
             self.registerPassword = ""
             self.registerConfirmPassword = ""
         } catch let signOutError as NSError {
