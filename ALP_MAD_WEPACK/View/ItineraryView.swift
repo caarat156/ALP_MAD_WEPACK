@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ItineraryView: View {
     var viewModel: TripViewModel
-    let trip: Trip // 📢 Menggunakan objek trip dinamis
+    let trip: Trip
     
     @State private var selectedDay: Int = 1
     @State private var isShowingAddActivity = false
     
-    // Logika otomatis menghitung total hari dari tanggal trip
+    // 📢 1. PENDETEKSI LAYAR IPAD VS IPHONE
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
     var totalDaysCount: Int {
         let calendar = Calendar.current
         let start = calendar.startOfDay(for: trip.startDate)
@@ -65,7 +67,7 @@ struct ItineraryView: View {
                 Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Top Bar
+                    // Top Bar (Nama Trip & Destinasi)
                     HStack {
                         Spacer()
                         VStack(spacing: 2) {
@@ -77,8 +79,10 @@ struct ItineraryView: View {
                     .padding().background(Color.white)
                     
                     ScrollView {
+                        // 📢 2. SEMUA KONTEN DIBUNGKUS DALAM VSTACK INI
                         VStack(alignment: .leading, spacing: 20) {
-                            // Header Title
+                            
+                            // Header Title & Button
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("Itinerary").font(.system(size: 28, weight: .black))
@@ -112,7 +116,7 @@ struct ItineraryView: View {
                                 Spacer()
                             }.padding(.horizontal, 20)
                             
-                            // Timeline List (Membaca data dummy & baru secara dinamis)
+                            // Timeline List
                             VStack(spacing: 0) {
                                 ForEach(filteredActivities) { activity in
                                     ItineraryCardView(activity: activity)
@@ -120,10 +124,13 @@ struct ItineraryView: View {
                             }
                             .padding(.horizontal, 20)
                         }
+                        // 📢 3. TRIK MAGIS IPAD (Maksimal lebar 700px kalau di iPad)
+                        .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
+                        // Agar posisinya selalu di tengah layar
+                        .frame(maxWidth: .infinity)
                     }
                 }
             }
-            // 📢 OPER DATA KE MODAL SECARA DINAMIS
             .sheet(isPresented: $isShowingAddActivity) {
                 AddActivityModalView(viewModel: viewModel, trip: trip, selectedDay: selectedDay)
             }
@@ -131,7 +138,7 @@ struct ItineraryView: View {
     }
 }
 
-// 🔥 SUB-KOMPONEN HARUS DI LUAR STRUCT UTAMA AGAR TIDAK ERROR SCOPE 🔥
+// SUB-KOMPONEN TETAP SAMA
 struct DayButton: View {
     let dayText: String
     let subText: String
@@ -153,8 +160,8 @@ struct DayButton: View {
     }
 }
 
+// 📢 4. FIX PREVIEW TANPA MOCKDATA
 #Preview {
-    let vm = TripViewModel()
     let sampleTrip = Trip(
         id: "PREVIEW_ID",
         name: "Preview Bali",
@@ -166,5 +173,5 @@ struct DayButton: View {
         groupProgress: 0.5,
         customImage: nil
     )
-    return ItineraryView(viewModel: vm, trip: sampleTrip)
+    ItineraryView(viewModel: TripViewModel(), trip: sampleTrip)
 }
