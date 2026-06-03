@@ -33,14 +33,14 @@ struct WatchContentView: View {
                     
                     if let activity = viewModel.nextActivity {
                         HStack(alignment: .center, spacing: 6) {
-                            Text(viewModel.getEmoji(for: .leisure)) // Dummy emoji
+                            Text(viewModel.getEmoji(for: activity.type))
                             Text(activity.name)
                                 .font(.system(size: 15, weight: .bold))
                                 .foregroundColor(.white)
                                 .lineLimit(1)
                         }
                         
-                        Text("\(viewModel.formatTime(date: activity.time)) • \(activity.location)")
+                        Text("\(viewModel.formatTime(date: activity.startTime)) • \(activity.location)")
                             .font(.system(size: 12))
                             .foregroundColor(.gray)
                             .lineLimit(1)
@@ -61,7 +61,7 @@ struct WatchContentView: View {
                         ForEach(viewModel.packingItems, id: \.id) { item in
                             Button(action: {
                                 withAnimation {
-                                    viewModel.toggleItem(id: item.id)
+                                    viewModel.toggleItem(id: item.id ?? "")
                                 }
                             }) {
                                 HStack(spacing: 10) {

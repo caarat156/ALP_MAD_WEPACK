@@ -23,6 +23,7 @@
 		5DA5E1E32FD093320016F613 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA5E1E22FD093320016F613 /* FirebaseMessaging */; };
 		5DA5E1E52FD093320016F613 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA5E1E42FD093320016F613 /* FirebaseStorage */; };
 		5DA5E1E72FD093320016F613 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA5E1E62FD093320016F613 /* FirebaseStorageCombine-Community */; };
+		5DA5E1E82FD09C5B0016F613 /* GoogleService-Info 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */; };
 		5DB5AF472FC97ECE00E48D11 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF462FC97ECE00E48D11 /* FirebaseAnalytics */; };
 		5DB5AF492FC97ECE00E48D11 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF482FC97ECE00E48D11 /* FirebaseAnalyticsCore */; };
 		5DB5AF4B2FC97ECE00E48D11 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB5AF4A2FC97ECE00E48D11 /* FirebaseAppCheck */; };
@@ -156,21 +157,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DA5E1CB2FD093320016F613 /* FirebaseAnalytics in Frameworks */,
 				5DA5E1CF2FD093320016F613 /* FirebaseAppCheck in Frameworks */,
-				5DA5E1CD2FD093320016F613 /* FirebaseAnalyticsCore in Frameworks */,
 				5DA5E1DB2FD093320016F613 /* FirebaseFirestoreCombine-Community in Frameworks */,
-				5DA5E1D52FD093320016F613 /* FirebaseCrashlytics in Frameworks */,
 				5DA5E1D12FD093320016F613 /* FirebaseAuth in Frameworks */,
 				5DA5E1D92FD093320016F613 /* FirebaseFirestore in Frameworks */,
 				5DA5E1E72FD093320016F613 /* FirebaseStorageCombine-Community in Frameworks */,
 				5DA5E1DD2FD093320016F613 /* FirebaseFunctions in Frameworks */,
-				5DA5E1E32FD093320016F613 /* FirebaseMessaging in Frameworks */,
 				5DA5E1D72FD093320016F613 /* FirebaseDatabase in Frameworks */,
 				5DA5E1DF2FD093320016F613 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				5DA5E1E52FD093320016F613 /* FirebaseStorage in Frameworks */,
 				5DA5E1D32FD093320016F613 /* FirebaseAuthCombine-Community in Frameworks */,
-				5DA5E1E12FD093320016F613 /* FirebaseInAppMessaging-Beta in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,19 +270,14 @@
 			);
 			name = "ALP_MAD_WEPACK_Watch Watch App";
 			packageProductDependencies = (
-				5DA5E1CA2FD093320016F613 /* FirebaseAnalytics */,
-				5DA5E1CC2FD093320016F613 /* FirebaseAnalyticsCore */,
 				5DA5E1CE2FD093320016F613 /* FirebaseAppCheck */,
 				5DA5E1D02FD093320016F613 /* FirebaseAuth */,
 				5DA5E1D22FD093320016F613 /* FirebaseAuthCombine-Community */,
-				5DA5E1D42FD093320016F613 /* FirebaseCrashlytics */,
 				5DA5E1D62FD093320016F613 /* FirebaseDatabase */,
 				5DA5E1D82FD093320016F613 /* FirebaseFirestore */,
 				5DA5E1DA2FD093320016F613 /* FirebaseFirestoreCombine-Community */,
 				5DA5E1DC2FD093320016F613 /* FirebaseFunctions */,
 				5DA5E1DE2FD093320016F613 /* FirebaseFunctionsCombine-Community */,
-				5DA5E1E02FD093320016F613 /* FirebaseInAppMessaging-Beta */,
-				5DA5E1E22FD093320016F613 /* FirebaseMessaging */,
 				5DA5E1E42FD093320016F613 /* FirebaseStorage */,
 				5DA5E1E62FD093320016F613 /* FirebaseStorageCombine-Community */,
 			);
@@ -491,6 +482,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DA5E1E82FD09C5B0016F613 /* GoogleService-Info 2.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

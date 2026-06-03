@@ -102,7 +102,7 @@ class WatchViewModel: ObservableObject {
         case .food: return "🍜"
         case .lodging: return "🏨"
         case .leisure: return "🏄"
-        case .activity: return "🎒"
+        case .attraction: return "🎒"
         }
     }
 }
