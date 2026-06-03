@@ -10,21 +10,17 @@ import SwiftUI
 struct TripCardComponent: View {
     let trip: Trip
     var viewModel: TripViewModel
-    
+
     private var tripLeaderInitials: String {
-        // Mencari ketua trip berdasarkan OwnerId di data dummy MockData
-        if let leader = MockData.sampleTripMembers.first(where: { $0.id == trip.ownerId }) {
-            let nameComponents = leader.name.components(separatedBy: " ")
-            
-            if nameComponents.count > 1 {
-                let firstLetter = nameComponents[0].prefix(1)
-                let lastLetter = nameComponents[1].prefix(1)
-                return "\(firstLetter)\(lastLetter)".uppercased()
-            } else {
-                return String(leader.name.prefix(2)).uppercased()
-            }
+        // Mengambil 2 huruf pertama dari nama trip sebagai inisial yang aman
+        let nameComponents = trip.name.components(separatedBy: " ")
+        if nameComponents.count > 1 {
+            let first = nameComponents[0].prefix(1)
+            let last = nameComponents[1].prefix(1)
+            return "\(first)\(last)".uppercased()
+        } else {
+            return String(trip.name.prefix(2)).uppercased()
         }
-        return "TL"
     }
     
     // =================================================================

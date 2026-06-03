@@ -152,7 +152,19 @@ struct DayButton: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
+
 #Preview {
-    // Memberikan sample data trip pertama dari MockData kamu biar preview ga error
-    ItineraryView(viewModel: TripViewModel(), trip: MockData.sampleTrips[0])
+    let vm = TripViewModel()
+    let sampleTrip = Trip(
+        id: "PREVIEW_ID",
+        name: "Preview Bali",
+        destination: "Bali",
+        startDate: Date(),
+        endDate: Date().addingTimeInterval(86400 * 3),
+        ownerId: "me",
+        memberIds: ["me"],
+        groupProgress: 0.5,
+        customImage: nil
+    )
+    return ItineraryView(viewModel: vm, trip: sampleTrip)
 }
