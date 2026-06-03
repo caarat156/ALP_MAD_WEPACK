@@ -23,7 +23,7 @@ enum PackingCategory: String, CaseIterable {
         }
     }
 }
-struct PackingItem: Identifiable, Codable {
+struct PackingItem: Identifiable {
     var id: String?
     var tripId: String
     var name: String
