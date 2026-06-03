@@ -1,13 +1,20 @@
+//
+//  PackingViewModel.swift
+//  ALP_MAD_WEPACK
+//
+//  Created by Anastasia on 29/05/26.
+//
+
 import Foundation
 import SwiftUI
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseAuth
+// SUDAH DIHAPUS: import FirebaseFirestoreSwift
 
 class PackingViewModel: ObservableObject {
     // --- STATE DATA ---
-    @Published var packingItems: [PackingItem] = [] // Sekarang kosong di awal
-    @Published var tripMembers: [TripMember] = []   // Data member asli
+    @Published var packingItems: [PackingItem] = []
+    @Published var tripMembers: [TripMember] = []
     @Published var showAddItemSheet = false
     
     // --- STATE FORM INPUT ---
@@ -28,7 +35,17 @@ class PackingViewModel: ObservableObject {
         fetchTripMembers()
     }
     
-    // --- FUNGSI FETCH REAL-TIME ---
+    // --- KALKULASI DATA (Dibutuhkan oleh UI Progress Bar) ---
+    var packedCount: Int {
+        packingItems.filter { $0.isPacked }.count
+    }
+    
+    var progressPercentage: Int {
+        guard !packingItems.isEmpty else { return 0 }
+        return Int(Double(packedCount) / Double(packingItems.count) * 100)
+    }
+    
+    // --- FUNGSI FETCH REAL-TIME (MANUAL MAPPING) ---
     func fetchPackingItems() {
         db.collection("packing_items")
             .whereField("tripId", isEqualTo: "TRIP_BALI_2026") // Ganti dengan ID trip aktifmu
@@ -38,18 +55,39 @@ class PackingViewModel: ObservableObject {
                     return
                 }
                 
-                self.packingItems = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: PackingItem.self)
-                } ?? []
+                guard let documents = querySnapshot?.documents else { return }
+                
+                // CARA MANUAL: Menerjemahkan Dictionary ke PackingItem
+                self.packingItems = documents.map { document in
+                    let data = document.data()
+                    let categoryString = data["category"] as? String ?? "Clothing"
+                    
+                    return PackingItem(
+                        id: document.documentID, // Ambil ID asli dari dokumen Firebase
+                        tripId: data["tripId"] as? String ?? "",
+                        name: data["name"] as? String ?? "",
+                        category: PackingCategory(rawValue: categoryString) ?? .clothing,
+                        isPacked: data["isPacked"] as? Bool ?? false,
+                        assignedTo: data["assignedTo"] as? [String] ?? []
+                    )
+                }
             }
     }
     
     func fetchTripMembers() {
-        // Asumsi data member ada di collection "users" atau subcollection "members"
         db.collection("users").getDocuments { snapshot, _ in
-            self.tripMembers = snapshot?.documents.compactMap { doc in
-                try? doc.data(as: TripMember.self)
-            } ?? []
+            guard let documents = snapshot?.documents else { return }
+            
+            // CARA MANUAL: Menerjemahkan Dictionary ke TripMember
+            self.tripMembers = documents.map { doc in
+                let data = doc.data()
+                return TripMember(
+                    id: doc.documentID,
+                    name: data["name"] as? String ?? "Unknown",
+                    role: data["role"] as? String ?? "Member",
+                    packingProgress: data["packingProgress"] as? Double ?? 0.0
+                )
+            }
         }
     }
     
@@ -75,20 +113,21 @@ class PackingViewModel: ObservableObject {
         
         let finalAssignees = assignmentType == .everyone ? ["Everyone"] : Array(selectedMemberIds)
         
-        let newItem = PackingItem(
-            id: nil, // Biarkan Firestore yang buat ID
-            tripId: "TRIP_BALI_2026",
-            name: trimmedName,
-            category: selectedCategory,
-            isPacked: false,
-            assignedTo: finalAssignees
-        )
+        // CARA MANUAL: Jadikan data form menjadi Dictionary
+        let itemData: [String: Any] = [
+            "tripId": "TRIP_BALI_2026",
+            "name": trimmedName,
+            "category": selectedCategory.rawValue,
+            "isPacked": false,
+            "assignedTo": finalAssignees
+        ]
         
-        do {
-            _ = try db.collection("packing_items").addDocument(from: newItem)
-            resetForm()
-        } catch {
-            print("Error saving item: \(error)")
+        db.collection("packing_items").addDocument(data: itemData) { [weak self] error in
+            if let error = error {
+                print("Error saving item: \(error)")
+            } else {
+                self?.resetForm()
+            }
         }
     }
     
@@ -99,18 +138,26 @@ class PackingViewModel: ObservableObject {
         selectedMemberIds = []
     }
     
-    // --- HELPER FUNCTIONS (Update untuk baca data Firebase) ---
+    // --- HELPER UNTUK TAMPILAN (UI) ---
+    func getMemberName(for assignedTo: [String]) -> String {
+        if assignedTo.contains("Everyone") { return "Everyone" }
+        
+        if let firstId = assignedTo.first,
+           let member = tripMembers.first(where: { $0.id == firstId }) {
+            return member.name.replacingOccurrences(of: " (You)", with: "")
+        }
+        return "Unassigned"
+    }
+    
+    func getBadgeColor(for assignedTo: [String]) -> Color {
+        return assignedTo.contains("Everyone") ? .gray : .blue
+    }
+    
     func getInisial(for id: String) -> String {
-        // Sekarang mencari di tripMembers yang kita ambil dari Firebase
         if let member = tripMembers.first(where: { $0.id == id }) {
             let cleanName = member.name.replacingOccurrences(of: " (You)", with: "")
             return String(cleanName.prefix(1)).uppercased()
         }
         return "?"
-    }
-    
-    func getBadgeColor(for id: String) -> Color {
-        // Kamu bisa simpan warna di Firestore atau tentukan logikanya di sini
-        return .blue
     }
 }

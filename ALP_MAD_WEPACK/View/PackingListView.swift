@@ -1,3 +1,10 @@
+//
+//  PackingListView.swift
+//  ALP_MAD_WEPACK
+//
+//  Created by Anastasia on 29/05/26.
+//
+
 import SwiftUI
 
 struct PackingListView: View {
