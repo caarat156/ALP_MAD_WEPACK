@@ -11,6 +11,11 @@ struct TripListView: View {
     @State private var viewModel = TripViewModel()
     @State private var isShowingAddTrip = false
     
+    // 📢 1. VARIABEL UNTUK RESPONSIVE IPAD (Grid adaptif)
+    let columns = [
+        GridItem(.adaptive(minimum: 300), spacing: 20)
+    ]
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -32,7 +37,7 @@ struct TripListView: View {
                         }
                         Spacer()
                         
-                        // 📢 Tombol New Trip menggunakan Button bawaan SwiftUI agar areanya presisi & tidak bentrok
+                        // Tombol New Trip
                         Button(action: {
                             isShowingAddTrip = true // Mengunci pemicu modal AddTrip
                         }) {
@@ -47,30 +52,38 @@ struct TripListView: View {
                             .background(Color(red: 0.08, green: 0.15, blue: 0.25))
                             .cornerRadius(20)
                         }
-                        // Mencegah modifier tombol menyebar kemana-mana
                         .buttonStyle(PlainButtonStyle())
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 15)
                     .background(Color.white) // Memberi efek header atas solid rapi
                     
+                    
                     // --- AREA SCROLL KHUSUS UNTUK CARD SAJA ---
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
+                        // 📢 2. MENGGUNAKAN LAZYVGRID AGAR IPAD BISA 2/3 KOLOM
+                        LazyVGrid(columns: columns, spacing: 20) {
                             ForEach(viewModel.trips) { trip in
-                                // Klik Card Trip -> Navigasi masuk ke TripDetailOverviewView
-                                    .navigationDestination(for: Trip.self) { selectedTrip in
-                                                    // 📢 5. GANTI MENGARAH KE MAIN TRIP VIEW
-                                                    MainTripView(trip: selectedTrip, viewModel: viewModel)
-                                                }
+                                
+                                // 📢 3. NAVIGATION LINK (Sebagai "Trigger/Pemicu")
+                                NavigationLink(value: trip) {
+                                    TripCardComponent(trip: trip, viewModel: viewModel)
+                                }
                                 .buttonStyle(PlainButtonStyle())
+                                
                             }
                         }
                         .padding(.top, 15)
+                        .padding(.horizontal) // Tambahan padding agar rapi di layar lebar
                     }
                 }
             }
-            // 📢 JALUR MODAL NYA DI SINI
+            // 📢 4. NAVIGATION DESTINATION TARUH DI SINI (Di luar elemen UI)
+            // Ini akan menangkap `value: trip` dari NavigationLink di atas
+            .navigationDestination(for: Trip.self) { selectedTrip in
+                MainTripView(trip: selectedTrip, viewModel: viewModel)
+            }
+            // 📢 JALUR MODAL NEW TRIP
             .sheet(isPresented: $isShowingAddTrip) {
                 AddTripModalView(viewModel: viewModel)
             }

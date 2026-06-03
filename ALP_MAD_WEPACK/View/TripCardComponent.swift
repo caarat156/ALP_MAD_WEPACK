@@ -10,18 +10,9 @@ import SwiftUI
 struct TripCardComponent: View {
     let trip: Trip
     var viewModel: TripViewModel
-
-    private var tripLeaderInitials: String {
-        // Mengambil 2 huruf pertama dari nama trip sebagai inisial yang aman
-        let nameComponents = trip.name.components(separatedBy: " ")
-        if nameComponents.count > 1 {
-            let first = nameComponents[0].prefix(1)
-            let last = nameComponents[1].prefix(1)
-            return "\(first)\(last)".uppercased()
-        } else {
-            return String(trip.name.prefix(2)).uppercased()
-        }
-    }
+    
+    // 📢 Pendeteksi Layar (iPhone vs iPad)
+    @Environment(\.horizontalSizeClass) var sizeClass
     
     // =================================================================
     // DYNAMIC DATE RANGE LOGIC (TUGAS ANGEL)
@@ -194,7 +185,8 @@ struct TripCardComponent: View {
             .background(Color.white)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0))
         }
-        .padding(.horizontal, 20)
+        // 📢 PENGGUNAAN SIZECLASS: Kalau di iPhone (compact) padding kiri kanan 20, kalau iPad (regular) padding 0 karena LazyVGrid sudah ngatur jaraknya.
+        .padding(.horizontal, sizeClass == .compact ? 20 : 0)
         .padding(.vertical, 4)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
     }
