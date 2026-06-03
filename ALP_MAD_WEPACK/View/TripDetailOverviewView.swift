@@ -11,6 +11,9 @@ struct TripDetailOverviewView: View {
     let trip: Trip
     var viewModel: TripViewModel
     
+    // 📢 1. PENDETEKSI LAYAR IPAD VS IPHONE
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
     // Data Dummy Anggota Kelompok sesuai dengan video demo WePack kamu
     let members = [
         (initials: "RF", name: "Rafi", role: "You", progress: 0.90, color: Color.blue),
@@ -27,6 +30,7 @@ struct TripDetailOverviewView: View {
                 .ignoresSafeArea()
             
             ScrollView {
+                // 📢 2. SEMUA KONTEN DIBUNGKUS DALAM VSTACK INI
                 VStack(alignment: .leading, spacing: 16) {
                     
                     // ==========================================
@@ -257,6 +261,10 @@ struct TripDetailOverviewView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 25)
                 }
+                // 📢 3. TRIK MAGIS IPAD (Maksimal lebar 700px kalau di iPad)
+                .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
+                // Agar selalu di tengah layar
+                .frame(maxWidth: .infinity)
             }
         }
         .navigationBarBackButtonHidden(false)
@@ -337,4 +345,21 @@ struct AttentionRowComponent: View {
                 .cornerRadius(6)
         }
     }
+}
+
+// 📢 4. TAMBAHAN PREVIEW AGAR CANVAS TIDAK ERROR
+#Preview {
+    let sampleTrip = Trip(
+        id: "PREVIEW_ID",
+        name: "Preview Bali",
+        destination: "Bali",
+        startDate: Date(),
+        endDate: Date().addingTimeInterval(86400 * 3),
+        ownerId: "me",
+        memberIds: ["me", "nd", "dt", "kr", "bm"],
+        groupProgress: 0.68,
+        customImage: nil
+    )
+    
+    TripDetailOverviewView(trip: sampleTrip, viewModel: TripViewModel())
 }
