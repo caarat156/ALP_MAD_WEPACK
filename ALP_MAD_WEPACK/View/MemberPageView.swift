@@ -158,7 +158,10 @@ struct MemberPageView: View {
             AddMemberView()
         }
         .sheet(item: $selectedMember) { member in
-            MemberAssignedItemsView(member: member)
+            MemberAssignedItemsView(
+                member: member, 
+                allPackingItems: viewModel.packingItems
+                )
         }
     }
 }
