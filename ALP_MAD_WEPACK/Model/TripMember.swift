@@ -8,9 +8,9 @@
 import Foundation
 
 struct TripMember: Identifiable {
-    var id: String              
+    var id: String
     var name: String
-    var role: String          
-    var packingProgress: Double
+    var role: String
+    var packingProgress: Double 
 }
 

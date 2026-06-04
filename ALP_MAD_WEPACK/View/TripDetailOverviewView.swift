@@ -10,11 +10,9 @@ import SwiftUI
 struct TripDetailOverviewView: View {
     let trip: Trip
     var viewModel: TripViewModel
-    
-    // 📢 1. PENDETEKSI LAYAR IPAD VS IPHONE
+
     @Environment(\.horizontalSizeClass) var sizeClass
     
-    // Data Dummy Anggota Kelompok sesuai dengan video demo WePack kamu
     let members = [
         (initials: "RF", name: "Rafi", role: "You", progress: 0.90, color: Color.blue),
         (initials: "ND", name: "Nadia", role: "Member", progress: 0.65, color: Color.teal),
@@ -25,20 +23,14 @@ struct TripDetailOverviewView: View {
     
     var body: some View {
         ZStack {
-            // Background abu-abu ultra light khas Figma WePack
             Color(red: 0.96, green: 0.97, blue: 0.98)
                 .ignoresSafeArea()
             
             ScrollView {
-                // 📢 2. SEMUA KONTEN DIBUNGKUS DALAM VSTACK INI
                 VStack(alignment: .leading, spacing: 16) {
-                    
-                    // ==========================================
-                    // 1. BANNER UTAMA TRIP DENGAN GAMBAR + OVERLAY
-                    // ==========================================
+        
                     ZStack(alignment: .bottomLeading) {
                         
-                        // --- A. ASSET GAMBAR UTAMA ---
                         if let data = trip.customImage, let uiImage = UIImage(data: data) {
                             Image(uiImage: uiImage)
                                 .resizable()
@@ -54,15 +46,12 @@ struct TripDetailOverviewView: View {
                                 .frame(height: 180)
                                 .clipped()
                         }
-                        
-                        // --- B. GRADASI GELAP PREMIUM ---
                         LinearGradient(
                             colors: [Color.black.opacity(0.2), Color.black.opacity(0.75)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                         
-                        // --- C. KONTEN OVERLAY TEKS & TOMBOL ---
                         VStack(alignment: .leading, spacing: 6) {
                             HStack {
                                 Text("\(viewModel.calculateDaysAway(from: trip.startDate)) days away")
@@ -74,8 +63,7 @@ struct TripDetailOverviewView: View {
                                     .cornerRadius(20)
                                 
                                 Spacer()
-                                
-                                // Status Trip Owner/Member Dinamis
+                  
                                 Text(trip.ownerId == viewModel.currentUserID ? "Owner" : "Member")
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
@@ -101,7 +89,6 @@ struct TripDetailOverviewView: View {
                                 Image(systemName: "mappin.and.ellipse")
                                 Text(trip.destination)
                                 Text("•")
-                                // Ambil rentang tanggal dinamis yang aman
                                 Text(trip.destination.lowercased().contains("bali") ? "May 29 — Jun 2" : "Jun 15 — Jun 19")
                             }
                             .font(.system(size: 13, weight: .medium))
@@ -113,10 +100,7 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .padding(.top, 10)
-                    
-                    // ==========================================
-                    // 2. KOTAK GROUP READINESS (68%)
-                    // ==========================================
+                
                     VStack(spacing: 16) {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 4) {
@@ -138,8 +122,6 @@ struct TripDetailOverviewView: View {
                                     .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                             }
                         }
-                        
-                        // Row Ringkasan Progress Lingkaran Anggota Kelompok
                         HStack(spacing: 0) {
                             ForEach(members, id: \.name) { member in
                                 VStack(spacing: 6) {
@@ -175,10 +157,7 @@ struct TripDetailOverviewView: View {
                     .background(Color.white)
                     .cornerRadius(18)
                     .padding(.horizontal)
-                    
-                    // ==========================================
-                    // 3. STATISTIK BARANG
-                    // ==========================================
+            
                     HStack(spacing: 12) {
                         MiniStatCard(value: "12", label: "Items packed")
                         MiniStatCard(value: "10", label: "Remaining")
@@ -186,9 +165,6 @@ struct TripDetailOverviewView: View {
                     }
                     .padding(.horizontal)
                     
-                    // ==========================================
-                    // 4. DAY 2 PREVIEW (TIMELINE JALUR TIMELINE)
-                    // ==========================================
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
                             Text("Day 2 Preview")
@@ -239,9 +215,6 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     
-                    // ==========================================
-                    // 5. SECTION "NEEDS ATTENTION"
-                    // ==========================================
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
@@ -261,17 +234,13 @@ struct TripDetailOverviewView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 25)
                 }
-                // 📢 3. TRIK MAGIS IPAD (Maksimal lebar 700px kalau di iPad)
                 .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
-                // Agar selalu di tengah layar
                 .frame(maxWidth: .infinity)
             }
         }
         .navigationBarBackButtonHidden(false)
     }
 }
-
-// --- SUB-KOMPONEN KUSTOM FORMAL AGAR KODE BERSIH DAN RAPI ---
 
 struct MiniStatCard: View {
     var value: String
@@ -303,7 +272,6 @@ struct AttentionRowComponent: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Avatar Bundar
             Circle()
                 .fill(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.8))
                 .frame(width: 36, height: 36)
@@ -313,13 +281,11 @@ struct AttentionRowComponent: View {
                         .foregroundColor(.white)
                 )
             
-            // Nama Anggota
             Text(name)
                 .font(.system(size: 14, weight: .bold))
                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                 .frame(width: 60, alignment: .leading)
             
-            // Mini Horizontal Progress Bar
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(Color.gray.opacity(0.15))
@@ -335,7 +301,6 @@ struct AttentionRowComponent: View {
                 .foregroundColor(.gray)
                 .frame(width: 35, alignment: .trailing)
             
-            // Badge Status Kotak Kapsul (IN PROGRESS / URGENT)
             Text(status)
                 .font(.system(size: 9, weight: .black))
                 .foregroundColor(statusColor)
@@ -347,7 +312,6 @@ struct AttentionRowComponent: View {
     }
 }
 
-// 📢 4. TAMBAHAN PREVIEW AGAR CANVAS TIDAK ERROR
 #Preview {
     let sampleTrip = Trip(
         id: "PREVIEW_ID",

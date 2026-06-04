@@ -13,8 +13,7 @@ struct ItineraryView: View {
     
     @State private var selectedDay: Int = 1
     @State private var isShowingAddActivity = false
-    
-    // 📢 1. PENDETEKSI LAYAR IPAD VS IPHONE
+
     @Environment(\.horizontalSizeClass) var sizeClass
     
     var totalDaysCount: Int {
@@ -67,7 +66,7 @@ struct ItineraryView: View {
                 Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Top Bar (Nama Trip & Destinasi)
+
                     HStack {
                         Spacer()
                         VStack(spacing: 2) {
@@ -79,10 +78,8 @@ struct ItineraryView: View {
                     .padding().background(Color.white)
                     
                     ScrollView {
-                        // 📢 2. SEMUA KONTEN DIBUNGKUS DALAM VSTACK INI
                         VStack(alignment: .leading, spacing: 20) {
                             
-                            // Header Title & Button
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("Itinerary").font(.system(size: 28, weight: .black))
@@ -97,7 +94,6 @@ struct ItineraryView: View {
                             }
                             .padding(.horizontal, 20).padding(.top, 20)
                             
-                            // Day Selector
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(0..<dynamicDays.count, id: \.self) { index in
@@ -109,14 +105,12 @@ struct ItineraryView: View {
                                 .padding(.horizontal, 20)
                             }
                             
-                            // Daily Title
                             HStack {
                                 Text("Day \(selectedDay) — \(formatDateForSelectedDay())")
                                     .font(.system(size: 18, weight: .bold))
                                 Spacer()
                             }.padding(.horizontal, 20)
                             
-                            // Timeline List
                             VStack(spacing: 0) {
                                 ForEach(filteredActivities) { activity in
                                     ItineraryCardView(activity: activity)
@@ -124,9 +118,7 @@ struct ItineraryView: View {
                             }
                             .padding(.horizontal, 20)
                         }
-                        // 📢 3. TRIK MAGIS IPAD (Maksimal lebar 700px kalau di iPad)
                         .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
-                        // Agar posisinya selalu di tengah layar
                         .frame(maxWidth: .infinity)
                     }
                 }
@@ -138,7 +130,6 @@ struct ItineraryView: View {
     }
 }
 
-// SUB-KOMPONEN TETAP SAMA
 struct DayButton: View {
     let dayText: String
     let subText: String
@@ -160,7 +151,6 @@ struct DayButton: View {
     }
 }
 
-// 📢 4. FIX PREVIEW TANPA MOCKDATA
 #Preview {
     let sampleTrip = Trip(
         id: "PREVIEW_ID",

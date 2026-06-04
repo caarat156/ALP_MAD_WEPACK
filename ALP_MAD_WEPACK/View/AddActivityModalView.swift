@@ -11,7 +11,7 @@ struct AddActivityModalView: View {
     @Environment(\.dismiss) var dismiss
     
     var viewModel: TripViewModel
-    let trip: Trip // Menerima trip objek utuh
+    let trip: Trip
     @State var selectedDay: Int
     
     @State private var activityName: String = ""
@@ -43,7 +43,7 @@ struct AddActivityModalView: View {
             Color(red: 0.98, green: 0.98, blue: 0.99).ignoresSafeArea()
             
             VStack(spacing: 24) {
-                // Header Modal
+
                 HStack {
                     Text("Add Activity")
                         .font(.system(size: 20, weight: .bold))
@@ -64,7 +64,6 @@ struct AddActivityModalView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         CustomInputView(label: "ACTIVITY NAME *", placeholder: "e.g. Sunset at Kuta Beach", text: $activityName)
                         
-                        // Day Selector Pills Dinamis mengikuti input user
                         VStack(alignment: .leading, spacing: 8) {
                             Text("DAY *").font(.system(size: 11, weight: .bold)).foregroundColor(.gray)
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -78,8 +77,7 @@ struct AddActivityModalView: View {
                                 }
                             }
                         }
-                        
-                        // Start & End Time
+             
                         HStack(spacing: 16) {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("START TIME *").font(.system(size: 11, weight: .bold)).foregroundColor(.gray)
@@ -100,8 +98,7 @@ struct AddActivityModalView: View {
                         }
                         
                         CustomInputView(label: "LOCATION *", placeholder: "e.g. Kuta Beach, Badung", text: $location)
-                        
-                        // Activity Type
+              
                         VStack(alignment: .leading, spacing: 10) {
                             Text("ACTIVITY TYPE *").font(.system(size: 11, weight: .bold)).foregroundColor(.gray)
                             HStack(spacing: 12) {
@@ -115,8 +112,7 @@ struct AddActivityModalView: View {
                                 Spacer()
                             }
                         }
-                        
-                        // Save Button
+                      
                         Button(action: {
                             let calendar = Calendar.current
                             let daysToAdd = selectedDay - 1
@@ -125,7 +121,7 @@ struct AddActivityModalView: View {
                             
                             let newActivity = ItineraryActivity(
                                 id: UUID().uuidString,
-                                tripId: trip.id, // Menyimpan id trip secara otomatis
+                                tripId: trip.id,
                                 name: activityName,
                                 startTime: finalStartDate,
                                 endTime: finalEndDate,
@@ -153,7 +149,6 @@ struct AddActivityModalView: View {
     }
 }
 
-// 🔥 DEFINISI SUB-KOMPONEN FORM DI LUAR STRUCT UTAMA 🔥
 struct CustomInputView: View {
     var label: String
     var placeholder: String

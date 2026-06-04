@@ -10,13 +10,9 @@ import SwiftUI
 struct TripCardComponent: View {
     let trip: Trip
     var viewModel: TripViewModel
-    
-    // 📢 Pendeteksi Layar (iPhone vs iPad)
+   
     @Environment(\.horizontalSizeClass) var sizeClass
-    
-    // =================================================================
-    // DYNAMIC DATE RANGE LOGIC (TUGAS ANGEL)
-    // =================================================================
+
     private var tripDateRangeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
@@ -27,12 +23,9 @@ struct TripCardComponent: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // ==========================================
-            // A. IMAGE BANNER ATAS DENGAN OVERLAY TEKS
-            // ==========================================
+
             ZStack(alignment: .bottomLeading) {
-                
-                // 1. ASSET GAMBAR UTAMA (Kustom dari Galeri / Default Cover)
+     
                 if let data = trip.customImage, let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -48,18 +41,15 @@ struct TripCardComponent: View {
                         .frame(height: 155)
                         .clipped()
                 }
-                
-                // 2. GRADASI GELAP (Supaya teks nama trip putih terlihat kontras dan jelas)
+        
                 LinearGradient(
                     colors: [Color.black.opacity(0.3), Color.black.opacity(0.7)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 
-                // 3. BADGES DI ATAS GAMBAR (Owner/Member & Upcoming)
                 VStack {
                     HStack {
-                        // Badge Status Kepemilikan (Dinamis sesuai User yang login)
                         Text(trip.ownerId == viewModel.currentUserID ? "Owner" : "Member")
                             .font(.system(size: 11, weight: .bold))
                             .foregroundColor(.white)
@@ -70,7 +60,6 @@ struct TripCardComponent: View {
                         
                         Spacer()
                         
-                        // Badge Upcoming
                         Text("Upcoming")
                             .font(.system(size: 11, weight: .bold))
                             .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
@@ -83,8 +72,6 @@ struct TripCardComponent: View {
                     
                     Spacer()
                 }
-                
-                // 4. JUDUL TRIP DI POJOK KIRI BAWAH GAMBAR
                 HStack(spacing: 6) {
                     Text(trip.destination.lowercased().contains("bali") ? "🌴" : "🏛️")
                         .font(.system(size: 16))
@@ -99,11 +86,7 @@ struct TripCardComponent: View {
             .frame(height: 155)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 16, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 16))
             
-            // ==========================================
-            // B. KOTAK INFORMASI DETAIL TEKNIS (BAWAH)
-            // ==========================================
             VStack(spacing: 12) {
-                // Row 1: Lokasi & Tanggal Rentang
                 HStack {
                     HStack(spacing: 6) {
                         Image(systemName: "mappin.and.ellipse")
@@ -126,8 +109,6 @@ struct TripCardComponent: View {
                     }
                 }
                 .padding(.top, 4)
-                
-                // Row 2: Jumlah Anggota, Progress Bar, Percentage, dan Sisa Hari
                 HStack(spacing: 10) {
                     HStack(spacing: 6) {
                         Image(systemName: "person.2.fill")
@@ -139,7 +120,6 @@ struct TripCardComponent: View {
                     }
                     .frame(width: 95, alignment: .leading)
                     
-                    // Progress Bar WePack Navy
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Capsule().fill(Color.gray.opacity(0.12))
@@ -164,9 +144,6 @@ struct TripCardComponent: View {
                         .cornerRadius(6)
                 }
                 
-                // ==========================================
-                // C. TOMBOL AKSES "OPEN TRIP →" WBPACK STYLE
-                // ==========================================
                 HStack {
                     Text("Open Trip")
                         .font(.system(size: 14, weight: .bold))
@@ -185,7 +162,7 @@ struct TripCardComponent: View {
             .background(Color.white)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0))
         }
-        // 📢 PENGGUNAAN SIZECLASS: Kalau di iPhone (compact) padding kiri kanan 20, kalau iPad (regular) padding 0 karena LazyVGrid sudah ngatur jaraknya.
+  
         .padding(.horizontal, sizeClass == .compact ? 20 : 0)
         .padding(.vertical, 4)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)
