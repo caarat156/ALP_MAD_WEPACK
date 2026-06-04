@@ -11,10 +11,8 @@ struct AddPackingItemView: View {
     @ObservedObject var viewModel: PackingViewModel
     @Environment(\.dismiss) var dismiss
     
-    // Layout grid untuk kategori (2 kolom)
     let categoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
     
-    // VARIABEL BANTUAN UNTUK MENGATASI ERROR "COMPILER UNABLE TO TYPE-CHECK"
     var isFormValid: Bool {
         let isNameFilled = !viewModel.newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let isCustomValid = viewModel.assignmentType == .custom ? !viewModel.selectedMemberIds.isEmpty : true
@@ -26,7 +24,6 @@ struct AddPackingItemView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    // 1. INPUT NAMA BARANG
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ITEM NAME *")
                             .font(.caption)
@@ -39,7 +36,6 @@ struct AddPackingItemView: View {
                             .cornerRadius(10)
                     }
                     
-                    // 2. PILIHAN KATEGORI
                     VStack(alignment: .leading, spacing: 8) {
                         Text("CATEGORY *")
                             .font(.caption)
@@ -70,7 +66,6 @@ struct AddPackingItemView: View {
                         }
                     }
                     
-                    // 3. WHO BRINGS THIS?
                     VStack(alignment: .leading, spacing: 12) {
                         Text("WHO BRINGS THIS? *")
                             .font(.caption)
@@ -78,7 +73,6 @@ struct AddPackingItemView: View {
                             .foregroundColor(.gray)
                         
                         HStack(spacing: 0) {
-                            // Tombol Everyone
                             Button(action: { viewModel.assignmentType = .everyone }) {
                                 Text("Everyone")
                                     .frame(maxWidth: .infinity)
@@ -90,7 +84,6 @@ struct AddPackingItemView: View {
                             .cornerRadius(8)
                             .shadow(color: viewModel.assignmentType == .everyone ? .black.opacity(0.05) : .clear, radius: 2)
                             
-                            // Tombol Custom
                             Button(action: { viewModel.assignmentType = .custom }) {
                                 Text("Custom")
                                     .frame(maxWidth: .infinity)
@@ -107,7 +100,6 @@ struct AddPackingItemView: View {
                         .cornerRadius(12)
                     }
                     
-                    // 4. SELECTION MEMBER GRID
                     if viewModel.assignmentType == .custom {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("SELECT MEMBERS")
@@ -116,7 +108,6 @@ struct AddPackingItemView: View {
                                 .foregroundColor(.gray)
                             
                             HStack(spacing: 20) {
-                                // ERROR MOCKDATA BIASANYA MUNCUL DARI BARIS INI
                                 ForEach(MockData.sampleTripMembers) { member in
                                     let isSelected = viewModel.selectedMemberIds.contains(member.id)
                                     
@@ -169,7 +160,7 @@ struct AddPackingItemView: View {
                         dismiss()
                     }
                     .fontWeight(.bold)
-                    .disabled(!isFormValid) // Jauh lebih bersih dan tidak bikin Xcode bingung!
+                    .disabled(!isFormValid)
                 }
             }
         }

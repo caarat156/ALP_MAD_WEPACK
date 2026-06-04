@@ -21,11 +21,9 @@ struct AccountView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                         
-                        // --- 1. PROFILE CARD ---
                         VStack(spacing: 0) {
                             HStack(alignment: .center, spacing: 16) {
-                                
-                                // AVATAR DENGAN FITUR KLIK GALERI (Sudah diperbaiki formatnya)
+                               
                                 PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
                                     ZStack(alignment: .bottomTrailing) {
                                         Group {
@@ -46,7 +44,6 @@ struct AccountView: View {
                                             }
                                         }
                                         
-                                        // Ikon kamera kecil
                                         Image(systemName: "camera.circle.fill")
                                             .resizable()
                                             .frame(width: 24, height: 24)
@@ -56,7 +53,6 @@ struct AccountView: View {
                                 }
                                 .buttonStyle(.plain)
                                 
-                                // INFO USER
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(viewModel.name)
                                         .font(.title3)
@@ -78,7 +74,6 @@ struct AccountView: View {
                         }
                         .padding(.horizontal)
                         
-                        // --- 2. MENU OPTIONS ---
                         AccountSectionView(title: "General") {
                             NavigationLink(destination: EditAccountView(viewModel: viewModel)) {
                                 AccountMenuRowView(icon: "person.circle", iconColor: .blue, title: "Edit Profile", subtitle: "Change your name or password")
@@ -91,7 +86,7 @@ struct AccountView: View {
                         }
                         .padding(.horizontal)
                         
-                        // --- 3. LOGOUT BUTTON ---
+                        
                         Button(action: {
                             authViewModel.logout()
                         }) {
@@ -120,7 +115,6 @@ struct AccountView: View {
     }
 }
 
-// --- KOMPONEN BANTUAN MENU BAWAH (Nama diubah agar tidak bentrok) ---
 struct AccountSectionView<Content: View>: View {
     let title: String
     let content: Content
