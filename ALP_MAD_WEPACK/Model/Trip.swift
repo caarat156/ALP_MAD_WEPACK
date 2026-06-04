@@ -8,7 +8,7 @@
 import Foundation
 import UIKit // 📢 Diperlukan untuk menggunakan UIImage
 
-struct Trip: Identifiable, Codable {
+struct Trip: Identifiable, Codable, Hashable {
     var id: String
     var name: String
     var destination: String

@@ -75,14 +75,16 @@ struct MemberAssignedItemsView: View {
                 ScrollView {
                     VStack(spacing: 12) {
                         // Menggunakan indices agar kita bisa memodifikasi array state langsung
-                        ForEach(assignedItems.indices, id: \.self) { index in
-                            let item = assignedItems[index]
+                        // 💡 PERBAIKAN 1: Looping langsung dari objek item-nya, bukan indices
+                        ForEach(assignedItems, id: \.id) { item in
                             
                             // BUNGKUS DENGAN BUTTON AGAR BISA DI-KLIK
                             Button(action: {
-                                // Efek animasi saat checklist ditekan
-                                withAnimation {
-                                    assignedItems[index].isPacked.toggle()
+                                // 💡 PERBAIKAN 2: Cari index menggunakan variabel "targetIndex" agar tidak error pointer C
+                                if let targetIndex = assignedItems.firstIndex(where: { $0.id == item.id }) {
+                                    withAnimation {
+                                        assignedItems[targetIndex].isPacked.toggle()
+                                    }
                                 }
                             }) {
                                 HStack(spacing: 16) {
@@ -99,12 +101,12 @@ struct MemberAssignedItemsView: View {
                                             .foregroundColor(item.isPacked ? .gray : .black)
                                         
                                         // Badge Kategori
-                                        Text(item.assignedTo == "Everyone" ? "Shared Item" : "Personal Item")
+                                        Text(item.assignedTo.contains("Everyone") ? "Shared Item" : "Personal Item")
                                             .font(.system(size: 10, weight: .bold))
-                                            .foregroundColor(item.assignedTo == "Everyone" ? .orange : .blue)
+                                            .foregroundColor(item.assignedTo.contains("Everyone") ? .orange : .blue)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
-                                            .background(item.assignedTo == "Everyone" ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
+                                            .background(item.assignedTo.contains("Everyone") ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
                                             .cornerRadius(8)
                                     }
                                     Spacer()
@@ -128,7 +130,7 @@ struct MemberAssignedItemsView: View {
         // Load dan filter data saat halaman muncul
         .onAppear {
             assignedItems = MockData.samplePackingItems.filter { item in
-                item.assignedTo == ["Everyone"] || item.assignedTo == [member.id]
+                item.assignedTo.contains("Everyone") || item.assignedTo.contains(member.id)
             }
         }
     }
