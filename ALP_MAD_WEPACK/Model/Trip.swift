@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit /
+import UIKit 
 
 struct Trip: Identifiable, Codable, Hashable {
     var id: String
