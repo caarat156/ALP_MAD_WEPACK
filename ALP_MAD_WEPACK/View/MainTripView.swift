@@ -8,31 +8,25 @@
 import SwiftUI
 
 struct MainTripView: View {
-    // 📢 1. HAPUS MOCK DATA. Ganti jadi variabel dinamis yang dilempar dari TripListView
     let trip: Trip
     var viewModel: TripViewModel
     
-    // 📢 2. Tambahkan Environment untuk fungsi tombol Back
     @Environment(\.dismiss) var dismiss
 
     func formatTripDate(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
         let startStr = formatter.string(from: start)
-        formatter.dateFormat = "MMM d, yyyy" // Tambah yyyy biar rapi
+        formatter.dateFormat = "MMM d, yyyy" 
         let endStr = formatter.string(from: end)
         return "\(startStr) – \(endStr)"
     }
     
     var body: some View {
         VStack(spacing: 0) {
-            
-            // ==========================================
-            // SHARED HEADER (Tetap ada di setiap Tab)
-            // ==========================================
             HStack {
                 Button(action: {
-                    dismiss() // 📢 3. Aktifkan tombol back
+                    dismiss() 
                 }) {
                     Image(systemName: "chevron.left")
                         .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
@@ -55,7 +49,6 @@ struct MainTripView: View {
                 
                 Spacer()
                 
-                // (Opsional) Tambahan icon notifikasi & profil biar persis Figma SS3
                 HStack(spacing: 12) {
                     Image(systemName: "bell")
                         .foregroundColor(.gray)
@@ -70,40 +63,30 @@ struct MainTripView: View {
             
             Divider()
             
-            // ==========================================
-            // SHARED BOTTOM NAVBAR (TAB VIEW)
-            // ==========================================
             TabView {
-                // 📢 4. MASUKKAN VIEW ASLINYA KE DALAM TAB
-                // Tab 1: Overview
                 TripDetailOverviewView(trip: trip, viewModel: viewModel)
                     .tabItem {
                         Image(systemName: "square.grid.2x2")
                         Text("Overview")
                     }
                 
-                // Tab 2: Packing (Tugasmu nanti)
-                Text("Halaman Packing") // Nanti ganti dengan View buatanmu
-                    .tabItem {
+                Text("Halaman Packing") 
                         Image(systemName: "shippingbox")
                         Text("Packing")
                     }
                 
-                // Tab 3: Itinerary
                 ItineraryView(viewModel: viewModel, trip: trip)
                     .tabItem {
                         Image(systemName: "calendar")
                         Text("Itinerary")
                     }
                 
-                // Tab 4: Members (Tugas Member 3)
-                                MemberPageView() // Panggil view-nya di sini
+                                MemberPageView() 
                                     .tabItem {
                                         Image(systemName: "person.2")
                                         Text("Members")
                                     }
                 
-                // Tab 5: Account
                 Text("Halaman Account")
                     .tabItem {
                         Image(systemName: "person.crop.circle")

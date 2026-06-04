@@ -10,24 +10,19 @@ struct LoginView: View {
     @ObservedObject var authViewModel: AuthViewModel
     @State private var isShowingRegister = false
     
-    // Warna Background Navy Utama (Menyesuaikan foto mockup kamu)
     let backgroundNavy = Color(red: 44/255, green: 74/255, blue: 104/255)
-    // Warna Tombol Sign In (Lebih gelap)
     let buttonNavy = Color(red: 45/255, green: 68/255, blue: 97/255)
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // --- 1. BACKGROUND FULL NAVY ---
                 backgroundNavy
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     Spacer()
                     
-                    // --- 2. TOP BRANDING (LOGO & APPS NAME) ---
                     HStack(spacing: 12) {
-                        // Lingkaran abu-abu transparan dengan huruf "W"
                         Text("W")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
@@ -44,10 +39,8 @@ struct LoginView: View {
                     .padding(.horizontal, 28)
                     .padding(.bottom, 30)
                     
-                    // --- 3. WHITE CONTAINER (BOX UTAMA) ---
                     VStack(alignment: .leading, spacing: 20) {
                         
-                        // Greeting Texts
                         VStack(alignment: .leading, spacing: 6) {
                             HStack(spacing: 6) {
                                 Text("Welcome back")
@@ -62,7 +55,6 @@ struct LoginView: View {
                         }
                         .padding(.top, 10)
                         
-                        // Input Fields (Email & Password)
                         VStack(spacing: 16) {
                             AuthInputField(
                                 label: "EMAIL",
@@ -71,12 +63,10 @@ struct LoginView: View {
                                 isSecure: false
                             )
                             
-                            // Ditambahkan fitur Forgot Password di atas field password
                             VStack(alignment: .trailing, spacing: 4) {
                                 HStack {
                                     Spacer()
                                     Button(action: {
-                                        // Action forgot password
                                     }) {
                                         Text("Forgot password?")
                                             .font(.caption)
@@ -94,7 +84,6 @@ struct LoginView: View {
                             }
                         }
                         
-                        // Error Message jika ada
                         if let error = authViewModel.errorMessage {
                             Text(error)
                                 .font(.caption)
@@ -102,7 +91,6 @@ struct LoginView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                         
-                        // Sign In Button
                         Button(action: {
                             authViewModel.login()
                         }) {
@@ -125,7 +113,6 @@ struct LoginView: View {
                         .disabled(!authViewModel.isLoginValid || authViewModel.isLoading)
                         .padding(.top, 5)
                         
-                        // Footer: Register Link
                         HStack(spacing: 4) {
                             Spacer()
                             Text("Don't have an account?")
@@ -147,7 +134,7 @@ struct LoginView: View {
                     .padding(.horizontal, 24)
                     .padding(.vertical, 32)
                     .background(Color.white)
-                    .cornerRadius(32) // Membuat sudut kotak putih melengkung cantik sesuai foto
+                    .cornerRadius(32) 
                     .padding(.horizontal, 16)
                     
                     Spacer()

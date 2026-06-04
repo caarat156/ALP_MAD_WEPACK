@@ -7,10 +7,8 @@
 import SwiftUI
 
 struct MemberPageView: View {
-    // Memanggil ViewModel
     @StateObject private var viewModel = MemberPageViewModel()
     
-    // State untuk memunculkan modal Add Member
     @State private var showAddMember = false
     @State private var selectedMember: MemberProgressUI? = nil
     
@@ -21,7 +19,6 @@ struct MemberPageView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 
-                // --- TITLE & ADD MEMBER BUTTON ---
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Members")
@@ -34,7 +31,6 @@ struct MemberPageView: View {
                     
                     Spacer()
                     
-                    // Tombol ini sekarang dijamin bisa diklik
                     Button(action: {
                         showAddMember = true
                     }) {
@@ -53,7 +49,6 @@ struct MemberPageView: View {
                 .padding(.horizontal)
                 .padding(.top, 16)
                 
-                // --- GROUP READINESS CARD ---
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
@@ -72,7 +67,6 @@ struct MemberPageView: View {
                         }
                         Spacer()
                         
-                        // Circular Indicator
                         ZStack {
                             Circle().stroke(Color.white.opacity(0.2), lineWidth: 8)
                             Circle()
@@ -94,7 +88,6 @@ struct MemberPageView: View {
                         .frame(width: 70, height: 70)
                     }
                     
-                    // Progress Bar Bawah Card
                     HStack(spacing: 6) {
                         ForEach(viewModel.members) { member in
                             VStack(spacing: 4) {
@@ -136,7 +129,6 @@ struct MemberPageView: View {
                 }
                 .padding(.horizontal)
                 
-//                // --- CATEGORY ASSIGNMENT SECTION ---
 //                VStack(alignment: .leading, spacing: 0) {
 //                    VStack(alignment: .leading, spacing: 4) {
 //                        Text("Category Assignment")
@@ -162,29 +154,23 @@ struct MemberPageView: View {
         }
         .background(lightGrayBg)
         
-        // 1. Sheet untuk memunculkan AddMemberView (Ini yang sebelumnya hilang)
         .sheet(isPresented: $showAddMember) {
             AddMemberView()
         }
-        
-        // 2. Sheet untuk memunculkan detail barang bawaan (MemberAssignedItemsView)
         .sheet(item: $selectedMember) { member in
             MemberAssignedItemsView(member: member)
         }
     }
 }
-// --- SUB-KOMPONEN: MEMBER CARD ---
 struct MemberCardView: View {
     let member: MemberProgressUI
     
     var body: some View {
         VStack(spacing: 16) {
-            // Garis Warna di Atas
             Rectangle()
                 .fill(member.themeColor)
                 .frame(height: 4)
             
-            // Avatar & Cincin Progres
             ZStack {
                 Circle().stroke(Color.gray.opacity(0.2), lineWidth: 5)
                 Circle()
@@ -200,7 +186,6 @@ struct MemberCardView: View {
             }
             .frame(width: 60, height: 60)
             
-            // Nama & YOU Badge
             VStack(spacing: 4) {
                 Text(member.name).font(.headline)
                 if member.isYou {
@@ -212,11 +197,10 @@ struct MemberCardView: View {
                         .background(Color.teal.opacity(0.15))
                         .cornerRadius(10)
                 } else {
-                    Text("").frame(height: 16) // Spacing filler
+                    Text("").frame(height: 16)
                 }
             }
             
-            // Item Count & Progress Bar
             VStack(spacing: 6) {
                 HStack {
                     Text("\(member.packedItems)/\(member.totalItems) items")
@@ -240,7 +224,6 @@ struct MemberCardView: View {
             }
             .padding(.horizontal, 16)
             
-            // Status Pill
             Text(member.statusText)
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(member.themeColor)
@@ -250,7 +233,6 @@ struct MemberCardView: View {
                 .cornerRadius(12)
                 .padding(.horizontal, 16)
             
-            // Ikon Kecil di Bawah
             HStack(spacing: 8) {
                 Image(systemName: "tshirt.fill").foregroundColor(.blue.opacity(0.5))
                 Image(systemName: "powerplug.fill").foregroundColor(.black.opacity(0.7))
@@ -266,13 +248,11 @@ struct MemberCardView: View {
     }
 }
 //
-//// --- SUB-KOMPONEN: CATEGORY ROW ---
 //struct CategoryRowView: View {
 //    let category: CategoryAssignment
 //    
 //    var body: some View {
 //        HStack(spacing: 16) {
-//            // Ikon Kategori Bulat
 //            Image(systemName: category.iconName)
 //                .foregroundColor(category.iconColor)
 //                .frame(width: 40, height: 40)
@@ -304,7 +284,6 @@ struct MemberCardView: View {
 //            
 //            Spacer()
 //            
-//            // Avatar yang ditugaskan
 //            HStack(spacing: -6) {
 //                ForEach(category.assignedInitials, id: \.self) { initial in
 //                    Text(initial)

@@ -14,6 +14,7 @@ class PackingViewModel: ObservableObject {
     @Published var packingItems: [PackingItem] = []
     @Published var tripMembers: [TripMember] = []
     @Published var showAddItemSheet = false
+    
     @Published var newItemName = ""
     @Published var selectedCategory: PackingCategory = .clothing
     @Published var assignmentType: AssignmentType = .everyone
@@ -30,6 +31,7 @@ class PackingViewModel: ObservableObject {
         fetchPackingItems()
         fetchTripMembers()
     }
+    
     var packedCount: Int {
         packingItems.filter { $0.isPacked }.count
     }
@@ -38,6 +40,7 @@ class PackingViewModel: ObservableObject {
         guard !packingItems.isEmpty else { return 0 }
         return Int(Double(packedCount) / Double(packingItems.count) * 100)
     }
+    
     func fetchPackingItems() {
         db.collection("packing_items")
             .whereField("tripId", isEqualTo: "TRIP_BALI_2026")

@@ -12,12 +12,10 @@ struct AuthInputField: View {
     var placeholder: String
     var isSecure: Bool
     
-    // State internal khusus untuk menyalakan/menyembunyikan password text
     @State private var isPasswordSecured: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            // Label teks kecil abu-abu di atas kotak input
             Text(label)
                 .font(.caption2)
                 .fontWeight(.bold)
@@ -35,7 +33,6 @@ struct AuthInputField: View {
                         .font(.system(size: 15))
                 }
                 
-                // Jika tipenya field password, munculkan ikon mata di sebelah kanan kotak
                 if isSecure {
                     Button(action: {
                         isPasswordSecured.toggle()
@@ -48,7 +45,7 @@ struct AuthInputField: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(Color(red: 247/255, green: 249/255, blue: 252/255)) // Warna background kotak agak keabuan soft
+            .background(Color(red: 247/255, green: 249/255, blue: 252/255)) 
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
