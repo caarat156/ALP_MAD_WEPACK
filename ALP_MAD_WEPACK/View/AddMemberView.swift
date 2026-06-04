@@ -48,10 +48,13 @@ struct AddMemberView: View {
                     // --- TRIP INFO CARD (Data Dinamis) ---
                     HStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(viewModel.currentTrip.name)
+                            // UBAH BARIS INI:
+                            Text(viewModel.tripName)
                                 .font(.headline)
                                 .fontWeight(.bold)
-                            Text("\(viewModel.getFormattedTripDate()) • \(viewModel.members.count) members")
+                            
+                            // UBAH BARIS INI JUGA:
+                            Text("\(viewModel.tripDate) • \(viewModel.members.count) members")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }

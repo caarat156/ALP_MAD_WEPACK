@@ -15,11 +15,11 @@ struct ALP_MAD_WEPACKApp: App {
     init() {
         FirebaseApp.configure()
     }
-
+    
     var body: some Scene {
         WindowGroup {
             if authViewModel.isAuthenticated {
-                MainTripView()
+                TripListView()
                     .environmentObject(authViewModel)
             } else {
                 LoginView(authViewModel: authViewModel)

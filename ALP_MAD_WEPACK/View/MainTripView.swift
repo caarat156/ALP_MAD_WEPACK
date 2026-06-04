@@ -97,11 +97,11 @@ struct MainTripView: View {
                     }
                 
                 // Tab 4: Members (Tugas Member 3)
-                Text("MemberPageView") // Nanti ganti dengan MemberPageView()
-                    .tabItem {
-                        Image(systemName: "person.2")
-                        Text("Members")
-                    }
+                                MemberPageView() // Panggil view-nya di sini
+                                    .tabItem {
+                                        Image(systemName: "person.2")
+                                        Text("Members")
+                                    }
                 
                 // Tab 5: Account
                 Text("Halaman Account")

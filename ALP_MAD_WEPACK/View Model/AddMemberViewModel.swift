@@ -4,45 +4,32 @@
 //
 //  Created by student on 29/05/26.
 //
-
 import SwiftUI
+import Combine
 
 class AddMemberViewModel: ObservableObject {
     // State untuk input form
     @Published var inviteMethod = 0 // 0 = Username, 1 = Email
     @Published var inviteInput = ""
     
-    // Data list anggota yang mengambil tipe dari GroupMemberUI
+    // Data list anggota (sekarang dinamis, murni dari state)
     @Published var members: [GroupMemberUI] = []
     
-    // Ambil data trip pertama dari MockData
-    let currentTrip = MockData.sampleTrips.first!
+    // Variabel pengganti MockData untuk Info Trip
+    @Published var tripName: String = "Bali Group Adventure"
+    @Published var tripDate: String = "Jun 14–17, 2026"
     
     init() {
-        loadDataFromMock()
-    }
-    
-    // Memproses MockData menjadi data yang siap ditayangkan di UI
-    private func loadDataFromMock() {
-        self.members = MockData.sampleTripMembers.map { tripMember in
-            // Mendeteksi apakah ini user yang sedang login (You)
-            let isCurrent = tripMember.id == "USER_CACA_123" || tripMember.name.contains("(You)")
-            
-            // Membersihkan nama dari embel-embel "(You)" yang ada di MockData
-            let cleanName = tripMember.name.replacingOccurrences(of: " (You)", with: "")
-            
-            // Membuat dummy username dan inisial secara otomatis
-            let generatedUsername = "@\(cleanName.lowercased().replacingOccurrences(of: " ", with: ""))"
-            let generatedInitials = String(cleanName.prefix(2)).uppercased()
-            
-            return GroupMemberUI(
-                id: tripMember.id,
-                name: cleanName,
-                username: generatedUsername,
-                initials: generatedInitials,
-                isYou: isCurrent
-            )
-        }
+        // Di aplikasi asli, fungsi ini dipakai untuk nge-fetch data dari Backend/Database.
+        // Untuk sekarang, kita inisialisasi dengan 1 member awal yaitu "YOU".
+        let currentUser = GroupMemberUI(
+            id: "USER_CURRENT",
+            name: "Rafi",
+            username: "@rafi",
+            initials: "RF",
+            isYou: true
+        )
+        self.members = [currentUser]
     }
     
     // Fungsi untuk menghapus member
@@ -50,27 +37,45 @@ class AddMemberViewModel: ObservableObject {
         members.removeAll { $0.id == id }
     }
     
-    // Fungsi simulasi kirim undangan
+    // Fungsi memproses inputan asli dari user
     func sendRequest() {
-        print("Mengirim undangan ke: \(inviteInput) via \(inviteMethod == 0 ? "Username" : "Email")")
-        // Reset input setelah tombol ditekan
+        var extractedName = ""
+        var newUsername = ""
+        
+        if inviteMethod == 1 {
+            // Jika via Email: Ambil kata sebelum '@'
+            let emailParts = inviteInput.components(separatedBy: "@")
+            extractedName = emailParts.first?.capitalized ?? "New User"
+            newUsername = "@\(extractedName.lowercased())"
+        } else {
+            // Jika via Username: Hapus '@'
+            let cleanInput = inviteInput.replacingOccurrences(of: "@", with: "")
+            extractedName = cleanInput.capitalized
+            newUsername = "@\(cleanInput.lowercased())"
+        }
+        
+        // Buat inisial 2 huruf pertama
+        let generatedInitials = String(extractedName.prefix(2)).uppercased()
+        
+        // Masukkan data inputan menjadi Member Baru
+        let newMember = GroupMemberUI(
+            id: UUID().uuidString,
+            name: extractedName,
+            username: newUsername,
+            initials: generatedInitials,
+            isYou: false
+        )
+        
+        // Tambahkan ke UI dengan animasi
+        withAnimation {
+            members.append(newMember)
+        }
+        
+        // Reset input form
         inviteInput = ""
     }
     
-    // Helper untuk memformat tanggal trip dari MockData (Contoh: "Jun 14–18, 2026")
-    func getFormattedTripDate() -> String {
-        let formatter = DateFormatter()
-        
-        formatter.dateFormat = "MMM d"
-        let startString = formatter.string(from: currentTrip.startDate)
-        
-        formatter.dateFormat = "d, yyyy"
-        let endString = formatter.string(from: currentTrip.endDate)
-        
-        return "\(startString)–\(endString)"
-    }
-    
-    // Tambahkan fungsi ini di dalam class AddMemberViewModel
+    // Fungsi reset saat tombol cancel ditekan
     func resetForm() {
         inviteInput = ""
     }
