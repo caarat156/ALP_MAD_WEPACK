@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// Struct sementara khusus UI Notifikasi
 struct NotificationItem: Identifiable {
     let id = UUID()
     let inviter: String
@@ -19,7 +18,6 @@ struct NotificationItem: Identifiable {
 struct NotificationView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // Data statis untuk dummy UI
     @State private var pendingRequests = [
         NotificationItem(inviter: "Siti Rahayu", username: "@sitirahayu", tripName: "Yogyakarta Weekend Trip", time: "2 hours ago"),
         NotificationItem(inviter: "Arif Budiman", username: "@arifbudiman", tripName: "Lombok Backpacking", time: "Yesterday")
@@ -27,7 +25,6 @@ struct NotificationView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header Notifikasi
             HStack {
                 Text("Notifications")
                     .font(.title2.bold())
@@ -46,7 +43,6 @@ struct NotificationView: View {
             Divider()
             
             if pendingRequests.isEmpty {
-                // Tampilan Empty State
                 VStack(spacing: 12) {
                     Spacer()
                     Image(systemName: "person.crop.circle.badge.checkmark")
@@ -62,7 +58,6 @@ struct NotificationView: View {
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        // Title Section
                         HStack {
                             Image(systemName: "person.2.fill")
                                 .foregroundColor(.gray)
@@ -80,11 +75,9 @@ struct NotificationView: View {
                         .padding(.horizontal)
                         .padding(.top, 16)
                         
-                        // List Undangan
                         ForEach(pendingRequests) { request in
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack(alignment: .top) {
-                                    // Avatar Inisial
                                     Text(String(request.inviter.prefix(2)).uppercased())
                                         .font(.subheadline.bold())
                                         .foregroundColor(.white)
@@ -103,7 +96,6 @@ struct NotificationView: View {
                                         .foregroundColor(.gray)
                                 }
                                 
-                                // Trip Info Box
                                 HStack {
                                     Image(systemName: "map.fill")
                                         .foregroundColor(.orange)
@@ -115,7 +107,6 @@ struct NotificationView: View {
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(8)
                                 
-                                // Action Buttons
                                 HStack(spacing: 12) {
                                     Button(action: { removeRequest(id: request.id) }) {
                                         Text("Decline")
@@ -132,7 +123,7 @@ struct NotificationView: View {
                                             .foregroundColor(.white)
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 10)
-                                            .background(Color.black) // Sesuaikan warna dengan tema project
+                                            .background(Color.black) 
                                             .cornerRadius(8)
                                     }
                                 }
@@ -149,8 +140,6 @@ struct NotificationView: View {
         }
         .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
     }
-    
-    // Fungsi animasi saat tombol Decline/Accept ditekan
     private func removeRequest(id: UUID) {
         withAnimation {
             pendingRequests.removeAll { $0.id == id }

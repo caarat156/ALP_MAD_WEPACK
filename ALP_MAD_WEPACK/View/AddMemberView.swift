@@ -11,17 +11,14 @@ import SwiftUI
 struct AddMemberView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // Memanggil ViewModel
     @StateObject private var viewModel = AddMemberViewModel()
     
-    // Warna custom sesuai desain
     let darkBlue = Color(red: 37/255, green: 45/255, blue: 67/255)
     let lightGrayBg = Color(red: 247/255, green: 248/255, blue: 250/255)
     
     var body: some View {
         VStack(spacing: 0) {
             
-            // --- HEADER ---
             HStack {
                 Text("Add Member")
                     .font(.title2)
@@ -45,15 +42,12 @@ struct AddMemberView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    // --- TRIP INFO CARD (Data Dinamis) ---
                     HStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 4) {
-                            // UBAH BARIS INI:
                             Text(viewModel.tripName)
                                 .font(.headline)
                                 .fontWeight(.bold)
                             
-                            // UBAH BARIS INI JUGA:
                             Text("\(viewModel.tripDate) • \(viewModel.members.count) members")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
@@ -65,7 +59,6 @@ struct AddMemberView: View {
                     .cornerRadius(16)
                     .padding(.top, 16)
                     
-                    // --- INVITE VIA (CUSTOM SEGMENTED CONTROL) ---
                     VStack(alignment: .leading, spacing: 12) {
                         Text("INVITE VIA")
                             .font(.caption)
@@ -109,7 +102,6 @@ struct AddMemberView: View {
                         }
                     }
                     
-                    // --- INPUT FIELD ---
                     VStack(alignment: .leading, spacing: 8) {
                         Text(viewModel.inviteMethod == 0 ? "USERNAME *" : "EMAIL *")
                             .font(.caption)
@@ -131,10 +123,9 @@ struct AddMemberView: View {
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
-                    // --- ACTION BUTTONS ---
                     HStack(spacing: 12) {
                         Button(action: {
-                            viewModel.resetForm() // <-- Tambahkan ini untuk clear input
+                            viewModel.resetForm() 
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Text("Cancel")
@@ -161,7 +152,6 @@ struct AddMemberView: View {
                     }
                     .padding(.vertical, 8)
                     
-                    // --- CURRENT MEMBERS LIST (Data Dinamis) ---
                     VStack(alignment: .leading, spacing: 12) {
                         Text("CURRENT MEMBERS")
                             .font(.caption)
@@ -170,14 +160,12 @@ struct AddMemberView: View {
                         
                         ForEach(viewModel.members) { member in
                             HStack {
-                                // Avatar Bulat
                                 Text(member.initials)
                                     .font(.subheadline.bold())
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
                                     .background(Circle().fill(member.isYou ? darkBlue : Color(red: 90/255, green: 140/255, blue: 160/255)))
                                 
-                                // Text Nama & Username
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(member.name)
                                         .font(.subheadline.bold())
@@ -188,7 +176,6 @@ struct AddMemberView: View {
                                 
                                 Spacer()
                                 
-                                // Indikator "YOU" atau Tombol Remove
                                 if member.isYou {
                                     Text("YOU")
                                         .font(.caption2.bold())
