@@ -5,19 +5,15 @@ struct AddTripModalView: View {
     @Environment(\.dismiss) var dismiss
     var viewModel: TripViewModel
     
-    // State untuk Form
     @State private var tripName = ""
     @State private var destination = ""
     @State private var startDate = Date()
     @State private var endDate = Date()
     @State private var tripType = "Leisure"
     @State private var description = ""
-    
-    // State untuk Media Picker Gambar Kustom
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
-    
-    // Pilihan Tipe Trip sesuai Figma
+
     let tripTypes = [
         ("Leisure", "beach.umbrella.fill", Color.orange),
         ("Adventure", "mountain.2.fill", Color.green),
@@ -31,7 +27,6 @@ struct AddTripModalView: View {
                 Color.white.ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // --- HEADER ---
                     HStack {
                         Text("Add New Trip")
                             .font(.system(size: 22, weight: .bold))
@@ -47,8 +42,7 @@ struct AddTripModalView: View {
                     
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
-                            
-                            // 1. INPUT IMAGE (Kustom Picker dari Galeri User)
+   
                             CustomInputLabel(text: "TRIP COVER IMAGE *")
                             
                             PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
@@ -89,12 +83,10 @@ struct AddTripModalView: View {
                                 }
                             }
                             
-                            // 2. TRIP NAME
                             CustomInputLabel(text: "TRIP NAME *")
                             TextField("e.g. Bali Group Adventure", text: $tripName)
                                 .modifier(FigmaInputStyle())
                             
-                            // 3. DESTINATION
                             CustomInputLabel(text: "DESTINATION *")
                             HStack {
                                 Image(systemName: "mappin.and.ellipse")
@@ -103,7 +95,6 @@ struct AddTripModalView: View {
                             }
                             .modifier(FigmaInputStyle())
                             
-                            // 4. START & END DATE
                             HStack(spacing: 15) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     CustomInputLabel(text: "START DATE *")
@@ -128,7 +119,6 @@ struct AddTripModalView: View {
                                 }
                             }
                             
-                            // 5. TRIP TYPE SELECTOR
                             CustomInputLabel(text: "TRIP TYPE")
                             HStack(spacing: 12) {
                                 ForEach(tripTypes, id: \.0) { type in
@@ -142,7 +132,6 @@ struct AddTripModalView: View {
                                 }
                             }
                             
-                            // 6. DESCRIPTION
                             CustomInputLabel(text: "DESCRIPTION")
                             TextField("What's the plan? (optional)", text: $description, axis: .vertical)
                                 .lineLimit(4, reservesSpace: true)
@@ -151,7 +140,6 @@ struct AddTripModalView: View {
                         .padding()
                     }
                     
-                    // --- FOOTER BUTTONS ---
                     HStack(spacing: 15) {
                         Button(action: { dismiss() }) {
                             Text("Cancel")
@@ -183,8 +171,6 @@ struct AddTripModalView: View {
         }
     }
 }
-
-// --- SUBVIEWS PEMBANTU (MENGATASI ERROR SCOPE) ---
 
 struct CustomInputLabel: View {
     var text: String

@@ -22,10 +22,9 @@ struct ItineraryCardView: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            
-            // Kolom Kiri: Waktu Mulai (Menggunakan startTimeString yang baru)
+         
             VStack(spacing: 0) {
-                Text(activity.startTimeString) // <-- BERUBAH DI SINI
+                Text(activity.startTimeString)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.7))
                     .frame(width: 50, alignment: .trailing)
@@ -37,15 +36,13 @@ struct ItineraryCardView: View {
                     .frame(width: 2)
                     .frame(maxHeight: .infinity)
             }
-            
-            // Kolom Tengah: Dot Timeline
+
             Circle()
                 .fill(categoryColor)
                 .frame(width: 12, height: 12)
                 .padding(.top, 4)
                 .padding(.trailing, 16)
-            
-            // Kolom Kanan: Card Aktivitas
+
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 14) {
                     Image(systemName: activity.type.iconName)
@@ -84,12 +81,11 @@ struct ItineraryCardView: View {
                         )
                 }
                 
-                // MENGGUNAKAN DATA ASLI: Jika ada endTimeString dari model, tampilkan teks "until [jam]"
-                if let endTimeString = activity.endTimeString { // <-- BERUBAH DI SINI
+                if let endTimeString = activity.endTimeString {
                     HStack(spacing: 4) {
                         Image(systemName: "clock")
                             .font(.system(size: 10))
-                        Text("until \(endTimeString)") // Menampilkan data asli
+                        Text("until \(endTimeString)")
                     }
                     .foregroundColor(.gray.opacity(0.8))
                     .padding(.leading, 64)
@@ -105,9 +101,7 @@ struct ItineraryCardView: View {
 }
 #Preview {
     ZStack {
-        Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea() // Background abu-abu
-        
-        // Contoh data dummy murni hanya untuk tampilan Preview
+        Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
         ItineraryCardView(activity: ItineraryActivity(
             id: "1",
             tripId: "trip1",
@@ -115,7 +109,7 @@ struct ItineraryCardView: View {
             location: "Seminyak",
             type: .food,
             startTime: Date(),
-            endTime: Date().addingTimeInterval(3600) // +1 jam
+            endTime: Date().addingTimeInterval(3600)
         ))
         .padding()
     }

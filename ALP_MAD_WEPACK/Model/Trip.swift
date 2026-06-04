@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit // 📢 Diperlukan untuk menggunakan UIImage
+import UIKit /
 
 struct Trip: Identifiable, Codable, Hashable {
     var id: String
@@ -17,8 +17,7 @@ struct Trip: Identifiable, Codable, Hashable {
     var ownerId: String
     var memberIds: [String]
     var groupProgress: Double
-    
-    // 📢 Menyimpan gambar kustom yang di-input oleh user sendiri
+  
     var customImage: Data?
 
     var dateRangeString: String {
