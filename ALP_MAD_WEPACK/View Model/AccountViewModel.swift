@@ -12,20 +12,17 @@ import FirebaseFirestore
 import PhotosUI
 
 class AccountViewModel: ObservableObject {
-    // --- STATE DATA PROFIL (TAMPILAN) ---
     @Published var name: String = "Loading..."
     @Published var username: String = "Loading..."
     @Published var email: String = "Loading..."
     @Published var profileImage: UIImage? = nil
     
-    // --- STATE DATA FORM EDIT ---
     @Published var editedName: String = ""
     @Published var editedUsername: String = ""
     @Published var editedEmail: String = ""
     @Published var editedPhone: String = ""
     @Published var editedBio: String = ""
     
-    // --- STATE FOTO GALERI ---
     @Published var selectedPhotoItem: PhotosPickerItem? = nil {
         didSet {
             if let selectedPhotoItem {
@@ -36,11 +33,9 @@ class AccountViewModel: ObservableObject {
         }
     }
     
-    // --- STATE STATUS ---
     @Published var isLoading = false
     @Published var errorMessage: String? = nil
     
-    // Logika Inisial Avatar
     var avatarInitials: String {
         let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if cleanName.isEmpty || cleanName == "Loading..." { return "?" }
@@ -53,7 +48,6 @@ class AccountViewModel: ObservableObject {
         fetchUserData()
     }
     
-    // --- FUNGSI TARIK DATA DARI FIRESTORE ---
     func fetchUserData() {
         guard let currentUser = Auth.auth().currentUser else { return }
         
@@ -81,7 +75,6 @@ class AccountViewModel: ObservableObject {
                     self?.username = fetchedUsername
                     self?.email = fetchedEmail
                     
-                    // Isi form edit otomatis dengan data yang ditarik dari database
                     self?.editedName = fetchedName
                     self?.editedUsername = fetchedUsername.replacingOccurrences(of: "@", with: "")
                     self?.editedEmail = fetchedEmail
@@ -92,12 +85,10 @@ class AccountViewModel: ObservableObject {
         }
     }
     
-    // --- FUNGSI SAVE EDIT KE FIRESTORE ---
     func saveProfile() {
         guard let currentUser = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
         
-        // Format username agar selalu ada '@' di depannya
         let finalUsername = editedUsername.hasPrefix("@") ? editedUsername : "@\(editedUsername)"
         
         let updatedData: [String: Any] = [
@@ -114,7 +105,6 @@ class AccountViewModel: ObservableObject {
                     print("Error saving profile: \(error.localizedDescription)")
                 } else {
                     print("Profile updated successfully!")
-                    // Update tampilan UI secara langsung setelah berhasil
                     self?.name = self?.editedName ?? ""
                     self?.username = finalUsername
                     self?.email = self?.editedEmail ?? ""
@@ -123,7 +113,6 @@ class AccountViewModel: ObservableObject {
         }
     }
     
-    // --- FUNGSI MENGUBAH ITEM GALERI JADI GAMBAR UI ---
     @MainActor
     private func loadSelectedPhoto(_ photoItem: PhotosPickerItem) async {
         do {

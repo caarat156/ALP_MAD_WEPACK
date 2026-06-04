@@ -9,15 +9,12 @@ import Foundation
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
-// SUDAH DIHAPUS: import FirebaseFirestoreSwift
 
 class PackingViewModel: ObservableObject {
-    // --- STATE DATA ---
     @Published var packingItems: [PackingItem] = []
     @Published var tripMembers: [TripMember] = []
     @Published var showAddItemSheet = false
     
-    // --- STATE FORM INPUT ---
     @Published var newItemName = ""
     @Published var selectedCategory: PackingCategory = .clothing
     @Published var assignmentType: AssignmentType = .everyone
@@ -35,7 +32,6 @@ class PackingViewModel: ObservableObject {
         fetchTripMembers()
     }
     
-    // --- KALKULASI DATA (Dibutuhkan oleh UI Progress Bar) ---
     var packedCount: Int {
         packingItems.filter { $0.isPacked }.count
     }
@@ -45,10 +41,9 @@ class PackingViewModel: ObservableObject {
         return Int(Double(packedCount) / Double(packingItems.count) * 100)
     }
     
-    // --- FUNGSI FETCH REAL-TIME (MANUAL MAPPING) ---
     func fetchPackingItems() {
         db.collection("packing_items")
-            .whereField("tripId", isEqualTo: "TRIP_BALI_2026") // Ganti dengan ID trip aktifmu
+            .whereField("tripId", isEqualTo: "TRIP_BALI_2026")
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error getting packing items: \(error)")
@@ -57,13 +52,12 @@ class PackingViewModel: ObservableObject {
                 
                 guard let documents = querySnapshot?.documents else { return }
                 
-                // CARA MANUAL: Menerjemahkan Dictionary ke PackingItem
                 self.packingItems = documents.map { document in
                     let data = document.data()
                     let categoryString = data["category"] as? String ?? "Clothing"
                     
                     return PackingItem(
-                        id: document.documentID, // Ambil ID asli dari dokumen Firebase
+                        id: document.documentID,
                         tripId: data["tripId"] as? String ?? "",
                         name: data["name"] as? String ?? "",
                         category: PackingCategory(rawValue: categoryString) ?? .clothing,
@@ -78,7 +72,6 @@ class PackingViewModel: ObservableObject {
         db.collection("users").getDocuments { snapshot, _ in
             guard let documents = snapshot?.documents else { return }
             
-            // CARA MANUAL: Menerjemahkan Dictionary ke TripMember
             self.tripMembers = documents.map { doc in
                 let data = doc.data()
                 return TripMember(
@@ -91,7 +84,6 @@ class PackingViewModel: ObservableObject {
         }
     }
     
-    // --- FUNCTIONS ---
     func toggleItemPacked(item: PackingItem) {
         guard let id = item.id else { return }
         let newStatus = !item.isPacked
@@ -113,7 +105,6 @@ class PackingViewModel: ObservableObject {
         
         let finalAssignees = assignmentType == .everyone ? ["Everyone"] : Array(selectedMemberIds)
         
-        // CARA MANUAL: Jadikan data form menjadi Dictionary
         let itemData: [String: Any] = [
             "tripId": "TRIP_BALI_2026",
             "name": trimmedName,
@@ -138,7 +129,6 @@ class PackingViewModel: ObservableObject {
         selectedMemberIds = []
     }
     
-    // --- HELPER UNTUK TAMPILAN (UI) ---
     func getMemberName(for assignedTo: [String]) -> String {
         if assignedTo.contains("Everyone") { return "Everyone" }
         

@@ -12,12 +12,10 @@ struct EditAccountView: View {
     @ObservedObject var viewModel: AccountViewModel
     @Environment(\.dismiss) var dismiss
     
-    // Warna Navy yang konsisten dengan AccountView
     let navyColor = Color(red: 50/255, green: 80/255, blue: 110/255)
     
     var body: some View {
         VStack(spacing: 0) {
-            // --- 1. HEADER ---
             HStack {
                 Text("Edit Profile")
                     .font(.title3)
@@ -38,9 +36,7 @@ struct EditAccountView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 25) {
                     
-                    // --- 2. PHOTO PICKER SECTION ---
                     VStack(spacing: 12) {
-                        // TYPO DIPERBAIKI DI SINI: menggunakan selectedPhotoItem
                         PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
                             ZStack(alignment: .bottomTrailing) {
                                 if let profileImage = viewModel.profileImage {
@@ -58,7 +54,6 @@ struct EditAccountView: View {
                                         .clipShape(Circle())
                                 }
                                 
-                                // Badge Ikon Kamera
                                 Image(systemName: "camera.fill")
                                     .font(.system(size: 14))
                                     .foregroundColor(.white)
@@ -75,14 +70,12 @@ struct EditAccountView: View {
                     }
                     .padding(.top, 10)
                     
-                    // --- 3. INPUT FIELDS SECTION ---
                     VStack(spacing: 18) {
                         CustomInputField(label: "FULL NAME", text: $viewModel.editedName)
                         CustomInputField(label: "USERNAME", text: $viewModel.editedUsername, prefix: "@")
                         CustomInputField(label: "EMAIL", text: $viewModel.editedEmail)
                         CustomInputField(label: "PHONE NUMBER", text: $viewModel.editedPhone)
                         
-                        // Bio menggunakan area yang lebih tinggi
                         VStack(alignment: .leading, spacing: 8) {
                             Text("BIO")
                                 .font(.caption2)
@@ -106,7 +99,6 @@ struct EditAccountView: View {
                 .padding(.bottom, 30)
             }
             
-            // --- 4. BOTTOM BUTTONS ---
             HStack(spacing: 15) {
                 Button(action: { dismiss() }) {
                     Text("Cancel")
@@ -119,7 +111,6 @@ struct EditAccountView: View {
                 }
                 
                 Button(action: {
-                    // Memicu pemindahan data ke Firestore
                     viewModel.saveProfile()
                     dismiss()
                 }) {
@@ -142,7 +133,6 @@ struct EditAccountView: View {
     }
 }
 
-// MARK: - Komponen Input Field Kustom
 struct CustomInputField: View {
     var label: String
     @Binding var text: String

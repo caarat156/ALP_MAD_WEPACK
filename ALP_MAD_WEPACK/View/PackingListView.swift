@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct PackingListView: View {
-    // Inisialisasi si otak/ViewModel
     @StateObject private var viewModel = PackingViewModel()
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                // --- KOTAK PROGRESS ATAS ---
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("\(viewModel.packedCount) of \(viewModel.packingItems.count) items packed")
@@ -35,7 +33,6 @@ struct PackingListView: View {
                 .cornerRadius(12)
                 .padding(.horizontal)
                 
-                // --- LIST BARANG ---
                 List {
                     ForEach(PackingCategory.allCases, id: \.self) { category in
                         let categoryItems = viewModel.packingItems.filter { $0.category == category }
@@ -47,7 +44,6 @@ struct PackingListView: View {
                             }) {
                                 ForEach(categoryItems) { item in
                                     HStack {
-                                        // PURE UI: Klik checkbox langsung lapor ke ViewModel
                                         Image(systemName: item.isPacked ? "checkmark.circle.fill" : "circle")
                                             .foregroundColor(item.isPacked ? .green : .gray)
                                             .font(.title3)
@@ -61,7 +57,6 @@ struct PackingListView: View {
                                         
                                         Spacer()
                                         
-                                        // PURE UI: Warna dan nama text diambil dari ViewModel
                                         Text(viewModel.getMemberName(for: item.assignedTo))
                                             .font(.caption)
                                             .fontWeight(.semibold)
@@ -89,7 +84,6 @@ struct PackingListView: View {
                     }
                 }
             }
-            // Munculkan sheet dan pinjamkan viewModel yang sama ke halaman input
             .sheet(isPresented: $viewModel.showAddItemSheet) {
                 AddPackingItemView(viewModel: viewModel)
             }

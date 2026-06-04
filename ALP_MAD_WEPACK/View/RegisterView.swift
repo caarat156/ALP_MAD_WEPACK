@@ -10,20 +10,17 @@ struct RegisterView: View {
     @ObservedObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
     
-    // Konstanta Warna (Menyesuaikan dengan LoginView agar serasi)
     let backgroundNavy = Color(red: 44/255, green: 74/255, blue: 104/255)
     let buttonNavy = Color(red: 45/255, green: 68/255, blue: 97/255)
     
     var body: some View {
         ZStack {
-            // --- 1. BACKGROUND FULL NAVY ---
             backgroundNavy
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 Spacer()
                 
-                // --- 2. TOP BRANDING (LOGO & APPS NAME) ---
                 HStack(spacing: 12) {
                     Text("W")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
@@ -41,10 +38,8 @@ struct RegisterView: View {
                 .padding(.horizontal, 28)
                 .padding(.bottom, 25)
                 
-                // --- 3. WHITE CONTAINER (BOX UTAMA REGISTER) ---
                 VStack(alignment: .leading, spacing: 18) {
                     
-                    // Greeting Texts
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 6) {
                             Text("Create account")
@@ -59,11 +54,9 @@ struct RegisterView: View {
                     }
                     .padding(.top, 5)
                     
-                    // Form Input Fields Scrollable inside the card if needed
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
                             
-                            // FULL NAME
                             AuthInputField(
                                 label: "FULL NAME",
                                 text: $authViewModel.registerName,
@@ -71,7 +64,6 @@ struct RegisterView: View {
                                 isSecure: false
                             )
                             
-                            // USERNAME dengan note kecil di bawahnya sesuai foto mockup
                             VStack(alignment: .leading, spacing: 6) {
                                 AuthInputField(
                                     label: "USERNAME *",
@@ -86,7 +78,6 @@ struct RegisterView: View {
                                     .padding(.leading, 4)
                             }
                             
-                            // EMAIL
                             AuthInputField(
                                 label: "EMAIL",
                                 text: $authViewModel.registerEmail,
@@ -94,7 +85,6 @@ struct RegisterView: View {
                                 isSecure: false
                             )
                             
-                            // PASSWORD
                             AuthInputField(
                                 label: "PASSWORD",
                                 text: $authViewModel.registerPassword,
@@ -102,7 +92,6 @@ struct RegisterView: View {
                                 isSecure: true
                             )
                             
-                            // CONFIRM PASSWORD
                             AuthInputField(
                                 label: "CONFIRM PASSWORD",
                                 text: $authViewModel.registerConfirmPassword,
@@ -112,9 +101,8 @@ struct RegisterView: View {
                         }
                         .padding(.vertical, 2)
                     }
-                    .frame(maxHeight: 380) // Membatasi tinggi form agar muat di layar device kecil
+                    .frame(maxHeight: 380)
                     
-                    // Button Create Account
                     Button(action: {
                         authViewModel.register()
                     }) {
@@ -137,14 +125,13 @@ struct RegisterView: View {
                     .disabled(!authViewModel.isRegisterValid || authViewModel.isLoading)
                     .padding(.top, 5)
                     
-                    // Footer: Back to Sign In Link
                     HStack(spacing: 4) {
                         Spacer()
                         Text("Already have an account?")
                             .foregroundColor(.secondary)
                         
                         Button(action: {
-                            dismiss() // Menutup screen register dan kembali ke Login
+                            dismiss()
                         }) {
                             Text("Sign In")
                                 .fontWeight(.bold)
@@ -159,13 +146,13 @@ struct RegisterView: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 30)
                 .background(Color.white)
-                .cornerRadius(32) // Membuat sudut melengkung sempurna sesuai screenshot
+                .cornerRadius(32)
                 .padding(.horizontal, 16)
                 
                 Spacer()
             }
         }
-        .navigationBarBackButtonHidden(true) // Menyembunyikan tombol back default navigation agar bersih
+        .navigationBarBackButtonHidden(true) 
     }
 }
 #Preview {
