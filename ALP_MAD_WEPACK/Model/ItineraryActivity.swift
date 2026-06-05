@@ -29,19 +29,17 @@ struct ItineraryActivity: Identifiable, Codable {
     var id: String
     var tripId: String
     var name: String
-    var startTime: Date      // 1. Diubah dari 'time' menjadi 'startTime'
-    var endTime: Date?       // 2. Ditambahkan 'endTime' opsional (pakai tanda tanya ?)
+    var startTime: Date      
+    var endTime: Date?
     var location: String
     var type: ActivityType
     
-    // Helper untuk memformat Start Time (Jam Mulai)
     var startTimeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: startTime)
     }
     
-    // 3. Helper baru untuk memformat End Time (Jam Selesai) jika ada datanya
     var endTimeString: String? {
         guard let endTime = endTime else { return nil }
         let formatter = DateFormatter()

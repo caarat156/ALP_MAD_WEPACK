@@ -98,3 +98,4 @@ struct MainTripView: View {
         .navigationBarHidden(true)
     }
 }
+
