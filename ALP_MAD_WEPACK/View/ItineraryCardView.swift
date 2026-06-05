@@ -99,18 +99,18 @@ struct ItineraryCardView: View {
         }
     }
 }
-#Preview {
-    ZStack {
-        Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
-        ItineraryCardView(activity: ItineraryActivity(
-            id: "1",
-            tripId: "trip1",
-            name: "Brunch at Cafe",
-            location: "Seminyak",
-            type: .food,
-            startTime: Date(),
-            endTime: Date().addingTimeInterval(3600)
-        ))
-        .padding()
-    }
-}
+//#Preview {
+//    ZStack {
+//        Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
+//        ItineraryCardView(activity: ItineraryActivity(
+//            id: "1",
+//            tripId: "trip1",
+//            name: "Brunch at Cafe",
+//            location: "Seminyak",
+//            type: .food,
+//            startTime: Date(),
+//            endTime: Date().addingTimeInterval(3600)
+//        ))
+//        .padding()
+//    }
+//}
