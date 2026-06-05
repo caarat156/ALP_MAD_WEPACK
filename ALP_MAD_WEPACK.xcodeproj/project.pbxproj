@@ -91,13 +91,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		5D07A7B12FD174D8005C6995 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACKTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Model/PackingItem.swift,
-			);
-			target = 5D99FF112FC031B7002F660F /* ALP_MAD_WEPACKTests */;
-		};
 		5DA5E1C72FD08F4D0016F613 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACK_Watch Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -113,7 +106,6 @@
 		5D99FF072FC031B6002F660F /* ALP_MAD_WEPACK */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				5D07A7B12FD174D8005C6995 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACKTests" target */,
 				5DA5E1C72FD08F4D0016F613 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACK_Watch Watch App" target */,
 			);
 			path = ALP_MAD_WEPACK;
