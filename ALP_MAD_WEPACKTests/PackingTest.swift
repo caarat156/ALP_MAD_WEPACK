@@ -74,9 +74,9 @@ final class PackingTest: XCTestCase {
         }
         
         XCTAssertEqual(filteredItems.count, 2, "Seharusnya Caca hanya melihat 2 barang (miliknya dan Everyone)")
-               XCTAssertTrue(filteredItems.contains(where: { $0.name == "Baju" }), "Barang Caca harusnya ada")
-               XCTAssertTrue(filteredItems.contains(where: { $0.name == "P3K" }), "Barang Everyone harusnya ada")
-               XCTAssertFalse(filteredItems.contains(where: { $0.name == "Kamera" }), "Barang Budi tidak boleh muncul untuk Caca")
+        XCTAssertTrue(filteredItems.contains(where: { $0.name == "Baju" }), "Barang Caca harusnya ada")
+        XCTAssertTrue(filteredItems.contains(where: { $0.name == "P3K" }), "Barang Everyone harusnya ada")
+        XCTAssertFalse(filteredItems.contains(where: { $0.name == "Kamera" }), "Barang Budi tidak boleh muncul untuk Caca")
     }
     
     func testPackingLogic_CalculateProgress_ShouldReturnCorrectPercentage() {
@@ -127,5 +127,28 @@ final class PackingTest: XCTestCase {
         ]
         
         XCTAssertEqual(viewModel.progressPercentage, 75, "Progress harusnya bernilai 75")
+    }
+    
+    func testViewModel_GetBadgeColor_ShouldReturnCorrectColor() {
+        let colorEveryone = viewModel.getBadgeColor(for: ["Everyone"])
+        XCTAssertEqual(colorEveryone, .gray, "Badge color untuk 'Everyone' harus abu-abu")
+        
+        let colorSpecific = viewModel.getBadgeColor(for: ["USER_123"])
+        XCTAssertEqual(colorSpecific, .blue, "Badge color untuk user spesifik harus biru")
+    }
+    
+    func testViewModel_GetMemberName_ShouldReturnCorrectName() {
+        viewModel.tripMembers = [
+            TripMember(id: "U1", name: "Budi (You)", role: "Admin", packingProgress: 0)
+        ]
+        
+        let nameEveryone = viewModel.getMemberName(for: ["Everyone"])
+        XCTAssertEqual(nameEveryone, "Everyone", "Harus me-return 'Everyone'")
+        
+        let nameBudi = viewModel.getMemberName(for: ["U1"])
+        XCTAssertEqual(nameBudi, "Budi", "Harus me-return 'Budi' tanpa '(You)'")
+        
+        let nameUnassigned = viewModel.getMemberName(for: ["GHOST_ID"])
+        XCTAssertEqual(nameUnassigned, "Unassigned", "Harus me-return 'Unassigned' jika ID tidak ditemukan")
     }
 }

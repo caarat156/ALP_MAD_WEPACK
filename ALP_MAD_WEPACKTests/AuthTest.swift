@@ -97,4 +97,21 @@ final class AuthTest: XCTestCase {
         XCTAssertEqual(viewModel.registerName, "", "registerName harusnya kosong setelah logout")
         XCTAssertEqual(viewModel.registerUsername, "", "registerUsername harusnya kosong setelah logout")
     }
+    
+    func testLoginValidation_WhitespaceEmail_ShouldBeInvalid() {
+        viewModel.loginEmail = "   "
+        viewModel.loginPassword = "password123"
+        
+        XCTAssertFalse(viewModel.isLoginValid, "Login tidak valid jika email hanya berisi spasi")
+    }
+    
+    func testRegisterValidation_WhitespaceUsername_ShouldBeInvalid() {
+        viewModel.registerName = "Caca"
+        viewModel.registerUsername = "   "
+        viewModel.registerEmail = "caca@student.uc.ac.id"
+        viewModel.registerPassword = "password123"
+        viewModel.registerConfirmPassword = "password123"
+        
+        XCTAssertFalse(viewModel.isRegisterValid, "Register tidak valid jika username hanya berisi spasi")
+    }
 }
