@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TripCardComponent: View {
     let trip: Trip
-    var viewModel: TripViewModel
+    var tripViewModel: TripViewModel
+    var activityViewModel: ActivityViewModel
    
     @Environment(\.horizontalSizeClass) var sizeClass
 
@@ -50,7 +51,8 @@ struct TripCardComponent: View {
                 
                 VStack {
                     HStack {
-                        Text(trip.ownerId == viewModel.currentUserID ? "Owner" : "Member")
+                        // 📢 PERBAIKAN: Pakai tripViewModel
+                        Text(trip.ownerId == tripViewModel.currentUserID ? "Owner" : "Member")
                             .font(.system(size: 11, weight: .bold))
                             .foregroundColor(.white)
                             .padding(.horizontal, 12)
@@ -134,8 +136,8 @@ struct TripCardComponent: View {
                         .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
                         .frame(width: 32, alignment: .trailing)
                     
-                    // Sisa Hari Dinamis
-                    Text("\(viewModel.calculateDaysAway(from: trip.startDate))d away")
+                    // 📢 PERBAIKAN: Pakai tripViewModel
+                    Text("\(tripViewModel.calculateDaysAway(from: trip.startDate))d away")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color(red: 0.18, green: 0.36, blue: 0.56))
                         .padding(.horizontal, 8)

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ItineraryView: View {
-    var viewModel: TripViewModel
+    var tripViewModel: TripViewModel
+    var activityViewModel: ActivityViewModel
     let trip: Trip
     
     @State private var selectedDay: Int = 1
@@ -51,7 +52,8 @@ struct ItineraryView: View {
     }
     
     var filteredActivities: [ItineraryActivity] {
-        viewModel.activities.filter { activity in
+        // 📢 1. PERBAIKAN DI SINI: pakai activityViewModel
+        activityViewModel.activities.filter { activity in
             let isCurrentTrip = activity.tripId == trip.id
             let calendar = Calendar.current
             let components = calendar.dateComponents([.day], from: calendar.startOfDay(for: trip.startDate), to: calendar.startOfDay(for: activity.startTime))
@@ -124,7 +126,7 @@ struct ItineraryView: View {
                 }
             }
             .sheet(isPresented: $isShowingAddActivity) {
-                AddActivityModalView(viewModel: viewModel, trip: trip, selectedDay: selectedDay)
+                AddActivityModalView(activityviewModel: activityViewModel, trip: trip, selectedDay: selectedDay)
             }
         }
     }
@@ -163,5 +165,6 @@ struct DayButton: View {
         groupProgress: 0.5,
         customImage: nil
     )
-    ItineraryView(viewModel: TripViewModel(), trip: sampleTrip)
+    // 📢 3. PERBAIKAN DI SINI: Masukkan kedua ViewModel
+    ItineraryView(tripViewModel: TripViewModel(), activityViewModel: ActivityViewModel(), trip: sampleTrip)
 }

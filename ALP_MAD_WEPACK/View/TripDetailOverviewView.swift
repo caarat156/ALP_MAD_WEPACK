@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TripDetailOverviewView: View {
     let trip: Trip
-    var viewModel: TripViewModel
+    var tripViewModel: TripViewModel
+    var activityViewModel: ActivityViewModel
 
     @Environment(\.horizontalSizeClass) var sizeClass
     
@@ -29,6 +30,9 @@ struct TripDetailOverviewView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
         
+                    // ==========================================
+                    // 1. BANNER UTAMA TRIP DENGAN GAMBAR + OVERLAY
+                    // ==========================================
                     ZStack(alignment: .bottomLeading) {
                         
                         if let data = trip.customImage, let uiImage = UIImage(data: data) {
@@ -54,7 +58,8 @@ struct TripDetailOverviewView: View {
                         
                         VStack(alignment: .leading, spacing: 6) {
                             HStack {
-                                Text("\(viewModel.calculateDaysAway(from: trip.startDate)) days away")
+                                // 📢 PERBAIKAN: Pakai tripViewModel
+                                Text("\(tripViewModel.calculateDaysAway(from: trip.startDate)) days away")
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 12)
@@ -63,8 +68,9 @@ struct TripDetailOverviewView: View {
                                     .cornerRadius(20)
                                 
                                 Spacer()
-                  
-                                Text(trip.ownerId == viewModel.currentUserID ? "Owner" : "Member")
+                                
+                                // 📢 PERBAIKAN: Pakai tripViewModel
+                                Text(trip.ownerId == tripViewModel.currentUserID ? "Owner" : "Member")
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
                                     .padding(.horizontal, 12)
@@ -100,7 +106,10 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .padding(.top, 10)
-                
+                    
+                    // ==========================================
+                    // 2. KOTAK GROUP READINESS (68%)
+                    // ==========================================
                     VStack(spacing: 16) {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 4) {
@@ -158,6 +167,9 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
             
+                    // ==========================================
+                    // 3. STATISTIK BARANG
+                    // ==========================================
                     HStack(spacing: 12) {
                         MiniStatCard(value: "12", label: "Items packed")
                         MiniStatCard(value: "10", label: "Remaining")
@@ -165,6 +177,9 @@ struct TripDetailOverviewView: View {
                     }
                     .padding(.horizontal)
                     
+                    // ==========================================
+                    // 4. DAY 2 PREVIEW (TIMELINE JALUR TIMELINE)
+                    // ==========================================
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
                             Text("Day 2 Preview")
@@ -183,7 +198,8 @@ struct TripDetailOverviewView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            let day2Activities = viewModel.activities.filter { $0.tripId == trip.id }
+                            // 📢 PERBAIKAN: Mengambil data activities dari activityViewModel
+                            let day2Activities = activityViewModel.activities.filter { $0.tripId == trip.id }
                             
                             ForEach(day2Activities) { activity in
                                 HStack(alignment: .top, spacing: 14) {
@@ -215,6 +231,9 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     
+                    // ==========================================
+                    // 5. SECTION "NEEDS ATTENTION"
+                    // ==========================================
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
@@ -241,6 +260,7 @@ struct TripDetailOverviewView: View {
         .navigationBarBackButtonHidden(false)
     }
 }
+
 
 struct MiniStatCard: View {
     var value: String
@@ -325,5 +345,9 @@ struct AttentionRowComponent: View {
         customImage: nil
     )
     
-    TripDetailOverviewView(trip: sampleTrip, viewModel: TripViewModel())
+    TripDetailOverviewView(
+        trip: sampleTrip,
+        tripViewModel: TripViewModel(),
+        activityViewModel: ActivityViewModel()
+    )
 }

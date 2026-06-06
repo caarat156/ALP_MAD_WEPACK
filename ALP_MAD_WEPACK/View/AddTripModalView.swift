@@ -3,7 +3,7 @@ import PhotosUI
 
 struct AddTripModalView: View {
     @Environment(\.dismiss) var dismiss
-    var viewModel: TripViewModel
+    var tripviewModel: TripViewModel
     
     @State private var tripName = ""
     @State private var destination = ""
@@ -151,7 +151,7 @@ struct AddTripModalView: View {
                         }
                         
                         Button(action: {
-                            viewModel.createNewTrip(name: tripName, destination: destination, start: startDate, end: endDate, imageData: selectedImageData)
+                            tripviewModel.createNewTrip(name: tripName, destination: destination, start: startDate, end: endDate, imageData: selectedImageData)
                             dismiss()
                         }) {
                             Text("Create Trip")
@@ -223,4 +223,8 @@ struct TripTypeItem: View {
         }
         .frame(maxWidth: .infinity)
     }
+}
+
+#Preview {
+    AddTripModalView(tripviewModel: TripViewModel())
 }

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct TripListView: View {
-    @State private var viewModel = TripViewModel()
+    @State private var tripViewModel = TripViewModel()
+    @State private var activityViewModel = ActivityViewModel()
     @State private var isShowingAddTrip = false
   
     let columns = [
@@ -29,7 +30,8 @@ struct TripListView: View {
                             Text("My Trips")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                            Text("\(viewModel.trips.count) trips total")
+                            
+                            Text("\(tripViewModel.trips.count) trips total")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -56,10 +58,10 @@ struct TripListView: View {
                     .background(Color.white)
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 20) {
-                            ForEach(viewModel.trips) { trip in
+                            ForEach(tripViewModel.trips) { trip in
                                 
                                 NavigationLink(value: trip) {
-                                    TripCardComponent(trip: trip, viewModel: viewModel)
+                                    TripCardComponent(trip: trip, tripViewModel: tripViewModel, activityViewModel: activityViewModel)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 
@@ -71,10 +73,10 @@ struct TripListView: View {
                 }
             }
             .navigationDestination(for: Trip.self) { selectedTrip in
-                MainTripView(trip: selectedTrip, viewModel: viewModel)
+                MainTripView(trip: selectedTrip, tripViewModel: tripViewModel)
             }
             .sheet(isPresented: $isShowingAddTrip) {
-                AddTripModalView(viewModel: viewModel)
+                AddTripModalView(tripviewModel: tripViewModel)
             }
         }
     }

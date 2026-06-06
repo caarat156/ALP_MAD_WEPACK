@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MainTripView: View {
     let trip: Trip
-    var viewModel: TripViewModel
+    var tripViewModel: TripViewModel
+    @State private var activityViewModel = ActivityViewModel()
     
     @Environment(\.dismiss) var dismiss
 
@@ -17,16 +18,17 @@ struct MainTripView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
         let startStr = formatter.string(from: start)
-        formatter.dateFormat = "MMM d, yyyy" 
+        formatter.dateFormat = "MMM d, yyyy"
         let endStr = formatter.string(from: end)
         return "\(startStr) – \(endStr)"
     }
     
     var body: some View {
         VStack(spacing: 0) {
+            // --- HEADER ATAS ---
             HStack {
                 Button(action: {
-                    dismiss() 
+                    dismiss()
                 }) {
                     Image(systemName: "chevron.left")
                         .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
@@ -62,30 +64,30 @@ struct MainTripView: View {
             .background(Color.white)
             
             Divider()
-            
             TabView {
-                TripDetailOverviewView(trip: trip, viewModel: viewModel)
+                TripDetailOverviewView(trip: trip, tripViewModel: tripViewModel, activityViewModel: activityViewModel)
                     .tabItem {
                         Image(systemName: "square.grid.2x2")
                         Text("Overview")
                     }
                 
-                Text("Halaman Packing") 
+                Text("Halaman Packing")
+                    .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")
                     }
-                
-                ItineraryView(viewModel: viewModel, trip: trip)
+          
+                ItineraryView(tripViewModel: tripViewModel, activityViewModel: activityViewModel, trip: trip)
                     .tabItem {
                         Image(systemName: "calendar")
                         Text("Itinerary")
                     }
                 
-                                MemberPageView() 
-                                    .tabItem {
-                                        Image(systemName: "person.2")
-                                        Text("Members")
-                                    }
+                MemberPageView()
+                    .tabItem {
+                        Image(systemName: "person.2")
+                        Text("Members")
+                    }
                 
                 Text("Halaman Account")
                     .tabItem {
@@ -98,4 +100,3 @@ struct MainTripView: View {
         .navigationBarHidden(true)
     }
 }
-

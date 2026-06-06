@@ -10,7 +10,7 @@ import SwiftUI
 struct AddActivityModalView: View {
     @Environment(\.dismiss) var dismiss
     
-    var viewModel: TripViewModel
+    var activityviewModel: ActivityViewModel
     let trip: Trip
     @State var selectedDay: Int
     
@@ -129,7 +129,7 @@ struct AddActivityModalView: View {
                                 type: selectedType
                             )
                             
-                            viewModel.addActivity(newActivity)
+                            activityviewModel.addActivity(newActivity)
                             dismiss()
                         }) {
                             Text("Save Activity")
