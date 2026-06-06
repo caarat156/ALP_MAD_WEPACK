@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import FirebaseFirestore
-import FirebaseAuth
 
 class PackingViewModel: ObservableObject {
     @Published var packingItems: [PackingItem] = []

@@ -91,13 +91,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		5D07A7B12FD174D8005C6995 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACKTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Model/PackingItem.swift,
-			);
-			target = 5D99FF112FC031B7002F660F /* ALP_MAD_WEPACKTests */;
-		};
 		5DA5E1C72FD08F4D0016F613 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACK_Watch Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -110,25 +103,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3FD9C8822FC9734D00251856 /* ALP_MAD_WEPACK_Watch Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "ALP_MAD_WEPACK_Watch Watch App";
-			sourceTree = "<group>";
-		};
-		3FD9C8902FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "ALP_MAD_WEPACK_Watch Watch AppTests";
-			sourceTree = "<group>";
-		};
-		3FD9C89A2FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "ALP_MAD_WEPACK_Watch Watch AppUITests";
-			sourceTree = "<group>";
-		};
 		5D99FF072FC031B6002F660F /* ALP_MAD_WEPACK */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				5D07A7B12FD174D8005C6995 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACKTests" target */,
 				5DA5E1C72FD08F4D0016F613 /* Exceptions for "ALP_MAD_WEPACK" folder in "ALP_MAD_WEPACK_Watch Watch App" target */,
 			);
 			path = ALP_MAD_WEPACK;
@@ -221,9 +198,6 @@
 				5D99FF072FC031B6002F660F /* ALP_MAD_WEPACK */,
 				5D99FF152FC031B7002F660F /* ALP_MAD_WEPACKTests */,
 				5D99FF1F2FC031B7002F660F /* ALP_MAD_WEPACKUITests */,
-				3FD9C8822FC9734D00251856 /* ALP_MAD_WEPACK_Watch Watch App */,
-				3FD9C8902FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppTests */,
-				3FD9C89A2FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppUITests */,
 				5D99FF062FC031B6002F660F /* Products */,
 				5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */,
 				3F96DBD32FD1406C00D5694A /* Frameworks */,
@@ -258,9 +232,6 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				3FD9C8822FC9734D00251856 /* ALP_MAD_WEPACK_Watch Watch App */,
-			);
 			name = "ALP_MAD_WEPACK_Watch Watch App";
 			packageProductDependencies = (
 				3F96DBF62FD1447A00D5694A /* FirebaseCore */,
@@ -284,9 +255,6 @@
 			dependencies = (
 				3FD9C88F2FC9734F00251856 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				3FD9C8902FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppTests */,
-			);
 			name = "ALP_MAD_WEPACK_Watch Watch AppTests";
 			packageProductDependencies = (
 			);
@@ -306,9 +274,6 @@
 			);
 			dependencies = (
 				3FD9C8992FC9734F00251856 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				3FD9C89A2FC9734F00251856 /* ALP_MAD_WEPACK_Watch Watch AppUITests */,
 			);
 			name = "ALP_MAD_WEPACK_Watch Watch AppUITests";
 			packageProductDependencies = (

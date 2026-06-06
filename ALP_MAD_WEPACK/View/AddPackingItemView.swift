@@ -118,7 +118,7 @@ struct AddPackingItemView: View {
                                                 .fontWeight(.bold)
                                                 .foregroundColor(.white)
                                                 .frame(width: 55, height: 55)
-                                                .background(viewModel.getBadgeColor(for: member.id))
+                                                .background(viewModel.getBadgeColor(for: [member.id]))
                                                 .clipShape(Circle())
                                             
                                             if isSelected {
