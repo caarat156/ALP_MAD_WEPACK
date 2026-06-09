@@ -24,11 +24,19 @@ class AuthViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var isLoading = false
     
+    private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
+    
     init() {
-        Auth.auth().addStateDidChangeListener { [weak self] auth, user in
+        authStateListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] auth, user in
             DispatchQueue.main.async {
                 self?.isAuthenticated = (user != nil)
             }
+        }
+    }
+    
+    deinit {
+        if let handle = authStateListenerHandle {
+            Auth.auth().removeStateDidChangeListener(handle)
         }
     }
     

@@ -9,10 +9,12 @@ import SwiftUI
 
 struct PackingListView: View {
     @StateObject private var viewModel = PackingViewModel()
-    
+    @Environment(\.horizontalSizeClass) var sizeClass
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
+                // Progress header
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("\(viewModel.packedCount) of \(viewModel.packingItems.count) items packed")
@@ -24,19 +26,23 @@ struct PackingListView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.blue)
                     }
-                    
+
                     ProgressView(value: Double(viewModel.packedCount), total: Double(max(1, viewModel.packingItems.count)))
                         .tint(.blue)
                 }
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(12)
-                .padding(.horizontal)
-                
+                // Di iPad, batasi lebar progress bar agar tidak melebar terlalu jauh
+                .padding(.horizontal, sizeClass == .regular ? 40 : 16)
+                .frame(maxWidth: sizeClass == .regular ? 700 : .infinity)
+                .frame(maxWidth: .infinity)
+
+                // List item
                 List {
                     ForEach(PackingCategory.allCases, id: \.self) { category in
                         let categoryItems = viewModel.packingItems.filter { $0.category == category }
-                        
+
                         if !categoryItems.isEmpty {
                             Section(header: HStack {
                                 Image(systemName: category.iconName)
@@ -50,13 +56,13 @@ struct PackingListView: View {
                                             .onTapGesture {
                                                 viewModel.toggleItemPacked(item: item)
                                             }
-                                        
+
                                         Text(item.name)
                                             .strikethrough(item.isPacked)
                                             .foregroundColor(item.isPacked ? .secondary : .primary)
-                                        
+
                                         Spacer()
-                                        
+
                                         Text(viewModel.getMemberName(for: item.assignedTo))
                                             .font(.caption)
                                             .fontWeight(.semibold)
@@ -71,6 +77,7 @@ struct PackingListView: View {
                         }
                     }
                 }
+                // Di iPad pakai insetGrouped lebih nyaman, di iPhone sama
                 .listStyle(.insetGrouped)
             }
             .navigationTitle("Packing List")
@@ -86,6 +93,8 @@ struct PackingListView: View {
             }
             .sheet(isPresented: $viewModel.showAddItemSheet) {
                 AddPackingItemView(viewModel: viewModel)
+                    // Di iPad, sheet tidak perlu full screen
+                    .presentationDetents(sizeClass == .regular ? [.medium, .large] : [.large])
             }
         }
     }
