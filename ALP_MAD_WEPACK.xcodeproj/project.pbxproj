@@ -20,7 +20,7 @@
 		3F96DBED2FD1434300D5694A /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 3F96DBEC2FD1434300D5694A /* FirebaseFunctionsCombine-Community */; };
 		3F96DBEF2FD1434300D5694A /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 3F96DBEE2FD1434300D5694A /* FirebaseInAppMessaging-Beta */; };
 		3F96DBF12FD1434300D5694A /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 3F96DBF02FD1434300D5694A /* FirebaseMessaging */; };
-		5DB5AF652FC97FF800E48D11 /* GoogleService-Info 2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */; };
+		5DB5AF652FC97FF800E48D11 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DB5AF642FC97FF800E48D11 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +57,7 @@
 		5D99FF052FC031B6002F660F /* ALP_MAD_WEPACK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ALP_MAD_WEPACK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D99FF122FC031B7002F660F /* ALP_MAD_WEPACKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALP_MAD_WEPACKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D99FF1C2FC031B7002F660F /* ALP_MAD_WEPACKUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ALP_MAD_WEPACKUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info 2.plist"; sourceTree = "<group>"; };
+		5DB5AF642FC97FF800E48D11 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -130,7 +130,7 @@
 				5D99FF152FC031B7002F660F /* ALP_MAD_WEPACKTests */,
 				5D99FF1F2FC031B7002F660F /* ALP_MAD_WEPACKUITests */,
 				5D99FF062FC031B6002F660F /* Products */,
-				5DB5AF642FC97FF800E48D11 /* GoogleService-Info 2.plist */,
+				5DB5AF642FC97FF800E48D11 /* GoogleService-Info.plist */,
 				3F96DBD32FD1406C00D5694A /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -282,7 +282,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DB5AF652FC97FF800E48D11 /* GoogleService-Info 2.plist in Resources */,
+				5DB5AF652FC97FF800E48D11 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
