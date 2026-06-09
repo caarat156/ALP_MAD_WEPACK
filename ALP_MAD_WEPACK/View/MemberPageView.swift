@@ -19,115 +19,12 @@ struct MemberPageView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Members")
-                            .font(.system(size: 28, weight: .bold))
-                        
-                        Text("Bali Group Adventure • \(viewModel.members.count) members")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        showAddMember = true
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "plus")
-                            Text("Add Member")
-                        }
-                        .font(.subheadline.bold())
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(darkSlateBlue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 16)
+                headerSection
                 
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("GROUP READINESS")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white.opacity(0.8))
-                            
-                            Text("\(viewModel.groupReadinessPercentage)%")
-                                .font(.system(size: 48, weight: .bold))
-                                .foregroundColor(.white)
-                            
-                            Text("\(viewModel.membersAlmostReadyCount) of \(viewModel.members.count) members almost ready")
-                                .font(.subheadline)
-                                .foregroundColor(.white.opacity(0.9))
-                        }
-                        Spacer()
-                        
-                        ZStack {
-                            Circle().stroke(Color.white.opacity(0.2), lineWidth: 8)
-                            Circle()
-                                .trim(from: 0.0, to: CGFloat(viewModel.groupReadinessPercentage) / 100.0)
-                                .stroke(Color.teal, style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                                .rotationEffect(.degrees(-90))
-                            
-                            HStack(spacing: -8) {
-                                ForEach(viewModel.members.prefix(3)) { member in
-                                    Text(String(member.initials.prefix(1)))
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(.white)
-                                        .frame(width: 24, height: 24)
-                                        .background(Circle().fill(member.themeColor))
-                                        .overlay(Circle().stroke(darkSlateBlue, lineWidth: 2))
-                                }
-                            }
-                        }
-                        .frame(width: 70, height: 70)
-                    }
-                    
-                    HStack(spacing: 6) {
-                        ForEach(viewModel.members) { member in
-                            VStack(spacing: 4) {
-                                GeometryReader { geo in
-                                    ZStack(alignment: .leading) {
-                                        Capsule().fill(Color.white.opacity(0.2))
-                                        Capsule()
-                                            .fill(Color.white)
-                                            .frame(width: geo.size.width * CGFloat(member.progress))
-                                    }
-                                }
-                                .frame(height: 6)
-                                
-                                Text(member.name)
-                                    .font(.system(size: 9))
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
-                        }
-                    }
-                }
-                .padding(24)
-                .background(
-                    LinearGradient(gradient: Gradient(colors: [darkSlateBlue, Color(red: 65/255, green: 98/255, blue: 122/255)]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-                .cornerRadius(16)
-                .padding(.horizontal)
+                progressSection
                 
                 // --- MEMBER GRID CARDS ---
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                    ForEach(viewModel.members) { member in
-                        // Bungkus Card dengan Button agar bisa ditekan
-                        Button(action: {
-                            selectedMember = member
-                        }) {
-                            MemberCardView(member: member)
-                        }
-                        .buttonStyle(PlainButtonStyle()) // Mencegah animasi teks menjadi biru berkedip khas tombol iOS
-                    }
-                }
-                .padding(.horizontal)
+                memberGridSection
                 
 //                VStack(alignment: .leading, spacing: 0) {
 //                    VStack(alignment: .leading, spacing: 4) {
@@ -163,6 +60,121 @@ struct MemberPageView: View {
                 allPackingItems: viewModel.packingItems
                 )
         }
+    }
+
+    private var headerSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Members")
+                    .font(.system(size: 28, weight: .bold))
+                
+                Text("Bali Group Adventure • \(viewModel.members.count) members")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                showAddMember = true
+            }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "plus")
+                    Text("Add Member")
+                }
+                .font(.subheadline.bold())
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(darkSlateBlue)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 16)
+    }
+
+    private var progressSection: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("GROUP READINESS")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    Text("\(viewModel.groupReadinessPercentage)%")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Text("\(viewModel.membersAlmostReadyCount) of \(viewModel.members.count) members almost ready")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                }
+                Spacer()
+                
+                ZStack {
+                    Circle().stroke(Color.white.opacity(0.2), lineWidth: 8)
+                    Circle()
+                        .trim(from: 0.0, to: CGFloat(viewModel.groupReadinessPercentage) / 100.0)
+                        .stroke(Color.teal, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                    
+                    HStack(spacing: -8) {
+                        ForEach(viewModel.members.prefix(3)) { member in
+                            Text(String(member.initials.prefix(1)))
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(width: 24, height: 24)
+                                .background(Circle().fill(member.themeColor))
+                                .overlay(Circle().stroke(darkSlateBlue, lineWidth: 2))
+                        }
+                    }
+                }
+                .frame(width: 70, height: 70)
+            }
+            
+            HStack(spacing: 6) {
+                ForEach(viewModel.members) { member in
+                    VStack(spacing: 4) {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color.white.opacity(0.2))
+                                Capsule()
+                                    .fill(Color.white)
+                                    .frame(width: geo.size.width * CGFloat(member.progress))
+                            }
+                        }
+                        .frame(height: 6)
+                        
+                        Text(member.name)
+                            .font(.system(size: 9))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                }
+            }
+        }
+        .padding(24)
+        .background(
+            LinearGradient(gradient: Gradient(colors: [darkSlateBlue, Color(red: 65/255, green: 98/255, blue: 122/255)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        )
+        .cornerRadius(16)
+        .padding(.horizontal)
+    }
+
+    private var memberGridSection: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+            ForEach(viewModel.members) { member in
+                // Bungkus Card dengan Button agar bisa ditekan
+                Button(action: {
+                    selectedMember = member
+                }) {
+                    MemberCardView(member: member)
+                }
+                .buttonStyle(PlainButtonStyle()) // Mencegah animasi teks menjadi biru berkedip khas tombol iOS
+            }
+        }
+        .padding(.horizontal)
     }
 }
 struct MemberCardView: View {

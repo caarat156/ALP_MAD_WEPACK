@@ -23,6 +23,13 @@ class MemberPageViewModel: ObservableObject {
         CategoryAssignment(title: "Operational", iconName: "list.clipboard.fill", iconColor: Color.gray, totalItems: 5, everyoneCount: 2, customCount: 3, assignedInitials: ["R", "N", "D", "K", "B"])
     ]
     
+    @Published var packingItems: [PackingItem] = [
+        PackingItem(id: "1", tripId: "TRIP1", name: "T-Shirts", category: .clothing, isPacked: true, assignedTo: ["Everyone"]),
+        PackingItem(id: "2", tripId: "TRIP1", name: "Camera", category: .electronics, isPacked: false, assignedTo: ["USER_CACA_123"]),
+        PackingItem(id: "3", tripId: "TRIP1", name: "First Aid Kit", category: .medical, isPacked: false, assignedTo: ["Everyone"]),
+        PackingItem(id: "4", tripId: "TRIP1", name: "Passports", category: .documents, isPacked: true, assignedTo: ["USER_CACA_123"])
+    ]
+    
     var groupReadinessPercentage: Int {
         let totalPacked = members.map { $0.packedItems }.reduce(0, +)
         let totalExpected = members.map { $0.totalItems }.reduce(0, +)
