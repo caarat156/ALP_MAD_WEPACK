@@ -11,7 +11,7 @@ struct TripCardComponent: View {
     let trip: Trip
     var tripViewModel: TripViewModel
     var activityViewModel: ActivityViewModel
-   
+    
     @Environment(\.horizontalSizeClass) var sizeClass
 
     private var tripDateRangeString: String {
@@ -24,16 +24,18 @@ struct TripCardComponent: View {
     
     var body: some View {
         VStack(spacing: 0) {
-
+            
+            // 📢 BAGIAN BANNER DIPERBAIKI: Gunakan imageUrl + AsyncImage
             ZStack(alignment: .bottomLeading) {
-     
-                if let data = trip.customImage, let uiImage = UIImage(data: data) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 155)
-                        .clipped()
+                if let imageUrl = trip.imageUrl, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 155)
+                    .clipped()
                 } else {
                     Image("bali_cover")
                         .resizable()
@@ -42,7 +44,7 @@ struct TripCardComponent: View {
                         .frame(height: 155)
                         .clipped()
                 }
-        
+                
                 LinearGradient(
                     colors: [Color.black.opacity(0.3), Color.black.opacity(0.7)],
                     startPoint: .top,
@@ -51,7 +53,6 @@ struct TripCardComponent: View {
                 
                 VStack {
                     HStack {
-                        // 📢 PERBAIKAN: Pakai tripViewModel
                         Text(trip.ownerId == tripViewModel.currentUserID ? "Owner" : "Member")
                             .font(.system(size: 11, weight: .bold))
                             .foregroundColor(.white)
@@ -71,9 +72,9 @@ struct TripCardComponent: View {
                             .cornerRadius(10)
                     }
                     .padding(12)
-                    
                     Spacer()
                 }
+                
                 HStack(spacing: 6) {
                     Text(trip.destination.lowercased().contains("bali") ? "🌴" : "🏛️")
                         .font(.system(size: 16))
@@ -88,6 +89,7 @@ struct TripCardComponent: View {
             .frame(height: 155)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 16, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 16))
             
+            // BAGIAN BAWAH CARD
             VStack(spacing: 12) {
                 HStack {
                     HStack(spacing: 6) {
@@ -111,6 +113,7 @@ struct TripCardComponent: View {
                     }
                 }
                 .padding(.top, 4)
+                
                 HStack(spacing: 10) {
                     HStack(spacing: 6) {
                         Image(systemName: "person.2.fill")
@@ -136,7 +139,6 @@ struct TripCardComponent: View {
                         .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
                         .frame(width: 32, alignment: .trailing)
                     
-                    // 📢 PERBAIKAN: Pakai tripViewModel
                     Text("\(tripViewModel.calculateDaysAway(from: trip.startDate))d away")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(Color(red: 0.18, green: 0.36, blue: 0.56))
@@ -164,7 +166,6 @@ struct TripCardComponent: View {
             .background(Color.white)
             .clipShape(UnevenRoundedRectangle(topLeadingRadius: 0, bottomLeadingRadius: 16, bottomTrailingRadius: 16, topTrailingRadius: 0))
         }
-  
         .padding(.horizontal, sizeClass == .compact ? 20 : 0)
         .padding(.vertical, 4)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 4)

@@ -17,8 +17,7 @@ struct Trip: Identifiable, Codable, Hashable {
     var ownerId: String
     var memberIds: [String]
     var groupProgress: Double
-  
-    var customImage: Data?
+    var imageUrl: String?
 
     var dateRangeString: String {
         let formatter = DateFormatter()

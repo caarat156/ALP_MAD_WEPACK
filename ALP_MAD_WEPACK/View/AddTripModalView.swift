@@ -75,14 +75,13 @@ struct AddTripModalView: View {
                                     }
                                 }
                             }
-                            .onChange(of: selectedItem) { oldItem, newItem in 
+                            .onChange(of: selectedItem) { _, newItem in
                                 Task {
                                     if let data = try? await newItem?.loadTransferable(type: Data.self) {
                                         selectedImageData = data
                                     }
                                 }
                             }
-                            
                             CustomInputLabel(text: "TRIP NAME *")
                             TextField("e.g. Bali Group Adventure", text: $tripName)
                                 .modifier(FigmaInputStyle())
@@ -188,40 +187,23 @@ struct FigmaInputStyle: ViewModifier {
             .padding()
             .background(Color(red: 0.96, green: 0.97, blue: 0.99))
             .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.blue.opacity(0.1), lineWidth: 1)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.blue.opacity(0.1), lineWidth: 1))
     }
 }
 
 struct TripTypeItem: View {
-    let title: String
-    let icon: String
-    let color: Color
-    var isSelected: Bool
-    
+    let title: String; let icon: String; let color: Color; var isSelected: Bool
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(isSelected ? color.opacity(0.1) : Color(red: 0.96, green: 0.97, blue: 0.99))
                     .frame(width: 65, height: 65)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
-                    )
-                
-                Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(isSelected ? color : .gray.opacity(0.6))
+                    .overlay(RoundedRectangle(cornerRadius: 15).stroke(isSelected ? color : Color.clear, lineWidth: 2))
+                Image(systemName: icon).font(.system(size: 24)).foregroundColor(isSelected ? color : .gray.opacity(0.6))
             }
-            
-            Text(title)
-                .font(.system(size: 12, weight: isSelected ? .bold : .medium))
-                .foregroundColor(isSelected ? .black : .gray)
-        }
-        .frame(maxWidth: .infinity)
+            Text(title).font(.system(size: 12, weight: isSelected ? .bold : .medium)).foregroundColor(isSelected ? .black : .gray)
+        }.frame(maxWidth: .infinity)
     }
 }
 

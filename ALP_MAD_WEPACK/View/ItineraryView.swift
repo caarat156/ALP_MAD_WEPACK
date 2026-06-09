@@ -163,8 +163,12 @@ struct DayButton: View {
         ownerId: "me",
         memberIds: ["me"],
         groupProgress: 0.5,
-        customImage: nil
+        imageUrl: nil
     )
-    // 📢 3. PERBAIKAN DI SINI: Masukkan kedua ViewModel
-    ItineraryView(tripViewModel: TripViewModel(), activityViewModel: ActivityViewModel(), trip: sampleTrip)
+   
+    ItineraryView(
+        tripViewModel: TripViewModel(),
+        activityViewModel: ActivityViewModel(),
+        trip: sampleTrip
+    )
 }
