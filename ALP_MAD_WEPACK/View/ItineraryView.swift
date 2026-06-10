@@ -163,7 +163,7 @@ struct DayButton: View {
         ownerId: "me",
         memberIds: ["me"],
         groupProgress: 0.5,
-        imageUrl: nil
+
     )
    
     ItineraryView(

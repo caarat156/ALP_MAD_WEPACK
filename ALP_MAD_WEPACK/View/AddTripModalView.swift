@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 struct AddTripModalView: View {
     @Environment(\.dismiss) var dismiss
@@ -11,8 +10,6 @@ struct AddTripModalView: View {
     @State private var endDate = Date()
     @State private var tripType = "Leisure"
     @State private var description = ""
-    @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var selectedImageData: Data? = nil
 
     let tripTypes = [
         ("Leisure", "beach.umbrella.fill", Color.orange),
@@ -42,46 +39,7 @@ struct AddTripModalView: View {
                     
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
-   
-                            CustomInputLabel(text: "TRIP COVER IMAGE *")
                             
-                            PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
-                                ZStack {
-                                    if let selectedImageData, let uiImage = UIImage(data: selectedImageData) {
-                                        Image(uiImage: uiImage)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 150)
-                                            .cornerRadius(12)
-                                            .clipped()
-                                    } else {
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color(red: 0.96, green: 0.97, blue: 0.99))
-                                            .frame(height: 150)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .stroke(Color.blue.opacity(0.1), lineWidth: 1)
-                                            )
-                                        
-                                        VStack(spacing: 8) {
-                                            Image(systemName: "photo.on.rectangle.angled")
-                                                .font(.system(size: 30))
-                                                .foregroundColor(.gray)
-                                            Text("Tap to upload trip cover image")
-                                                .font(.system(size: 13, weight: .medium))
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
-                                }
-                            }
-                            .onChange(of: selectedItem) { _, newItem in
-                                Task {
-                                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                                        selectedImageData = data
-                                    }
-                                }
-                            }
                             CustomInputLabel(text: "TRIP NAME *")
                             TextField("e.g. Bali Group Adventure", text: $tripName)
                                 .modifier(FigmaInputStyle())
@@ -149,8 +107,9 @@ struct AddTripModalView: View {
                                 .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray.opacity(0.2)))
                         }
                         
+                        // 📢 PERBAIKAN: Tombol save dipanggil TANPA imageData
                         Button(action: {
-                            tripviewModel.createNewTrip(name: tripName, destination: destination, start: startDate, end: endDate, imageData: selectedImageData)
+                            tripviewModel.createNewTrip(name: tripName, destination: destination, start: startDate, end: endDate)
                             dismiss()
                         }) {
                             Text("Create Trip")
@@ -171,6 +130,7 @@ struct AddTripModalView: View {
     }
 }
 
+// MARK: - Komponen UI
 struct CustomInputLabel: View {
     var text: String
     var body: some View {

@@ -25,25 +25,14 @@ struct TripCardComponent: View {
     var body: some View {
         VStack(spacing: 0) {
             
-            // 📢 BAGIAN BANNER DIPERBAIKI: Gunakan imageUrl + AsyncImage
+            // BANNER STATIS (bali_cover)
             ZStack(alignment: .bottomLeading) {
-                if let imageUrl = trip.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
-                    }
+                Image("bali_cover")
+                    .resizable()
+                    .scaledToFill()
                     .frame(maxWidth: .infinity)
                     .frame(height: 155)
                     .clipped()
-                } else {
-                    Image("bali_cover")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 155)
-                        .clipped()
-                }
                 
                 LinearGradient(
                     colors: [Color.black.opacity(0.3), Color.black.opacity(0.7)],

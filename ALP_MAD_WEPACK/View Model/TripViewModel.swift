@@ -1,7 +1,6 @@
 import SwiftUI
 import Observation
 import FirebaseFirestore
-import FirebaseStorage
 
 @Observable
 class TripViewModel {
@@ -9,7 +8,6 @@ class TripViewModel {
     var currentUserID: String = "me"
     
     private let db = Firestore.firestore()
-    private let storage = Storage.storage().reference()
     
     init() { fetchTrips() }
     
@@ -19,36 +17,15 @@ class TripViewModel {
         return max(0, components.day ?? 0)
     }
     
-    // Fungsi nambah trip baru
-    func createNewTrip(name: String, destination: String, start: Date, end: Date, imageData: Data?) {
+    // Fungsi nambah trip baru (Lebih simpel tanpa gambar!)
+    func createNewTrip(name: String, destination: String, start: Date, end: Date) {
         let newTripId = UUID().uuidString
-        
-        // 1. Jika ada gambar, upload ke Firebase Storage dulu
-        if let imageData = imageData {
-            let imageRef = storage.child("trip_images/\(newTripId).jpg")
-            
-            imageRef.putData(imageData, metadata: nil) { _, error in
-                if let error = error {
-                    print("❌ Gagal upload gambar: \(error.localizedDescription)")
-                    return
-                }
-                
-                // Ambil link URL setelah upload sukses
-                imageRef.downloadURL { url, _ in
-                    let imageUrl = url?.absoluteString
-                    // Simpan ke Firestore setelah dapet URL gambar
-                    self.saveToFirestore(id: newTripId, name: name, destination: destination, start: start, end: end, imageUrl: imageUrl)
-                }
-            }
-        } else {
-            // 2. Jika tidak ada gambar, simpan langsung ke Firestore
-            saveToFirestore(id: newTripId, name: name, destination: destination, start: start, end: end, imageUrl: nil)
-        }
+        saveToFirestore(id: newTripId, name: name, destination: destination, start: start, end: end)
     }
     
     // Fungsi pembantu untuk simpan ke database
-    private func saveToFirestore(id: String, name: String, destination: String, start: Date, end: Date, imageUrl: String?) {
-        var tripData: [String: Any] = [
+    private func saveToFirestore(id: String, name: String, destination: String, start: Date, end: Date) {
+        let tripData: [String: Any] = [
             "id": id,
             "name": name,
             "destination": destination,
@@ -58,8 +35,6 @@ class TripViewModel {
             "memberIds": [currentUserID],
             "groupProgress": 0.0
         ]
-        
-        if let url = imageUrl { tripData["imageUrl"] = url }
         
         db.collection("trips").document(id).setData(tripData) { error in
             if let error = error { print("❌ Gagal save: \(error.localizedDescription)") }
@@ -83,8 +58,7 @@ class TripViewModel {
                         endDate: (data["endDate"] as? Timestamp)?.dateValue() ?? Date(),
                         ownerId: data["ownerId"] as? String ?? "",
                         memberIds: data["memberIds"] as? [String] ?? [],
-                        groupProgress: data["groupProgress"] as? Double ?? 0.0,
-                        imageUrl: data["imageUrl"] as? String // Ambil URL string
+                        groupProgress: data["groupProgress"] as? Double ?? 0.0
                     )
                 }
             }
