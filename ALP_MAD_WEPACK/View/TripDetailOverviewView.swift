@@ -14,175 +14,63 @@ struct TripDetailOverviewView: View {
 
     @Environment(\.horizontalSizeClass) var sizeClass
     
-    let members = [
-        (initials: "RF", name: "Rafi", role: "You", progress: 0.90, color: Color.blue),
-        (initials: "ND", name: "Nadia", role: "Member", progress: 0.65, color: Color.teal),
-        (initials: "DT", name: "Dito", role: "Member", progress: 0.60, color: Color.green),
-        (initials: "KR", name: "Karina", role: "Member", progress: 0.85, color: Color.purple),
-        (initials: "BM", name: "Bimo", role: "Member", progress: 0.40, color: Color.cyan)
-    ]
-    
     var body: some View {
         ZStack {
-            Color(red: 0.96, green: 0.97, blue: 0.98)
-                .ignoresSafeArea()
+            Color(red: 0.96, green: 0.97, blue: 0.98).ignoresSafeArea()
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-        
-                    // ==========================================
-                    // 1. BANNER UTAMA TRIP DENGAN GAMBAR + OVERLAY
-                    // ==========================================
+                    
+                    // 1. BANNER STATIS
                     ZStack(alignment: .bottomLeading) {
-                        
-                        if let data = trip.customImage, let uiImage = UIImage(data: data) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 180)
-                                .clipped()
-                        } else {
-                            Image("bali_cover")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 180)
-                                .clipped()
-                        }
-                        LinearGradient(
-                            colors: [Color.black.opacity(0.2), Color.black.opacity(0.75)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                // 📢 PERBAIKAN: Pakai tripViewModel
-                                Text("\(tripViewModel.calculateDaysAway(from: trip.startDate)) days away")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.black.opacity(0.4))
-                                    .cornerRadius(20)
-                                
-                                Spacer()
-                                
-                                // 📢 PERBAIKAN: Pakai tripViewModel
-                                Text(trip.ownerId == tripViewModel.currentUserID ? "Owner" : "Member")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.white.opacity(0.9))
-                                    .cornerRadius(10)
-                            }
-                            
-                            Spacer()
-                            
-                            Text("ACTIVE TRIP")
-                                .font(.system(size: 10, weight: .black))
-                                .foregroundColor(.white.opacity(0.6))
-                                .tracking(1)
-                            
-                            Text(trip.name)
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.white)
-                                .lineLimit(1)
-                            
-                            HStack(spacing: 6) {
-                                Image(systemName: "mappin.and.ellipse")
-                                Text(trip.destination)
-                                Text("•")
-                                Text(trip.destination.lowercased().contains("bali") ? "May 29 — Jun 2" : "Jun 15 — Jun 19")
-                            }
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
-                        }
-                        .padding(20)
+                        Image("bali_cover")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 180)
+                            .clipped()
                     }
-                    .frame(height: 180)
                     .cornerRadius(20)
                     .padding(.horizontal)
-                    .padding(.top, 10)
-                    
-                    // ==========================================
-                    // 2. KOTAK GROUP READINESS (68%)
-                    // ==========================================
+
+                    // 2. GROUP READINESS (Dinamis ID)
                     VStack(spacing: 16) {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Group Readiness")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                Text("\(members.count) members • synced live")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.gray)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Group Readiness").font(.headline)
+                                Text("\(trip.memberIds.count) members • synced live")
+                                    .font(.caption).foregroundColor(.gray)
                             }
                             Spacer()
-                            
-                            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                                Text("\(Int(trip.groupProgress * 100))")
-                                    .font(.system(size: 32, weight: .black))
-                                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                Text("%")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                            }
+                            Text("\(Int(trip.groupProgress * 100))%").font(.title.bold())
                         }
-                        HStack(spacing: 0) {
-                            ForEach(members, id: \.name) { member in
-                                VStack(spacing: 6) {
-                                    ZStack {
-                                        Circle()
-                                            .stroke(Color.gray.opacity(0.15), lineWidth: 3)
-                                            .frame(width: 42, height: 42)
-                                        
-                                        Circle()
-                                            .trim(from: 0.0, to: CGFloat(member.progress))
-                                            .stroke(member.color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                                            .frame(width: 42, height: 42)
-                                            .rotationEffect(Angle(degrees: -90))
-                                        
-                                        Text(member.initials)
-                                            .font(.system(size: 11, weight: .bold))
-                                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                    }
-                                    
-                                    Text(member.name)
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundColor(.gray)
-                                    
-                                    Text("\(Int(member.progress * 100))%")
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
+                        
+                        HStack {
+                            Text("IDs: " + trip.memberIds.joined(separator: ", "))
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.gray)
+                            Spacer()
                         }
                     }
                     .padding()
                     .background(Color.white)
                     .cornerRadius(18)
                     .padding(.horizontal)
-            
-                    // ==========================================
-                    // 3. STATISTIK BARANG
-                    // ==========================================
+                    
+                    // 3. STATISTIK BARANG (Dinamis Total Hari)
                     HStack(spacing: 12) {
-                        MiniStatCard(value: "12", label: "Items packed")
-                        MiniStatCard(value: "10", label: "Remaining")
-                        MiniStatCard(value: "4", label: "Days planned")
+                        MiniStatCard(value: "0", label: "Items packed")
+                        MiniStatCard(value: "0", label: "Remaining")
+                        
+                        let totalDays = (Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: trip.startDate), to: Calendar.current.startOfDay(for: trip.endDate)).day ?? 0) + 1
+                        MiniStatCard(value: "\(totalDays)", label: "Days planned")
                     }
                     .padding(.horizontal)
                     
-                    // ==========================================
-                    // 4. DAY 2 PREVIEW (TIMELINE JALUR TIMELINE)
-                    // ==========================================
+                    // 4. ITINERARY PREVIEW (Dinamis 3 Kegiatan Pertama)
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
-                            Text("Day 2 Preview")
+                            Text("Upcoming Activities")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                             Spacer()
@@ -198,30 +86,39 @@ struct TripDetailOverviewView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            // 📢 PERBAIKAN: Mengambil data activities dari activityViewModel
-                            let day2Activities = activityViewModel.activities.filter { $0.tripId == trip.id }
+                            let previewActivities = activityViewModel.activities
+                                .filter { $0.tripId == trip.id }
+                                .sorted { $0.startTime < $1.startTime }
+                                .prefix(3)
                             
-                            ForEach(day2Activities) { activity in
-                                HStack(alignment: .top, spacing: 14) {
-                                    Text(activity.startTimeString)
-                                        .font(.system(size: 13, weight: .bold))
-                                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                        .frame(width: 45, alignment: .leading)
-                                    
-                                    Circle()
-                                        .fill(activity.type == .transport ? Color.blue : (activity.type == .food ? Color.orange : Color.teal))
-                                        .frame(width: 8, height: 8)
-                                        .padding(.top, 5)
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(activity.name)
-                                            .font(.system(size: 14, weight: .bold))
+                            if previewActivities.isEmpty {
+                                Text("No activities planned yet.")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.gray)
+                                    .padding(.vertical, 8)
+                            } else {
+                                ForEach(previewActivities) { activity in
+                                    HStack(alignment: .top, spacing: 14) {
+                                        Text(activity.startTimeString)
+                                            .font(.system(size: 13, weight: .bold))
                                             .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                        Text(activity.location)
-                                            .font(.system(size: 12))
-                                            .foregroundColor(.gray)
+                                            .frame(width: 45, alignment: .leading)
+                                        
+                                        Circle()
+                                            .fill(activity.type == .transport ? Color.blue : (activity.type == .food ? Color.orange : Color.teal))
+                                            .frame(width: 8, height: 8)
+                                            .padding(.top, 5)
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(activity.name)
+                                                .font(.system(size: 14, weight: .bold))
+                                                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                                            Text(activity.location)
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+                                        Spacer()
                                     }
-                                    Spacer()
                                 }
                             }
                         }
@@ -231,20 +128,29 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     
-                    // ==========================================
-                    // 5. SECTION "NEEDS ATTENTION"
-                    // ==========================================
+                    // 5. NEEDS ATTENTION (Dinamis dari memberIds)
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                         
                         VStack(spacing: 12) {
-                            AttentionRowComponent(initials: "ND", name: "Nadia", progress: 0.65, status: "IN PROGRESS", statusColor: .blue)
-                            Divider().background(Color.gray.opacity(0.1))
-                            AttentionRowComponent(initials: "DT", name: "Dito", progress: 0.60, status: "IN PROGRESS", statusColor: .blue)
-                            Divider().background(Color.gray.opacity(0.1))
-                            AttentionRowComponent(initials: "BM", name: "Bimo", progress: 0.40, status: "URGENT", statusColor: .red)
+                            ForEach(trip.memberIds, id: \.self) { memberId in
+                                let initials = String(memberId.prefix(2)).uppercased()
+                                let displayName = memberId == tripViewModel.currentUserID ? "You" : "User \(initials)"
+                                
+                                AttentionRowComponent(
+                                    initials: initials.isEmpty ? "?" : initials,
+                                    name: displayName,
+                                    progress: 0.0,
+                                    status: "NOT STARTED",
+                                    statusColor: .gray
+                                )
+                                
+                                if memberId != trip.memberIds.last {
+                                    Divider().background(Color.gray.opacity(0.1))
+                                }
+                            }
                         }
                     }
                     .padding()
@@ -252,6 +158,7 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     .padding(.bottom, 25)
+                    
                 }
                 .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
                 .frame(maxWidth: .infinity)
@@ -261,73 +168,31 @@ struct TripDetailOverviewView: View {
     }
 }
 
-
+// MARK: - Komponen Bantuan
 struct MiniStatCard: View {
-    var value: String
-    var label: String
-    
+    var value: String; var label: String
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(value)
-                .font(.system(size: 24, weight: .black))
-                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-            Text(label)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.gray)
-        }
-        .padding(.vertical, 14)
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .cornerRadius(16)
+            Text(value).font(.system(size: 24, weight: .black)).foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+            Text(label).font(.system(size: 11, weight: .medium)).foregroundColor(.gray)
+        }.padding(.vertical, 14).padding(.horizontal, 16).frame(maxWidth: .infinity, alignment: .leading).background(Color.white).cornerRadius(16)
     }
 }
 
 struct AttentionRowComponent: View {
-    var initials: String
-    var name: String
-    var progress: Double
-    var status: String
-    var statusColor: Color
-    
+    var initials: String; var name: String; var progress: Double; var status: String; var statusColor: Color
     var body: some View {
         HStack(spacing: 12) {
-            Circle()
-                .fill(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.8))
-                .frame(width: 36, height: 36)
-                .overlay(
-                    Text(initials)
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.white)
-                )
-            
-            Text(name)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                .frame(width: 60, alignment: .leading)
-            
+            Circle().fill(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.8)).frame(width: 36, height: 36).overlay(Text(initials).font(.system(size: 12, weight: .bold)).foregroundColor(.white))
+            Text(name).font(.system(size: 14, weight: .bold)).foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25)).frame(width: 60, alignment: .leading)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(Color.gray.opacity(0.15))
-                    Capsule().fill(statusColor)
-                        .frame(width: geo.size.width * CGFloat(progress))
+                    Capsule().fill(statusColor).frame(width: geo.size.width * CGFloat(progress))
                 }
-            }
-            .frame(height: 6)
-            .padding(.horizontal, 4)
-            
-            Text("\(Int(progress * 100))%")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.gray)
-                .frame(width: 35, alignment: .trailing)
-            
-            Text(status)
-                .font(.system(size: 9, weight: .black))
-                .foregroundColor(statusColor)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(statusColor.opacity(0.1))
-                .cornerRadius(6)
+            }.frame(height: 6).padding(.horizontal, 4)
+            Text("\(Int(progress * 100))%").font(.system(size: 12, weight: .bold)).foregroundColor(.gray).frame(width: 35, alignment: .trailing)
+            Text(status).font(.system(size: 9, weight: .black)).foregroundColor(statusColor).padding(.horizontal, 8).padding(.vertical, 5).background(statusColor.opacity(0.1)).cornerRadius(6)
         }
     }
 }
@@ -340,12 +205,11 @@ struct AttentionRowComponent: View {
         startDate: Date(),
         endDate: Date().addingTimeInterval(86400 * 3),
         ownerId: "me",
-        memberIds: ["me", "nd", "dt", "kr", "bm"],
-        groupProgress: 0.68,
-        customImage: nil
+        memberIds: ["me"],
+        groupProgress: 0.68
     )
     
-    TripDetailOverviewView(
+    return TripDetailOverviewView(
         trip: sampleTrip,
         tripViewModel: TripViewModel(),
         activityViewModel: ActivityViewModel()

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit 
 
 struct Trip: Identifiable, Codable, Hashable {
     var id: String
@@ -17,12 +16,17 @@ struct Trip: Identifiable, Codable, Hashable {
     var ownerId: String
     var memberIds: [String]
     var groupProgress: Double
-  
-    var customImage: Data?
 
     var dateRangeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
         return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
     }
-}
+    
+    var durationInDays: Int {
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.day], from: calendar.startOfDay(for: startDate), to: calendar.startOfDay(for: endDate))
+            return (components.day ?? 0) + 1
+        }
+    }
+
