@@ -21,7 +21,7 @@ struct TripDetailOverviewView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     
-                    // BANNER STATIS
+                    // 1. BANNER STATIS
                     ZStack(alignment: .bottomLeading) {
                         Image("bali_cover")
                             .resizable()
@@ -33,6 +33,7 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
 
+                    // 2. GROUP READINESS (Dinamis ID)
                     VStack(spacing: 16) {
                         HStack {
                             VStack(alignment: .leading) {
@@ -45,7 +46,10 @@ struct TripDetailOverviewView: View {
                         }
                         
                         HStack {
-                            Text("Members loaded from Firebase")
+                            Text("IDs: " + trip.memberIds.joined(separator: ", "))
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.gray)
+                            Spacer()
                         }
                     }
                     .padding()
@@ -53,18 +57,20 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     
-                    // STATISTIK BARANG
+                    // 3. STATISTIK BARANG (Dinamis Total Hari)
                     HStack(spacing: 12) {
-                        MiniStatCard(value: "12", label: "Items packed")
-                        MiniStatCard(value: "10", label: "Remaining")
-                        MiniStatCard(value: "4", label: "Days planned")
+                        MiniStatCard(value: "0", label: "Items packed")
+                        MiniStatCard(value: "0", label: "Remaining")
+                        
+                        let totalDays = (Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: trip.startDate), to: Calendar.current.startOfDay(for: trip.endDate)).day ?? 0) + 1
+                        MiniStatCard(value: "\(totalDays)", label: "Days planned")
                     }
                     .padding(.horizontal)
                     
-                    // DAY 2 PREVIEW
+                    // 4. ITINERARY PREVIEW (Dinamis 3 Kegiatan Pertama)
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
-                            Text("Day 2 Preview")
+                            Text("Upcoming Activities")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                             Spacer()
@@ -80,29 +86,39 @@ struct TripDetailOverviewView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            let day2Activities = activityViewModel.activities.filter { $0.tripId == trip.id }
+                            let previewActivities = activityViewModel.activities
+                                .filter { $0.tripId == trip.id }
+                                .sorted { $0.startTime < $1.startTime }
+                                .prefix(3)
                             
-                            ForEach(day2Activities) { activity in
-                                HStack(alignment: .top, spacing: 14) {
-                                    Text(activity.startTimeString)
-                                        .font(.system(size: 13, weight: .bold))
-                                        .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                        .frame(width: 45, alignment: .leading)
-                                    
-                                    Circle()
-                                        .fill(activity.type == .transport ? Color.blue : (activity.type == .food ? Color.orange : Color.teal))
-                                        .frame(width: 8, height: 8)
-                                        .padding(.top, 5)
-                                    
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(activity.name)
-                                            .font(.system(size: 14, weight: .bold))
+                            if previewActivities.isEmpty {
+                                Text("No activities planned yet.")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.gray)
+                                    .padding(.vertical, 8)
+                            } else {
+                                ForEach(previewActivities) { activity in
+                                    HStack(alignment: .top, spacing: 14) {
+                                        Text(activity.startTimeString)
+                                            .font(.system(size: 13, weight: .bold))
                                             .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                        Text(activity.location)
-                                            .font(.system(size: 12))
-                                            .foregroundColor(.gray)
+                                            .frame(width: 45, alignment: .leading)
+                                        
+                                        Circle()
+                                            .fill(activity.type == .transport ? Color.blue : (activity.type == .food ? Color.orange : Color.teal))
+                                            .frame(width: 8, height: 8)
+                                            .padding(.top, 5)
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(activity.name)
+                                                .font(.system(size: 14, weight: .bold))
+                                                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                                            Text(activity.location)
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+                                        Spacer()
                                     }
-                                    Spacer()
                                 }
                             }
                         }
@@ -112,18 +128,29 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     
-                    // NEEDS ATTENTION
+                    // 5. NEEDS ATTENTION (Dinamis dari memberIds)
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                         
                         VStack(spacing: 12) {
-                            AttentionRowComponent(initials: "ND", name: "Nadia", progress: 0.65, status: "IN PROGRESS", statusColor: .blue)
-                            Divider().background(Color.gray.opacity(0.1))
-                            AttentionRowComponent(initials: "DT", name: "Dito", progress: 0.60, status: "IN PROGRESS", statusColor: .blue)
-                            Divider().background(Color.gray.opacity(0.1))
-                            AttentionRowComponent(initials: "BM", name: "Bimo", progress: 0.40, status: "URGENT", statusColor: .red)
+                            ForEach(trip.memberIds, id: \.self) { memberId in
+                                let initials = String(memberId.prefix(2)).uppercased()
+                                let displayName = memberId == tripViewModel.currentUserID ? "You" : "User \(initials)"
+                                
+                                AttentionRowComponent(
+                                    initials: initials.isEmpty ? "?" : initials,
+                                    name: displayName,
+                                    progress: 0.0,
+                                    status: "NOT STARTED",
+                                    statusColor: .gray
+                                )
+                                
+                                if memberId != trip.memberIds.last {
+                                    Divider().background(Color.gray.opacity(0.1))
+                                }
+                            }
                         }
                     }
                     .padding()
@@ -131,6 +158,7 @@ struct TripDetailOverviewView: View {
                     .cornerRadius(18)
                     .padding(.horizontal)
                     .padding(.bottom, 25)
+                    
                 }
                 .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
                 .frame(maxWidth: .infinity)
@@ -140,7 +168,7 @@ struct TripDetailOverviewView: View {
     }
 }
 
-// Struct MiniStatCard & AttentionRowComponent biarkan sama seperti kodemu sebelumnya...
+// MARK: - Komponen Bantuan
 struct MiniStatCard: View {
     var value: String; var label: String
     var body: some View {

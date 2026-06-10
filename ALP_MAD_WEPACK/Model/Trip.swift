@@ -22,4 +22,11 @@ struct Trip: Identifiable, Codable, Hashable {
         formatter.dateFormat = "MMM d"
         return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
     }
-}
+    
+    var durationInDays: Int {
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.day], from: calendar.startOfDay(for: startDate), to: calendar.startOfDay(for: endDate))
+            return (components.day ?? 0) + 1
+        }
+    }
+
