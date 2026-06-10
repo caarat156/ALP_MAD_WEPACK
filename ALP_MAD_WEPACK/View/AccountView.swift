@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct AccountView: View {
     @ObservedObject var authViewModel: AuthViewModel
@@ -14,10 +13,9 @@ struct AccountView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(red: 245/255, green: 247/255, blue: 250/255)
-                    .ignoresSafeArea()
+        ZStack {
+            Color(red: 245/255, green: 247/255, blue: 250/255)
+                .ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
                     // Di iPad, konten di-center dengan max width
@@ -26,36 +24,14 @@ struct AccountView: View {
                         VStack(spacing: 0) {
                             HStack(alignment: .center, spacing: 16) {
 
-                                PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
-                                    ZStack(alignment: .bottomTrailing) {
-                                        Group {
-                                            if let profileImage = viewModel.profileImage {
-                                                Image(uiImage: profileImage)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: sizeClass == .regular ? 100 : 80,
-                                                           height: sizeClass == .regular ? 100 : 80)
-                                                    .clipShape(Circle())
-                                            } else {
-                                                Text(viewModel.avatarInitials)
-                                                    .font(sizeClass == .regular ? .largeTitle : .title)
-                                                    .fontWeight(.bold)
-                                                    .foregroundColor(.white)
-                                                    .frame(width: sizeClass == .regular ? 100 : 80,
-                                                           height: sizeClass == .regular ? 100 : 80)
-                                                    .background(Color.gray)
-                                                    .clipShape(Circle())
-                                            }
-                                        }
-
-                                        Image(systemName: "camera.circle.fill")
-                                            .resizable()
-                                            .frame(width: 24, height: 24)
-                                            .foregroundColor(.blue)
-                                            .background(Color.white.clipShape(Circle()))
-                                    }
-                                }
-                                .buttonStyle(.plain)
+                                Text(viewModel.avatarInitials)
+                                    .font(sizeClass == .regular ? .largeTitle : .title)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .frame(width: sizeClass == .regular ? 100 : 80,
+                                           height: sizeClass == .regular ? 100 : 80)
+                                    .background(Color.gray)
+                                    .clipShape(Circle())
 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(viewModel.name)
@@ -117,7 +93,6 @@ struct AccountView: View {
             }
             .navigationTitle("Account")
             .navigationBarTitleDisplayMode(.inline)
-        }
     }
 }
 

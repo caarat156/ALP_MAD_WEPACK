@@ -63,9 +63,8 @@ struct ItineraryView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
+        ZStack(alignment: .top) {
+            Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
                 
                 VStack(spacing: 0) {
 
@@ -128,7 +127,6 @@ struct ItineraryView: View {
             .sheet(isPresented: $isShowingAddActivity) {
                 AddActivityModalView(activityviewModel: activityViewModel, trip: trip, selectedDay: selectedDay)
             }
-        }
     }
 }
 

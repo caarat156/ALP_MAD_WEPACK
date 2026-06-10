@@ -11,6 +11,7 @@ struct MainTripView: View {
     let trip: Trip
     var tripViewModel: TripViewModel
     @State private var activityViewModel = ActivityViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     @Environment(\.dismiss) var dismiss
 
@@ -71,7 +72,7 @@ struct MainTripView: View {
                         Text("Overview")
                     }
                 
-                Text("Halaman Packing")
+                PackingListView()
                     .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")
@@ -89,7 +90,7 @@ struct MainTripView: View {
                         Text("Members")
                     }
                 
-                Text("Halaman Account")
+                AccountView(authViewModel: authViewModel)
                     .tabItem {
                         Image(systemName: "person.crop.circle")
                         Text("Account")

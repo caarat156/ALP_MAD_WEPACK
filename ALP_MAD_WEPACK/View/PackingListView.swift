@@ -12,8 +12,7 @@ struct PackingListView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
+        VStack(spacing: 16) {
                 // Progress header
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -96,7 +95,6 @@ struct PackingListView: View {
                     // Di iPad, sheet tidak perlu full screen
                     .presentationDetents(sizeClass == .regular ? [.medium, .large] : [.large])
             }
-        }
     }
 }
 
