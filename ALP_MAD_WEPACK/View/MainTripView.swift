@@ -14,6 +14,7 @@ struct MainTripView: View {
     // Gunakan @State biasa karena ActivityViewModel menggunakan @Observable (iOS 17+)
     @State private var activityViewModel = ActivityViewModel()
     @EnvironmentObject var authViewModel: AuthViewModel
+    
     @Environment(\.dismiss) var dismiss
     
     // 💡 PENAMBAHAN 1: Variabel penampung inisial user agar dinamis
@@ -84,7 +85,7 @@ struct MainTripView: View {
                         Text("Overview")
                     }
                 
-                Text("Halaman Packing") // Ganti dengan PackingListView() jika sudah siap
+                PackingListView()
                     .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")
@@ -100,6 +101,12 @@ struct MainTripView: View {
                     .tabItem {
                         Image(systemName: "person.2")
                         Text("Members")
+                    }
+                
+                AccountView(authViewModel: authViewModel)
+                    .tabItem {
+                        Image(systemName: "person.crop.circle")
+                        Text("Account")
                     }
             }
             .accentColor(Color(red: 37/255, green: 45/255, blue: 67/255))

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct EditAccountView: View {
     @ObservedObject var viewModel: AccountViewModel
@@ -39,38 +38,13 @@ struct EditAccountView: View {
                 VStack(spacing: 25) {
 
                     VStack(spacing: 12) {
-                        PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
-                            ZStack(alignment: .bottomTrailing) {
-                                if let profileImage = viewModel.profileImage {
-                                    Image(uiImage: profileImage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: sizeClass == .regular ? 120 : 100,
-                                               height: sizeClass == .regular ? 120 : 100)
-                                        .clipShape(Circle())
-                                } else {
-                                    Text(viewModel.avatarInitials)
-                                        .font(.system(size: sizeClass == .regular ? 48 : 40, weight: .bold))
-                                        .foregroundColor(.white)
-                                        .frame(width: sizeClass == .regular ? 120 : 100,
-                                               height: sizeClass == .regular ? 120 : 100)
-                                        .background(navyColor)
-                                        .clipShape(Circle())
-                                }
-
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white)
-                                    .frame(width: 32, height: 32)
-                                    .background(Color(red: 70/255, green: 100/255, blue: 130/255))
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                            }
-                        }
-
-                        Text("Tap to change photo")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text(viewModel.avatarInitials)
+                            .font(.system(size: sizeClass == .regular ? 48 : 40, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: sizeClass == .regular ? 120 : 100,
+                                   height: sizeClass == .regular ? 120 : 100)
+                            .background(navyColor)
+                            .clipShape(Circle())
                     }
                     .padding(.top, 10)
 
