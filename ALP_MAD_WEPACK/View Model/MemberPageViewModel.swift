@@ -6,29 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 class MemberPageViewModel: ObservableObject {
-    @Published var members: [MemberProgressUI] = [
-        MemberProgressUI(id: "USER_CACA_123", name: "Rafi", initials: "RF", isYou: true, packedItems: 14, totalItems: 15, themeColor: Color(red: 37/255, green: 45/255, blue: 67/255)),
-        MemberProgressUI(id: "USER_ANGEL_456", name: "Nadia", initials: "ND", isYou: false, packedItems: 10, totalItems: 15, themeColor: Color.blue.opacity(0.7)),
-        MemberProgressUI(id: "USER_NDUT_789", name: "Dito", initials: "DT", isYou: false, packedItems: 9, totalItems: 15, themeColor: Color.teal),
-        MemberProgressUI(id: "USER_KR_04", name: "Karina", initials: "KR", isYou: false, packedItems: 10, totalItems: 12, themeColor: Color.teal),
-        MemberProgressUI(id: "USER_BM_05", name: "Bimo", initials: "BM", isYou: false, packedItems: 5, totalItems: 13, themeColor: Color.blue.opacity(0.5))
-    ]
-    
-    @Published var categories: [CategoryAssignment] = [
-        CategoryAssignment(title: "Clothing", iconName: "tshirt.fill", iconColor: Color.blue.opacity(0.5), totalItems: 6, everyoneCount: 3, customCount: 3, assignedInitials: ["R", "N", "D", "K", "B"]),
-        CategoryAssignment(title: "Electronics", iconName: "powerplug.fill", iconColor: Color(red: 37/255, green: 45/255, blue: 67/255), totalItems: 5, everyoneCount: 2, customCount: 3, assignedInitials: ["R", "N", "D", "K", "B"]),
-        CategoryAssignment(title: "Medical", iconName: "pill.fill", iconColor: Color.red, totalItems: 5, everyoneCount: 3, customCount: 2, assignedInitials: ["R", "N", "D", "K", "B"]),
-        CategoryAssignment(title: "Operational", iconName: "list.clipboard.fill", iconColor: Color.gray, totalItems: 5, everyoneCount: 2, customCount: 3, assignedInitials: ["R", "N", "D", "K", "B"])
-    ]
-    
-    @Published var packingItems: [PackingItem] = [
-        PackingItem(id: "1", tripId: "TRIP1", name: "T-Shirts", category: .clothing, isPacked: true, assignedTo: ["Everyone"]),
-        PackingItem(id: "2", tripId: "TRIP1", name: "Camera", category: .electronics, isPacked: false, assignedTo: ["USER_CACA_123"]),
-        PackingItem(id: "3", tripId: "TRIP1", name: "First Aid Kit", category: .medical, isPacked: false, assignedTo: ["Everyone"]),
-        PackingItem(id: "4", tripId: "TRIP1", name: "Passports", category: .documents, isPacked: true, assignedTo: ["USER_CACA_123"])
-    ]
+    @Published var members: [MemberProgressUI] = []
+    @Published var categories: [CategoryAssignment] = []
+    @Published var packingItems: [PackingItem] = []
     
     var groupReadinessPercentage: Int {
         let totalPacked = members.map { $0.packedItems }.reduce(0, +)
@@ -38,5 +21,50 @@ class MemberPageViewModel: ObservableObject {
     
     var membersAlmostReadyCount: Int {
         return members.filter { $0.progress >= 0.8 }.count
+    }
+    // Inisialisasi Database
+    private let db = Firestore.firestore()
+    
+    // Fungsi untuk menarik data dari Firebase
+    func fetchMembersData(tripId: String) {
+        // Asumsi struktur temanmu: koleksi "trips" -> dokumen "tripId" -> koleksi "members"
+        db.collection("trips").document(tripId).collection("members").getDocuments { snapshot, error in
+            
+            // 1. Cek apakah ada error koneksi
+            if let error = error {
+                print("Gagal mengambil data member: \(error.localizedDescription)")
+                return
+            }
+            
+            // 2. Pastikan datanya tidak kosong
+            guard let documents = snapshot?.documents else {
+                print("Tidak ada member di trip ini.")
+                return
+            }
+            
+            // 3. Ubah data mentah Firebase menjadi array model SwiftUI-mu
+            DispatchQueue.main.async {
+                self.members = documents.compactMap { doc -> MemberProgressUI? in
+                    let data = doc.data()
+                    
+                    // Tarik data dari field Firebase (contoh)
+                    let name = data["name"] as? String ?? "Unknown"
+                    let initials = data["initials"] as? String ?? ""
+                    let isYou = data["id"] as? String == "USER_CURRENT_ID" // Ganti dengan logika deteksi user login
+                    let packedItems = data["packedItems"] as? Int ?? 0
+                    let totalItems = data["totalItems"] as? Int ?? 0
+                    
+                    return MemberProgressUI(
+                        id: doc.documentID,
+                        name: name,
+                        initials: initials,
+                        isYou: isYou,
+                        packedItems: packedItems,
+                        totalItems: totalItems,
+                        themeColor: Color.blue // Bisa disesuaikan nanti
+                    )
+                }
+            }
+        }
     }
 }

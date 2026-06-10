@@ -14,7 +14,7 @@ struct ItineraryView: View {
     
     @State private var selectedDay: Int = 1
     @State private var isShowingAddActivity = false
-
+    
     @Environment(\.horizontalSizeClass) var sizeClass
     
     var totalDaysCount: Int {
@@ -63,74 +63,73 @@ struct ItineraryView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
+        ZStack(alignment: .top) {
+            Color(red: 0.97, green: 0.98, blue: 0.99).ignoresSafeArea()
+            
+            VStack(spacing: 0) {
                 
-                VStack(spacing: 0) {
-
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 2) {
-                            Text("🌴 \(trip.name)").font(.system(size: 16, weight: .bold))
-                            Text("\(trip.destination)").font(.system(size: 11)).foregroundColor(.gray)
-                        }
-                        Spacer()
+                HStack {
+                    Spacer()
+                    VStack(spacing: 2) {
+                        Text("🌴 \(trip.name)").font(.system(size: 16, weight: .bold))
+                        Text("\(trip.destination)").font(.system(size: 11)).foregroundColor(.gray)
                     }
-                    .padding().background(Color.white)
-                    
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Itinerary").font(.system(size: 28, weight: .black))
-                                    Text("\(trip.name) · \(totalDaysCount) days").font(.subheadline).foregroundColor(.gray)
-                                }
-                                Spacer()
-                                Button(action: { isShowingAddActivity = true }) {
-                                    Text("+ Add Activity").font(.system(size: 13, weight: .bold))
-                                        .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 10)
-                                        .background(Color(red: 0.08, green: 0.15, blue: 0.25)).cornerRadius(20)
-                                }
+                    Spacer()
+                }
+                .padding().background(Color.white)
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Itinerary").font(.system(size: 28, weight: .black))
+                                Text("\(trip.name) · \(totalDaysCount) days").font(.subheadline).foregroundColor(.gray)
                             }
-                            .padding(.horizontal, 20).padding(.top, 20)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 12) {
-                                    ForEach(0..<dynamicDays.count, id: \.self) { index in
-                                        DayButton(dayText: dynamicDays[index], subText: dynamicSubDays[index], isSelected: selectedDay == index + 1) {
-                                            selectedDay = index + 1
-                                        }
+                            Spacer()
+                            Button(action: { isShowingAddActivity = true }) {
+                                Text("+ Add Activity").font(.system(size: 13, weight: .bold))
+                                    .foregroundColor(.white).padding(.horizontal, 16).padding(.vertical, 10)
+                                    .background(Color(red: 0.08, green: 0.15, blue: 0.25)).cornerRadius(20)
+                            }
+                        }
+                        .padding(.horizontal, 20).padding(.top, 20)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(0..<dynamicDays.count, id: \.self) { index in
+                                    DayButton(dayText: dynamicDays[index], subText: dynamicSubDays[index], isSelected: selectedDay == index + 1) {
+                                        selectedDay = index + 1
                                     }
-                                }
-                                .padding(.horizontal, 20)
-                            }
-                            
-                            HStack {
-                                Text("Day \(selectedDay) — \(formatDateForSelectedDay())")
-                                    .font(.system(size: 18, weight: .bold))
-                                Spacer()
-                            }.padding(.horizontal, 20)
-                            
-                            VStack(spacing: 0) {
-                                ForEach(filteredActivities) { activity in
-                                    ItineraryCardView(activity: activity)
                                 }
                             }
                             .padding(.horizontal, 20)
                         }
-                        .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
-                        .frame(maxWidth: .infinity)
+                        
+                        HStack {
+                            Text("Day \(selectedDay) — \(formatDateForSelectedDay())")
+                                .font(.system(size: 18, weight: .bold))
+                            Spacer()
+                        }.padding(.horizontal, 20)
+                        
+                        VStack(spacing: 0) {
+                            ForEach(filteredActivities) { activity in
+                                ItineraryCardView(activity: activity)
+                            }
+                        }
+                        .padding(.horizontal, 20)
                     }
+                    .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
+                    .frame(maxWidth: .infinity)
                 }
             }
-            .sheet(isPresented: $isShowingAddActivity) {
-                AddActivityModalView(activityviewModel: activityViewModel, trip: trip, selectedDay: selectedDay)
-            }
+        }
+        .sheet(isPresented: $isShowingAddActivity) {
+            AddActivityModalView(activityviewModel: activityViewModel, trip: trip, selectedDay: selectedDay)
         }
     }
 }
+
 
 struct DayButton: View {
     let dayText: String
@@ -163,9 +162,9 @@ struct DayButton: View {
         ownerId: "me",
         memberIds: ["me"],
         groupProgress: 0.5,
-
+        
     )
-   
+    
     ItineraryView(
         tripViewModel: TripViewModel(),
         activityViewModel: ActivityViewModel(),

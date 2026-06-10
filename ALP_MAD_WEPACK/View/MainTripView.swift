@@ -10,9 +10,15 @@ import SwiftUI
 struct MainTripView: View {
     let trip: Trip
     var tripViewModel: TripViewModel
-    @State private var activityViewModel = ActivityViewModel()
     
+    // Gunakan @State biasa karena ActivityViewModel menggunakan @Observable (iOS 17+)
+    @State private var activityViewModel = ActivityViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
+    
+    // 💡 PENAMBAHAN 1: Variabel penampung inisial user agar dinamis
+    // (Bisa kamu isi dari AuthViewModel atau halaman sebelumnya)
+    var userInitials: String = "RF"
 
     func formatTripDate(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
@@ -54,16 +60,23 @@ struct MainTripView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "bell")
                         .foregroundColor(.gray)
-                    Circle()
-                        .fill(Color(red: 0.08, green: 0.15, blue: 0.25))
-                        .frame(width: 30, height: 30)
-                        .overlay(Text("RF").font(.system(size: 10, weight: .bold)).foregroundColor(.white))
+                    
+                    // 💡 PENAMBAHAN 2: Menggunakan NavigationLink agar pindah halaman (bukan pop-up naik)
+                    NavigationLink(destination: AccountView(authViewModel: authViewModel)) {
+                        Circle()
+                            .fill(Color(red: 0.08, green: 0.15, blue: 0.25))
+                            .frame(width: 30, height: 30)
+                            // Inisial sekarang dinamis menyesuaikan variabel userInitials
+                            .overlay(Text(userInitials).font(.system(size: 10, weight: .bold)).foregroundColor(.white))
+                    }
                 }
             }
             .padding()
             .background(Color.white)
             
             Divider()
+            
+            // --- NAVBAR ---
             TabView {
                 TripDetailOverviewView(trip: trip, tripViewModel: tripViewModel, activityViewModel: activityViewModel)
                     .tabItem {
@@ -71,7 +84,7 @@ struct MainTripView: View {
                         Text("Overview")
                     }
                 
-                Text("Halaman Packing")
+                Text("Halaman Packing") // Ganti dengan PackingListView() jika sudah siap
                     .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")
@@ -87,12 +100,6 @@ struct MainTripView: View {
                     .tabItem {
                         Image(systemName: "person.2")
                         Text("Members")
-                    }
-                
-                Text("Halaman Account")
-                    .tabItem {
-                        Image(systemName: "person.crop.circle")
-                        Text("Account")
                     }
             }
             .accentColor(Color(red: 37/255, green: 45/255, blue: 67/255))
