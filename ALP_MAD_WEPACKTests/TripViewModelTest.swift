@@ -51,4 +51,19 @@ final class TripViewModelTests: XCTestCase {
         // 5. Ekstra! Test computed property durationInDays sekalian
         XCTAssertEqual(viewModel.trips.first?.durationInDays, 4) // 3 interval hari = 4 hari total
     }
+    
+    func testCalculateDaysAway_PastDate_ReturnsZero() {
+            // Cek kalau startDate-nya adalah kemarin, harusnya mengembalikan 0 (bukan minus)
+            let yesterday = Date().addingTimeInterval(-86400) // Mundur 1 hari
+            let daysAway = viewModel.calculateDaysAway(from: yesterday)
+            
+            XCTAssertEqual(daysAway, 0, "Jika hari H sudah lewat, harusnya mengembalikan 0, bukan angka negatif.")
+        }
+
+        func testCalculateDaysAway_Today_ReturnsZero() {
+            // Cek kalau startDate-nya adalah hari ini
+            let daysAway = viewModel.calculateDaysAway(from: Date())
+            
+            XCTAssertEqual(daysAway, 0, "Jika trip berangkat hari ini, jarak harinya harus 0.")
+        }
 }
