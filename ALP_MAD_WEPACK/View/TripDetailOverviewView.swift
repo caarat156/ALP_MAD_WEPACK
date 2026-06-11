@@ -19,21 +19,21 @@ struct TripDetailOverviewView: View {
             Color(red: 0.96, green: 0.97, blue: 0.98).ignoresSafeArea()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 20) {
                     
                     // 1. BANNER STATIS
                     ZStack(alignment: .bottomLeading) {
                         Image("bali_cover")
                             .resizable()
                             .scaledToFill()
-                            .frame(maxWidth: .infinity)
+                            // Tambahin minWidth 0 biar gambar ga maksa ngelebarin layar
+                            .frame(minWidth: 0, maxWidth: .infinity)
                             .frame(height: 180)
                             .clipped()
                     }
                     .cornerRadius(20)
-                    .padding(.horizontal)
 
-                    // 2. GROUP READINESS (Dinamis ID)
+                    // 2. GROUP READINESS
                     VStack(spacing: 16) {
                         HStack {
                             VStack(alignment: .leading) {
@@ -41,7 +41,7 @@ struct TripDetailOverviewView: View {
                                 Text("\(trip.memberIds.count) members • synced live")
                                     .font(.caption).foregroundColor(.gray)
                             }
-                            Spacer()
+                            Spacer(minLength: 0) // Tambahin minLength 0 biar aman
                             Text("\(Int(trip.groupProgress * 100))%").font(.title.bold())
                         }
                         
@@ -49,32 +49,32 @@ struct TripDetailOverviewView: View {
                             Text("IDs: " + trip.memberIds.joined(separator: ", "))
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(.gray)
-                            Spacer()
+                                .lineLimit(1) // Jaga-jaga kalau ID kepanjangan
+                                .truncationMode(.tail)
+                            Spacer(minLength: 0)
                         }
                     }
                     .padding()
                     .background(Color.white)
                     .cornerRadius(18)
-                    .padding(.horizontal)
                     
-                    // 3. STATISTIK BARANG (Dinamis Total Hari)
-                    HStack(spacing: 12) {
+                    // 3. STATISTIK BARANG
+                    HStack(spacing: 10) { // Spacing antar card dikurangin dikit
                         MiniStatCard(value: "0", label: "Items packed")
                         MiniStatCard(value: "0", label: "Remaining")
                         
                         let totalDays = (Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: trip.startDate), to: Calendar.current.startOfDay(for: trip.endDate)).day ?? 0) + 1
                         MiniStatCard(value: "\(totalDays)", label: "Days planned")
                     }
-                    .padding(.horizontal)
                     
-                    // 4. ITINERARY PREVIEW (Dinamis 3 Kegiatan Pertama)
+                    // 4. ITINERARY PREVIEW
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
                             Text("Upcoming Activities")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
                             Spacer()
-                            Button(action: {}) {
+                            NavigationLink(destination: ItineraryView(tripViewModel: tripViewModel, activityViewModel: activityViewModel, trip: trip)) {
                                 HStack(spacing: 4) {
                                     Text("See all")
                                         .font(.system(size: 13, weight: .bold))
@@ -126,9 +126,8 @@ struct TripDetailOverviewView: View {
                     .padding()
                     .background(Color.white)
                     .cornerRadius(18)
-                    .padding(.horizontal)
                     
-                    // 5. NEEDS ATTENTION (Dinamis dari memberIds)
+                    // 5. NEEDS ATTENTION
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
@@ -156,12 +155,11 @@ struct TripDetailOverviewView: View {
                     .padding()
                     .background(Color.white)
                     .cornerRadius(18)
-                    .padding(.horizontal)
                     .padding(.bottom, 25)
                     
                 }
+                .padding(.horizontal, 20) // Fokus padding horizontal aja
                 .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
-                .frame(maxWidth: .infinity)
             }
         }
         .navigationBarBackButtonHidden(false)
@@ -173,9 +171,23 @@ struct MiniStatCard: View {
     var value: String; var label: String
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(value).font(.system(size: 24, weight: .black)).foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-            Text(label).font(.system(size: 11, weight: .medium)).foregroundColor(.gray)
-        }.padding(.vertical, 14).padding(.horizontal, 16).frame(maxWidth: .infinity, alignment: .leading).background(Color.white).cornerRadius(16)
+            Text(value)
+                .font(.system(size: 24, weight: .black))
+                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                .lineLimit(1) // Wajib ada biar ga turun ke bawah
+                .minimumScaleFactor(0.5) // Bakal ngecilin font otomatis kalau layarnya sempit
+            
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.gray)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, 10) // Kurangin dari 16 ke 10 biar lebih muat bertiga
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
+        .cornerRadius(16)
     }
 }
 
@@ -184,7 +196,7 @@ struct AttentionRowComponent: View {
     var body: some View {
         HStack(spacing: 12) {
             Circle().fill(Color(red: 0.08, green: 0.15, blue: 0.25).opacity(0.8)).frame(width: 36, height: 36).overlay(Text(initials).font(.system(size: 12, weight: .bold)).foregroundColor(.white))
-            Text(name).font(.system(size: 14, weight: .bold)).foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25)).frame(width: 60, alignment: .leading)
+            Text(name).font(.system(size: 14, weight: .bold)).foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25)).frame(width: 60, alignment: .leading).lineLimit(1)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(Color.gray.opacity(0.15))
@@ -192,11 +204,10 @@ struct AttentionRowComponent: View {
                 }
             }.frame(height: 6).padding(.horizontal, 4)
             Text("\(Int(progress * 100))%").font(.system(size: 12, weight: .bold)).foregroundColor(.gray).frame(width: 35, alignment: .trailing)
-            Text(status).font(.system(size: 9, weight: .black)).foregroundColor(statusColor).padding(.horizontal, 8).padding(.vertical, 5).background(statusColor.opacity(0.1)).cornerRadius(6)
+            Text(status).font(.system(size: 9, weight: .black)).foregroundColor(statusColor).padding(.horizontal, 8).padding(.vertical, 5).background(statusColor.opacity(0.1)).cornerRadius(6).lineLimit(1)
         }
     }
 }
-
 #Preview {
     let sampleTrip = Trip(
         id: "PREVIEW_ID",
