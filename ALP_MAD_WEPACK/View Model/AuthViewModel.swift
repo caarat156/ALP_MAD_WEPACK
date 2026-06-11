@@ -76,35 +76,65 @@ class AuthViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        Auth.auth().createUser(withEmail: registerEmail, password: registerPassword) { authResult, error in
+        let db = Firestore.firestore()
+        
+        // Bersihkan username dari spasi, huruf besar, dan simbol '@' (jika user terlanjur mengetik)
+        let cleanedUsername = registerUsername
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "@", with: "")
+            .replacingOccurrences(of: " ", with: "")
+            .lowercased()
+        
+        // Cek apakah username sudah ada
+        db.collection("users").whereField("username", isEqualTo: cleanedUsername).getDocuments { [weak self] snapshot, error in
+            guard let self = self else { return }
+            
             if let error = error {
                 DispatchQueue.main.async {
                     self.isLoading = false
                     self.errorMessage = error.localizedDescription
                 }
-            } else {
-                guard let user = authResult?.user else { return }
-                print("User Baru Terdaftar dengan UID: \(user.uid)")
-                
-                let changeRequest = user.createProfileChangeRequest()
-                changeRequest.displayName = self.registerName
-                
-                changeRequest.commitChanges { error in
-                    let db = Firestore.firestore()
-                    db.collection("users").document(user.uid).setData([
-                        "name": self.registerName,
-                        "username": self.registerUsername,
-                        "email": self.registerEmail,
-                        "joinedDate": Timestamp(date: Date())
-                    ]) { firestoreError in
-                        DispatchQueue.main.async {
-                            self.isLoading = false
-                            
-                            if let firestoreError = firestoreError {
-                                self.errorMessage = firestoreError.localizedDescription
-                                print("Gagal menyimpan data ke Firestore: \(firestoreError.localizedDescription)")
-                            } else {
-                                print("Berhasil menyimpan profil lengkap ke Firestore!")
+                return
+            }
+            
+            if let docs = snapshot?.documents, !docs.isEmpty {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    self.errorMessage = "Username already taken. Please choose another one."
+                }
+                return
+            }
+            
+            // Lanjut ke pembuatan user Auth jika username tersedia
+            Auth.auth().createUser(withEmail: self.registerEmail, password: self.registerPassword) { authResult, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.errorMessage = error.localizedDescription
+                    }
+                } else {
+                    guard let user = authResult?.user else { return }
+                    print("User Baru Terdaftar dengan UID: \(user.uid)")
+                    
+                    let changeRequest = user.createProfileChangeRequest()
+                    changeRequest.displayName = self.registerName
+                    
+                    changeRequest.commitChanges { error in
+                        db.collection("users").document(user.uid).setData([
+                            "name": self.registerName,
+                            "username": cleanedUsername,
+                            "email": self.registerEmail,
+                            "joinedDate": Timestamp(date: Date())
+                        ]) { firestoreError in
+                            DispatchQueue.main.async {
+                                self.isLoading = false
+                                
+                                if let firestore  = firestoreError {
+                                    self.errorMessage = firestore.localizedDescription
+                                    print("Gagal menyimpan data ke Firestore: \(firestore.localizedDescription)")
+                                } else {
+                                    print("Berhasil menyimpan profil lengkap ke Firestore!")
+                                }
                             }
                         }
                     }

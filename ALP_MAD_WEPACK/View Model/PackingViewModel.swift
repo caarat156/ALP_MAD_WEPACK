@@ -25,8 +25,10 @@ class PackingViewModel: ObservableObject {
     }
     
     private let db = Firestore.firestore()
+    let trip: Trip
     
-    init() {
+    init(trip: Trip) {
+        self.trip = trip
         fetchPackingItems()
         fetchTripMembers()
     }
@@ -42,7 +44,7 @@ class PackingViewModel: ObservableObject {
     
     func fetchPackingItems() {
         db.collection("packing_items")
-            .whereField("tripId", isEqualTo: "TRIP_BALI_2026")
+            .whereField("tripId", isEqualTo: trip.id)
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error getting packing items: \(error)")
@@ -71,7 +73,7 @@ class PackingViewModel: ObservableObject {
         db.collection("users").getDocuments { snapshot, _ in
             guard let documents = snapshot?.documents else { return }
             
-            self.tripMembers = documents.map { doc in
+            let allUsers = documents.map { doc in
                 let data = doc.data()
                 return TripMember(
                     id: doc.documentID,
@@ -79,6 +81,19 @@ class PackingViewModel: ObservableObject {
                     role: data["role"] as? String ?? "Member",
                     packingProgress: data["packingProgress"] as? Double ?? 0.0
                 )
+            }
+            
+            DispatchQueue.main.async {
+                // 1. Filter dari database yang sesuai dengan memberIds trip ini
+                var validMembers = allUsers.filter { self.trip.memberIds.contains($0.id) }
+                
+                // 2. Karena kode Trip punya temanmu memakai "me" secara hardcode,
+                // kita buatkan akun dummy sementara agar kamu (owner) tetap muncul di pilihan.
+                if self.trip.memberIds.contains("me") && !validMembers.contains(where: { $0.id == "me" }) {
+                    validMembers.insert(TripMember(id: "me", name: "You (Owner)", role: "Owner", packingProgress: 0.0), at: 0)
+                }
+                
+                self.tripMembers = validMembers
             }
         }
     }
@@ -105,7 +120,7 @@ class PackingViewModel: ObservableObject {
         let finalAssignees = assignmentType == .everyone ? ["Everyone"] : Array(selectedMemberIds)
         
         let itemData: [String: Any] = [
-            "tripId": "TRIP_BALI_2026",
+            "tripId": trip.id,
             "name": trimmedName,
             "category": selectedCategory.rawValue,
             "isPacked": false,

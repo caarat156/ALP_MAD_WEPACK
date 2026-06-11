@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct PackingListView: View {
-    @StateObject private var viewModel = PackingViewModel()
+    @StateObject private var viewModel: PackingViewModel
     @Environment(\.horizontalSizeClass) var sizeClass
+
+    init(trip: Trip) {
+        _viewModel = StateObject(wrappedValue: PackingViewModel(trip: trip))
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -104,12 +108,11 @@ struct PackingListView: View {
             }
             .sheet(isPresented: $viewModel.showAddItemSheet) {
                 AddPackingItemView(viewModel: viewModel)
-                    // Di iPad, sheet tidak perlu full screen
-                    .presentationDetents(sizeClass == .regular ? [.medium, .large] : [.large])
+                    .presentationDetents([.large])
             }
     }
 }
 
 #Preview {
-    PackingListView()
+    PackingListView(trip: Trip(id: "PREVIEW", name: "Preview", destination: "Bali", startDate: Date(), endDate: Date(), ownerId: "me", memberIds: ["me"], groupProgress: 0.0))
 }

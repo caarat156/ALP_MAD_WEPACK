@@ -11,6 +11,7 @@ struct AuthInputField: View {
     @Binding var text: String
     var placeholder: String
     var isSecure: Bool
+    var prefix: String? = nil
     
     @State private var isPasswordSecured: Bool = true
     
@@ -23,6 +24,12 @@ struct AuthInputField: View {
                 .padding(.leading, 4)
             
             HStack {
+                if let prefix = prefix {
+                    Text(prefix)
+                        .foregroundColor(.primary)
+                        .fontWeight(.medium)
+                }
+                
                 if isSecure && isPasswordSecured {
                     SecureField("", text: $text, prompt: Text(placeholder).foregroundColor(.gray.opacity(0.3)))
                         .font(.system(size: 15))

@@ -85,7 +85,7 @@ struct MainTripView: View {
                         Text("Overview")
                     }
                 
-                PackingListView()
+                PackingListView(trip: trip)
                     .tabItem {
                         Image(systemName: "shippingbox")
                         Text("Packing")

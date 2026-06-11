@@ -14,7 +14,8 @@ final class PackingTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        viewModel = PackingViewModel()
+        let dummyTrip = Trip(id: "T1", name: "Test Trip", destination: "Bali", startDate: Date(), endDate: Date(), ownerId: "U1", memberIds: ["U1"], groupProgress: 0.0)
+        viewModel = PackingViewModel(trip: dummyTrip)
     }
     
     override func tearDown() {

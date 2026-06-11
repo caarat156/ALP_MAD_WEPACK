@@ -203,5 +203,5 @@ struct AddPackingItemView: View {
 }
 
 #Preview {
-    AddPackingItemView(viewModel: PackingViewModel())
+    AddPackingItemView(viewModel: PackingViewModel(trip: Trip(id: "PREVIEW", name: "Preview", destination: "Bali", startDate: Date(), endDate: Date(), ownerId: "me", memberIds: ["me"], groupProgress: 0.0)))
 }
