@@ -15,7 +15,7 @@ class NotificationViewModel: ObservableObject {
         
         db.collection("invitations")
             .whereField("receiverId", isEqualTo: userId)
-            .whereField("status", isEqualTo: "pending")
+            .whereField("stnoatus", isEqualTo: "pending")
             .addSnapshotListener { snapshot, _ in
                 self.invitations = snapshot?.documents.compactMap { try? $0.data(as: Invitation.self) } ?? []
             }
