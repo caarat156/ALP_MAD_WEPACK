@@ -13,8 +13,31 @@ struct PackingListView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-                // Progress header
-                VStack(alignment: .leading, spacing: 8) {
+            // Custom Header
+            HStack {
+                Text("Packing List")
+                    .font(.system(size: 28, weight: .bold))
+                Spacer()
+                Button(action: {
+                    viewModel.showAddItemSheet.toggle()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                        Text("Add Item")
+                    }
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color(red: 0.08, green: 0.15, blue: 0.25))
+                    .cornerRadius(20)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+
+            // Progress header
+            VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("\(viewModel.packedCount) of \(viewModel.packingItems.count) items packed")
                             .font(.subheadline)
@@ -78,17 +101,6 @@ struct PackingListView: View {
                 }
                 // Di iPad pakai insetGrouped lebih nyaman, di iPhone sama
                 .listStyle(.insetGrouped)
-            }
-            .navigationTitle("Packing List")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        viewModel.showAddItemSheet.toggle()
-                    }) {
-                        Image(systemName: "plus")
-                            .fontWeight(.bold)
-                    }
-                }
             }
             .sheet(isPresented: $viewModel.showAddItemSheet) {
                 AddPackingItemView(viewModel: viewModel)
