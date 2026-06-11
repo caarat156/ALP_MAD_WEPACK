@@ -27,12 +27,15 @@ struct TripCardComponent: View {
             
             // BANNER STATIS (bali_cover)
             ZStack(alignment: .bottomLeading) {
-                Image("bali_cover")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 155)
-                    .clipped()
+                
+                // FIX GAMBAR TUMPAH: Kurung dengan GeometryReader
+                GeometryReader { geo in
+                    Image("bali_cover")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped() // Potong sisa gambar yang keluar batas
+                }
                 
                 LinearGradient(
                     colors: [Color.black.opacity(0.3), Color.black.opacity(0.7)],
@@ -52,13 +55,6 @@ struct TripCardComponent: View {
                         
                         Spacer()
                         
-                        Text("Upcoming")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.28))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.white.opacity(0.9))
-                            .cornerRadius(10)
                     }
                     .padding(12)
                     Spacer()
