@@ -77,7 +77,7 @@ struct MainTripView: View {
             
             // --- NAVBAR ---
             TabView {
-                TripDetailOverviewView(trip: trip, tripViewModel: tripViewModel, activityViewModel: activityViewModel)
+                TripDetailOverviewView(trip: trip, tripViewModel: tripViewModel, activityViewModel: activityViewModel, packingViewModel: PackingViewModel(trip: trip))
                     .tabItem {
                         Image(systemName: "square.grid.2x2")
                         Text("Overview")

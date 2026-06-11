@@ -11,8 +11,26 @@ struct TripDetailOverviewView: View {
     let trip: Trip
     var tripViewModel: TripViewModel
     var activityViewModel: ActivityViewModel
+    
+    // 📢 1. Inject ViewModel yang menangani data packing
+    @ObservedObject var packingViewModel: PackingViewModel
 
     @Environment(\.horizontalSizeClass) var sizeClass
+    
+    // 📢 2. Computed Properties untuk menghitung statistik barang otomatis
+        var packedItemsCount: Int {
+            // Pakai packingItems sesuai dengan nama di PackingViewModel
+            packingViewModel.packingItems.filter { $0.tripId == trip.id && $0.isPacked }.count
+        }
+        
+        var totalItemsCount: Int {
+            // Pakai packingItems sesuai dengan nama di PackingViewModel
+            packingViewModel.packingItems.filter { $0.tripId == trip.id }.count
+        }
+        
+        var remainingItemsCount: Int {
+            totalItemsCount - packedItemsCount
+        }
     
     var body: some View {
         ZStack {
@@ -26,7 +44,6 @@ struct TripDetailOverviewView: View {
                         Image("bali_cover")
                             .resizable()
                             .scaledToFill()
-                            // Tambahin minWidth 0 biar gambar ga maksa ngelebarin layar
                             .frame(minWidth: 0, maxWidth: .infinity)
                             .frame(height: 180)
                             .clipped()
@@ -41,27 +58,30 @@ struct TripDetailOverviewView: View {
                                 Text("\(trip.memberIds.count) members • synced live")
                                     .font(.caption).foregroundColor(.gray)
                             }
-                            Spacer(minLength: 0) // Tambahin minLength 0 biar aman
-                            Text("\(Int(trip.groupProgress * 100))%").font(.title.bold())
+                            Spacer(minLength: 0)
+                            
+                            // Menghitung progress keseluruhan grup berdasarkan barang yang di-pack
+                            let overallProgress = totalItemsCount > 0 ? (Double(packedItemsCount) / Double(totalItemsCount)) * 100 : 0.0
+                            Text("\(Int(overallProgress))%").font(.title.bold())
                         }
                         
-                        HStack {
-                            Text("IDs: " + trip.memberIds.joined(separator: ", "))
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.gray)
-                                .lineLimit(1) // Jaga-jaga kalau ID kepanjangan
-                                .truncationMode(.tail)
-                            Spacer(minLength: 0)
-                        }
+//                        HStack {
+//                            Text("IDs: " + trip.memberIds.joined(separator: ", "))
+//                                .font(.system(size: 14, weight: .medium))
+//                                .foregroundColor(.gray)
+//                                .lineLimit(1)
+//                                .truncationMode(.tail)
+//                            Spacer(minLength: 0)
+//                        }
                     }
                     .padding()
                     .background(Color.white)
                     .cornerRadius(18)
                     
-                    // 3. STATISTIK BARANG
-                    HStack(spacing: 10) { // Spacing antar card dikurangin dikit
-                        MiniStatCard(value: "0", label: "Items packed")
-                        MiniStatCard(value: "0", label: "Remaining")
+                    // 3. STATISTIK BARANG (Sudah Dinamis)
+                    HStack(spacing: 10) {
+                        MiniStatCard(value: "\(packedItemsCount)", label: "Items packed")
+                        MiniStatCard(value: "\(remainingItemsCount)", label: "Remaining")
                         
                         let totalDays = (Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: trip.startDate), to: Calendar.current.startOfDay(for: trip.endDate)).day ?? 0) + 1
                         MiniStatCard(value: "\(totalDays)", label: "Days planned")
@@ -127,7 +147,7 @@ struct TripDetailOverviewView: View {
                     .background(Color.white)
                     .cornerRadius(18)
                     
-                    // 5. NEEDS ATTENTION
+                    // 5. NEEDS ATTENTION (Progress Bar Dinamis)
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Needs Attention")
                             .font(.system(size: 16, weight: .bold))
@@ -138,12 +158,17 @@ struct TripDetailOverviewView: View {
                                 let initials = String(memberId.prefix(2)).uppercased()
                                 let displayName = memberId == tripViewModel.currentUserID ? "You" : "User \(initials)"
                                 
+                                // Kalkulasi progress per orang (sementara pakai progress global trip)
+                                let userProgress = totalItemsCount > 0 ? Double(packedItemsCount) / Double(totalItemsCount) : 0.0
+                                let currentStatus = userProgress == 1.0 ? "DONE" : (userProgress > 0 ? "IN PROGRESS" : "NOT STARTED")
+                                let currentColor = userProgress == 1.0 ? Color.green : (userProgress > 0 ? Color.orange : Color.gray)
+                                
                                 AttentionRowComponent(
                                     initials: initials.isEmpty ? "?" : initials,
                                     name: displayName,
-                                    progress: 0.0,
-                                    status: "NOT STARTED",
-                                    statusColor: .gray
+                                    progress: userProgress,
+                                    status: currentStatus,
+                                    statusColor: currentColor
                                 )
                                 
                                 if memberId != trip.memberIds.last {
@@ -158,7 +183,7 @@ struct TripDetailOverviewView: View {
                     .padding(.bottom, 25)
                     
                 }
-                .padding(.horizontal, 20) // Fokus padding horizontal aja
+                .padding(.horizontal, 20)
                 .frame(maxWidth: sizeClass == .compact ? .infinity : 700)
             }
         }
@@ -174,8 +199,8 @@ struct MiniStatCard: View {
             Text(value)
                 .font(.system(size: 24, weight: .black))
                 .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                .lineLimit(1) // Wajib ada biar ga turun ke bawah
-                .minimumScaleFactor(0.5) // Bakal ngecilin font otomatis kalau layarnya sempit
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
             
             Text(label)
                 .font(.system(size: 11, weight: .medium))
@@ -184,7 +209,7 @@ struct MiniStatCard: View {
                 .minimumScaleFactor(0.5)
         }
         .padding(.vertical, 14)
-        .padding(.horizontal, 10) // Kurangin dari 16 ke 10 biar lebih muat bertiga
+        .padding(.horizontal, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
         .cornerRadius(16)
@@ -208,6 +233,7 @@ struct AttentionRowComponent: View {
         }
     }
 }
+
 #Preview {
     let sampleTrip = Trip(
         id: "PREVIEW_ID",
@@ -223,6 +249,8 @@ struct AttentionRowComponent: View {
     return TripDetailOverviewView(
         trip: sampleTrip,
         tripViewModel: TripViewModel(),
-        activityViewModel: ActivityViewModel()
+        activityViewModel: ActivityViewModel(),
+        // 📢 Masukin PackingViewModel dan oper sampleTrip ke dalamnya
+        packingViewModel: PackingViewModel(trip: sampleTrip)
     )
 }
