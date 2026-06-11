@@ -118,8 +118,9 @@ struct RegisterView: View {
                         AuthInputField(
                             label: "USERNAME *",
                             text: $authViewModel.registerUsername,
-                            placeholder: "@ rafipratama",
-                            isSecure: false
+                            placeholder: "rafipratama",
+                            isSecure: false,
+                            prefix: "@"
                         )
 
                         Text("Friends can find and invite you using your @username")

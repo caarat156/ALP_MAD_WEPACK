@@ -54,6 +54,8 @@ struct EditAccountView: View {
                             HStack(spacing: 16) {
                                 CustomInputField(label: "FULL NAME", text: $viewModel.editedName)
                                 CustomInputField(label: "USERNAME", text: $viewModel.editedUsername, prefix: "@")
+                                    .disabled(true)
+                                    .opacity(0.6)
                             }
                             HStack(spacing: 16) {
                                 CustomInputField(label: "EMAIL", text: $viewModel.editedEmail)
@@ -83,6 +85,8 @@ struct EditAccountView: View {
                         VStack(spacing: 18) {
                             CustomInputField(label: "FULL NAME", text: $viewModel.editedName)
                             CustomInputField(label: "USERNAME", text: $viewModel.editedUsername, prefix: "@")
+                                .disabled(true)
+                                .opacity(0.6)
                             CustomInputField(label: "EMAIL", text: $viewModel.editedEmail)
                             CustomInputField(label: "PHONE NUMBER", text: $viewModel.editedPhone)
 

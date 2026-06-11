@@ -119,20 +119,23 @@ struct AddPackingItemView: View {
 
                             // Di iPad tampilkan lebih banyak member per baris
                             let memberColumns: [GridItem] = sizeClass == .regular
-                                ? Array(repeating: GridItem(.flexible()), count: min(MockData.sampleTripMembers.count, 5))
+                                ? Array(repeating: GridItem(.flexible()), count: min(viewModel.tripMembers.count, 5))
                                 : []
 
                             if sizeClass == .regular {
                                 LazyVGrid(columns: memberColumns, spacing: 16) {
-                                    ForEach(MockData.sampleTripMembers) { member in
+                                    ForEach(viewModel.tripMembers) { member in
                                         memberAvatar(member: member)
                                     }
                                 }
                             } else {
-                                HStack(spacing: 20) {
-                                    ForEach(MockData.sampleTripMembers) { member in
-                                        memberAvatar(member: member)
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 20) {
+                                        ForEach(viewModel.tripMembers) { member in
+                                            memberAvatar(member: member)
+                                        }
                                     }
+                                    .padding(.horizontal, 4)
                                 }
                             }
                         }
@@ -200,5 +203,5 @@ struct AddPackingItemView: View {
 }
 
 #Preview {
-    AddPackingItemView(viewModel: PackingViewModel())
+    AddPackingItemView(viewModel: PackingViewModel(trip: Trip(id: "PREVIEW", name: "Preview", destination: "Bali", startDate: Date(), endDate: Date(), ownerId: "me", memberIds: ["me"], groupProgress: 0.0)))
 }

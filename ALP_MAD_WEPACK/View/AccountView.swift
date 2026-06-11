@@ -54,30 +54,6 @@ struct AccountView: View {
                         }
                         .padding(.horizontal)
 
-                        AccountSectionView(title: "General") {
-                            NavigationLink(destination: EditAccountView(viewModel: viewModel)) {
-                                AccountMenuRowView(icon: "person.circle", iconColor: .blue, title: "Edit Profile", subtitle: "Change your name or password")
-                            }
-                            .buttonStyle(.plain)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(viewModel.name)
-                                    .font(sizeClass == .regular ? .title2 : .title3)
-                                    .fontWeight(.bold)
-                                Text(viewModel.username)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Text(viewModel.email)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(16)
-                        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                     }
                     .padding(.horizontal)
                     
@@ -86,10 +62,6 @@ struct AccountView: View {
                             AccountMenuRowView(icon: "person.circle", iconColor: .blue, title: "Edit Profile", subtitle: "Change your name or password")
                         }
                         .buttonStyle(.plain)
-                        
-                        Divider().padding(.leading, 56)
-                        
-                        AccountMenuRowView(icon: "bell", iconColor: .orange, title: "Notifications", subtitle: "Manage your alerts")
                     }
                     .padding(.horizontal)
                     

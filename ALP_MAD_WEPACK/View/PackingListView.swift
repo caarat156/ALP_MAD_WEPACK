@@ -8,13 +8,40 @@
 import SwiftUI
 
 struct PackingListView: View {
-    @StateObject private var viewModel = PackingViewModel()
+    @StateObject private var viewModel: PackingViewModel
     @Environment(\.horizontalSizeClass) var sizeClass
+
+    init(trip: Trip) {
+        _viewModel = StateObject(wrappedValue: PackingViewModel(trip: trip))
+    }
 
     var body: some View {
         VStack(spacing: 16) {
-                // Progress header
-                VStack(alignment: .leading, spacing: 8) {
+            // Custom Header
+            HStack {
+                Text("Packing List")
+                    .font(.system(size: 28, weight: .bold))
+                Spacer()
+                Button(action: {
+                    viewModel.showAddItemSheet.toggle()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                        Text("Add Item")
+                    }
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color(red: 0.08, green: 0.15, blue: 0.25))
+                    .cornerRadius(20)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+
+            // Progress header
+            VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("\(viewModel.packedCount) of \(viewModel.packingItems.count) items packed")
                             .font(.subheadline)
@@ -79,25 +106,13 @@ struct PackingListView: View {
                 // Di iPad pakai insetGrouped lebih nyaman, di iPhone sama
                 .listStyle(.insetGrouped)
             }
-            .navigationTitle("Packing List")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        viewModel.showAddItemSheet.toggle()
-                    }) {
-                        Image(systemName: "plus")
-                            .fontWeight(.bold)
-                    }
-                }
-            }
             .sheet(isPresented: $viewModel.showAddItemSheet) {
                 AddPackingItemView(viewModel: viewModel)
-                    // Di iPad, sheet tidak perlu full screen
-                    .presentationDetents(sizeClass == .regular ? [.medium, .large] : [.large])
+                    .presentationDetents([.large])
             }
     }
 }
 
 #Preview {
-    PackingListView()
+    PackingListView(trip: Trip(id: "PREVIEW", name: "Preview", destination: "Bali", startDate: Date(), endDate: Date(), ownerId: "me", memberIds: ["me"], groupProgress: 0.0))
 }
