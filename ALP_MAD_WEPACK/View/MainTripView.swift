@@ -11,15 +11,13 @@ struct MainTripView: View {
     let trip: Trip
     var tripViewModel: TripViewModel
     
-    // Gunakan @State biasa karena ActivityViewModel menggunakan @Observable (iOS 17+)
     @State private var activityViewModel = ActivityViewModel()
     @EnvironmentObject var authViewModel: AuthViewModel
     
     @Environment(\.dismiss) var dismiss
     
-    // 💡 PENAMBAHAN 1: Variabel penampung inisial user agar dinamis
-    // (Bisa kamu isi dari AuthViewModel atau halaman sebelumnya)
-    var userInitials: String = "RF"
+    // 💡 PERBAIKAN UTAMA: Kita panggil AccountViewModel ke sini!
+    @StateObject private var accountViewModel = AccountViewModel()
 
     func formatTripDate(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
@@ -59,16 +57,16 @@ struct MainTripView: View {
                 Spacer()
                 
                 HStack(spacing: 12) {
-                    Image(systemName: "bell")
-                        .foregroundColor(.gray)
-                    
-                    // 💡 PENAMBAHAN 2: Menggunakan NavigationLink agar pindah halaman (bukan pop-up naik)
                     NavigationLink(destination: AccountView(authViewModel: authViewModel)) {
                         Circle()
                             .fill(Color(red: 0.08, green: 0.15, blue: 0.25))
                             .frame(width: 30, height: 30)
-                            // Inisial sekarang dinamis menyesuaikan variabel userInitials
-                            .overlay(Text(userInitials).font(.system(size: 10, weight: .bold)).foregroundColor(.white))
+                            // 💡 PERUBAHAN: Tinggal panggil avatarInitials dari accountViewModel
+                            .overlay(
+                                Text(accountViewModel.avatarInitials)
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.white)
+                            )
                     }
                 }
             }
@@ -101,12 +99,6 @@ struct MainTripView: View {
                     .tabItem {
                         Image(systemName: "person.2")
                         Text("Members")
-                    }
-                
-                AccountView(authViewModel: authViewModel)
-                    .tabItem {
-                        Image(systemName: "person.crop.circle")
-                        Text("Account")
                     }
             }
             .accentColor(Color(red: 37/255, green: 45/255, blue: 67/255))

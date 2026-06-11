@@ -8,21 +8,42 @@ import SwiftUI
 import Combine
 
 class AddMemberViewModel: ObservableObject {
-    @Published var inviteMethod = 0 
+    @Published var inviteMethod = 0
     @Published var inviteInput = ""
     @Published var members: [GroupMemberUI] = []
-    @Published var tripName: String = "Bali Group Adventure"
-    @Published var tripDate: String = "Jun 14–17, 2026"
+    
+    // 💡 PERUBAHAN 1: Hapus data dummy, ganti jadi string kosong
+    @Published var tripName: String = ""
+    @Published var tripDate: String = ""
     
     init() {
+        self.members = []
+    }
+    
+    // 💡 PERUBAHAN 2: Fungsi untuk memuat data Trip asli
+    func loadTripData(name: String, dateString: String) {
+        self.tripName = name
+        self.tripDate = dateString
+    }
+    
+    // Fungsi untuk memasukkan user yang sedang login ke dalam list
+    func loadCurrentUser(id: String, name: String, username: String) {
+        // Cek agar tidak duplikat
+        guard !members.contains(where: { $0.id == id }) else { return }
+        
+        // Ambil 2 huruf pertama untuk inisial secara dinamis
+        let generatedInitials = String(name.prefix(2)).uppercased()
+        
         let currentUser = GroupMemberUI(
-            id: "USER_CURRENT",
-            name: "Rafi",
-            username: "@rafi",
-            initials: "RF",
+            id: id,
+            name: name,
+            username: username,
+            initials: generatedInitials,
             isYou: true
         )
-        self.members = [currentUser]
+        
+        // Pastikan user current selalu ada di urutan paling atas
+        members.insert(currentUser, at: 0)
     }
     
     func removeMember(id: String) {
