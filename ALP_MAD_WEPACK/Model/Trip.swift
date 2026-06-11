@@ -30,3 +30,29 @@ struct Trip: Identifiable, Codable, Hashable {
         }
     }
 
+//import Foundation
+//
+//struct Trip: Codable, Identifiable {
+//    let id: String
+//    let name: String
+//    let destination: String
+//    let startDate: Date
+//    let endDate: Date
+//    let ownerId: String
+//    
+//    // UBAH INI: Dari [String] jadi [TripMember]
+//    var members: [TripMember]
+//    
+//    var groupProgress: Double
+//}
+//
+//struct TripMember: Codable, Identifiable {
+//    var id: String { uid } // Biar gampang dipake di SwiftUI List
+//    let uid: String
+//    var status: MemberStatus
+//}
+//
+//enum MemberStatus: String, Codable {
+//    case pending
+//    case accepted
+//}
