@@ -78,6 +78,10 @@ struct TripListView: View {
             .sheet(isPresented: $isShowingAddTrip) {
                 AddTripModalView(tripviewModel: tripViewModel)
             }
+            .onAppear {
+                // Re-fetch ketika view muncul agar memakai UID asli yang sudah siap dari Auth
+                tripViewModel.fetchTrips()
+            }
         }
     }
 }
