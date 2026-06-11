@@ -4,10 +4,15 @@
 //
 //  Created by student on 29/05/26.
 //
+
 import SwiftUI
 
 struct MemberPageView: View {
     @StateObject private var viewModel = MemberPageViewModel()
+    @ObservedObject var packingViewModel: PackingViewModel
+    
+    // 📢 1. Tambahkan ini agar layar tahu ID aslimu
+    var tripViewModel: TripViewModel
     
     @State private var showAddMember = false
     @State private var selectedMember: MemberProgressUI? = nil
@@ -15,69 +20,74 @@ struct MemberPageView: View {
     let darkSlateBlue = Color(red: 37/255, green: 45/255, blue: 67/255)
     let lightGrayBg = Color(red: 248/255, green: 249/255, blue: 251/255)
     
+    var syncedMembers: [MemberProgressUI] {
+        let colors: [Color] = [.teal, .blue, .orange, .purple, .pink]
+        
+        return packingViewModel.tripMembers.enumerated().map { index, tripMember in
+            let assignedItems = packingViewModel.packingItems.filter {
+                $0.assignedTo.contains(tripMember.id) || $0.assignedTo.contains("Everyone")
+            }
+            
+            let liveTotalItems = assignedItems.count
+            let livePackedItems = assignedItems.filter { $0.isPacked }.count
+            
+            let cleanName = tripMember.name.replacingOccurrences(of: " (You)", with: "")
+            let initials = cleanName.isEmpty ? "?" : String(cleanName.prefix(2)).uppercased()
+            
+            // 📢 2. KUNCI PERBAIKANNYA DI SINI!
+            // Kita cocokkan ID member dengan currentUserID kamu yang asli
+            let isYou = tripMember.id == tripViewModel.currentUserID || tripMember.id == "me"
+            
+            return MemberProgressUI(
+                id: tripMember.id,
+                name: cleanName,
+                initials: initials,
+                isYou: isYou,
+                packedItems: livePackedItems,
+                totalItems: liveTotalItems,
+                themeColor: colors[index % colors.count]
+            )
+        }
+    }
+    
+    var syncedReadyCount: Int {
+        syncedMembers.filter { $0.progress >= 1.0 }.count
+    }
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
-                
                 headerSection
-                
                 progressSection
-                
-                // --- MEMBER GRID CARDS ---
                 memberGridSection
-                
-//                VStack(alignment: .leading, spacing: 0) {
-//                    VStack(alignment: .leading, spacing: 4) {
-//                        Text("Category Assignment")
-//                            .font(.headline)
-//                        Text("Who carries what")
-//                            .font(.subheadline)
-//                            .foregroundColor(.gray)
-//                    }
-//                    .padding()
-//                    
-//                    Divider()
-//                    
-//                    ForEach(viewModel.categories) { category in
-//                        CategoryRowView(category: category) // (Komponen UI dari jawaban sebelumnya)
-//                        Divider()
-//                    }
-//                }
-//                .background(Color.white)
-//                .cornerRadius(16)
-//                .padding(.horizontal)
-//                .padding(.bottom, 20)
             }
         }
         .background(lightGrayBg)
-        
         .sheet(isPresented: $showAddMember) {
             AddMemberView()
         }
         .sheet(item: $selectedMember) { member in
+            // 📢 1. Lempar packingViewModel ke dalam layar detail barang
             MemberAssignedItemsView(
-                member: member, 
-                allPackingItems: viewModel.packingItems
-                )
+                member: member,
+                packingViewModel: packingViewModel
+            )
         }
     }
-
+    
+    // MARK: - Subviews
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Members")
                     .font(.system(size: 28, weight: .bold))
                 
-                Text("Bali Group Adventure • \(viewModel.members.count) members")
+                Text("Bali Group Adventure • \(syncedMembers.count) members")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
-            
             Spacer()
-            
-            Button(action: {
-                showAddMember = true
-            }) {
+            Button(action: { showAddMember = true }) {
                 HStack(spacing: 6) {
                     Image(systemName: "plus")
                     Text("Add Member")
@@ -93,7 +103,7 @@ struct MemberPageView: View {
         .padding(.horizontal)
         .padding(.top, 16)
     }
-
+    
     private var progressSection: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .top) {
@@ -103,11 +113,11 @@ struct MemberPageView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.white.opacity(0.8))
                     
-                    Text("\(viewModel.groupReadinessPercentage)%")
+                    Text("\(packingViewModel.progressPercentage)%")
                         .font(.system(size: 48, weight: .bold))
                         .foregroundColor(.white)
                     
-                    Text("\(viewModel.membersAlmostReadyCount) of \(viewModel.members.count) members almost ready")
+                    Text("\(syncedReadyCount) of \(syncedMembers.count) members ready")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.9))
                 }
@@ -116,13 +126,13 @@ struct MemberPageView: View {
                 ZStack {
                     Circle().stroke(Color.white.opacity(0.2), lineWidth: 8)
                     Circle()
-                        .trim(from: 0.0, to: CGFloat(viewModel.groupReadinessPercentage) / 100.0)
+                        .trim(from: 0.0, to: CGFloat(packingViewModel.progressPercentage) / 100.0)
                         .stroke(Color.teal, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                     
                     HStack(spacing: -8) {
-                        ForEach(viewModel.members.prefix(3)) { member in
-                            Text(String(member.initials.prefix(1)))
+                        ForEach(syncedMembers.prefix(3)) { member in
+                            Text(member.initials.prefix(1))
                                 .font(.system(size: 10, weight: .bold))
                                 .foregroundColor(.white)
                                 .frame(width: 24, height: 24)
@@ -135,7 +145,7 @@ struct MemberPageView: View {
             }
             
             HStack(spacing: 6) {
-                ForEach(viewModel.members) { member in
+                ForEach(syncedMembers) { member in
                     VStack(spacing: 4) {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
@@ -150,6 +160,7 @@ struct MemberPageView: View {
                         Text(member.name)
                             .font(.system(size: 9))
                             .foregroundColor(.white.opacity(0.8))
+                            .lineLimit(1)
                     }
                 }
             }
@@ -161,22 +172,23 @@ struct MemberPageView: View {
         .cornerRadius(16)
         .padding(.horizontal)
     }
-
+    
     private var memberGridSection: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-            ForEach(viewModel.members) { member in
-                // Bungkus Card dengan Button agar bisa ditekan
+            ForEach(syncedMembers) { member in
                 Button(action: {
                     selectedMember = member
                 }) {
                     MemberCardView(member: member)
                 }
-                .buttonStyle(PlainButtonStyle()) // Mencegah animasi teks menjadi biru berkedip khas tombol iOS
+                .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal)
     }
 }
+
+// MARK: - MemberCardView Component
 struct MemberCardView: View {
     let member: MemberProgressUI
     
@@ -202,7 +214,7 @@ struct MemberCardView: View {
             .frame(width: 60, height: 60)
             
             VStack(spacing: 4) {
-                Text(member.name).font(.headline)
+                Text(member.name).font(.headline).lineLimit(1)
                 if member.isYou {
                     Text("YOU")
                         .font(.system(size: 10, weight: .bold))
@@ -239,6 +251,7 @@ struct MemberCardView: View {
             }
             .padding(.horizontal, 16)
             
+            // Warnanya menggunakan background dari Computed Property di MembersModel
             Text(member.statusText)
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(member.themeColor)
@@ -261,59 +274,4 @@ struct MemberCardView: View {
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 3)
     }
-}
-//
-//struct CategoryRowView: View {
-//    let category: CategoryAssignment
-//    
-//    var body: some View {
-//        HStack(spacing: 16) {
-//            Image(systemName: category.iconName)
-//                .foregroundColor(category.iconColor)
-//                .frame(width: 40, height: 40)
-//                .background(Color.gray.opacity(0.1))
-//                .clipShape(Circle())
-//            
-//            VStack(alignment: .leading, spacing: 6) {
-//                HStack {
-//                    Text(category.title).font(.subheadline.bold())
-//                    Text("\(category.totalItems) items")
-//                        .font(.system(size: 10, weight: .bold))
-//                        .foregroundColor(.teal)
-//                        .padding(.horizontal, 6)
-//                        .padding(.vertical, 2)
-//                        .background(Color.teal.opacity(0.1))
-//                        .cornerRadius(6)
-//                }
-//                HStack(spacing: 8) {
-//                    Text("\(category.everyoneCount) everyone")
-//                    Text("\(category.customCount) custom")
-//                }
-//                .font(.system(size: 10, weight: .semibold))
-//                .foregroundColor(.gray)
-//                .padding(.horizontal, 8)
-//                .padding(.vertical, 4)
-//                .background(Color.gray.opacity(0.1))
-//                .cornerRadius(10)
-//            }
-//            
-//            Spacer()
-//            
-//            HStack(spacing: -6) {
-//                ForEach(category.assignedInitials, id: \.self) { initial in
-//                    Text(initial)
-//                        .font(.system(size: 10, weight: .bold))
-//                        .foregroundColor(.white)
-//                        .frame(width: 24, height: 24)
-//                        .background(Circle().fill(Color(red: 65/255, green: 98/255, blue: 122/255)))
-//                        .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
-//                }
-//            }
-//        }
-//        .padding()
-//    }
-//}
-
-#Preview {
-    MemberPageView()
 }
