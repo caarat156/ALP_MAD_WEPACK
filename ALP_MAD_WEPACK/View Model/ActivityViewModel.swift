@@ -19,16 +19,51 @@ class ActivityViewModel {
     
     // Fungsi nambah aktivitas
     func addActivity(_ activity: ItineraryActivity) {
-        activities.append(activity)
-        activities.sort { $0.startTime < $1.startTime }
-        
+        // 2. Simpan ke database
         do {
-            try db.collection("activities").document(activity.id).setData(from: activity)
-            print("Berhasil menyimpan aktivitas baru")
+            try db.collection("activities").document(activity.id).setData(from: activity) { error in
+                if let error = error {
+                    // Error dari server Firebase akan ketahuan di sini
+                    print("Gagal menyimpan ke server: \(error.localizedDescription)")
+                } else {
+                    print("Berhasil menyimpan aktivitas baru ke server!")
+                }
+            }
         } catch {
-            print("Gagal menyimpan : \(error.localizedDescription)")
+            // Ini hanya menangkap error proses encode data lokal
+            print("Gagal encode data: \(error.localizedDescription)")
         }
+        // Gak perlu .append manual di sini, karena listener di atas bakal otomatis update UI
     }
+    
+    // Fungsi untuk mendengarkan perubahan data secara real-time dari Firebase
+        func listenToActivities(forTrip tripId: String) {
+            db.collection("activities")
+                .whereField("tripId", isEqualTo: tripId)
+                .addSnapshotListener { querySnapshot, error in
+                    if let error = error {
+                        print("❌ Error mendengarkan data: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let documents = querySnapshot?.documents else {
+                        print("⚠️ Dokumen kosong")
+                        return
+                    }
+                    
+                    self.activities = documents.compactMap { document -> ItineraryActivity? in
+                        do {
+                            // Coba paksa decode supaya error aslinya ketahuan
+                            return try document.data(as: ItineraryActivity.self)
+                        } catch {
+                            // Kalau gagal, error aslinya bakal di-print dengan jelas di sini!
+                            print("❌ GAGAL DECODE (ID: \(document.documentID)): \(error)")
+                            return nil
+                        }
+                    }
+                    print("✅ Berhasil memuat \(self.activities.count) aktivitas untuk trip ini.")
+                }
+        }
 
     // Fungsi ngambil aktivitas per hari
     func getActivities(forDay dayNumber: Int, tripStartDate: Date) -> [ItineraryActivity] {

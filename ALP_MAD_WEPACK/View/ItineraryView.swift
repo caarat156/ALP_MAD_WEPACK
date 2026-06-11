@@ -127,6 +127,9 @@ struct ItineraryView: View {
         .sheet(isPresented: $isShowingAddActivity) {
             AddActivityModalView(activityviewModel: activityViewModel, trip: trip, selectedDay: selectedDay)
         }
+        .onAppear {
+                    activityViewModel.listenToActivities(forTrip: trip.id)
+                }
     }
 }
 

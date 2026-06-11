@@ -114,24 +114,32 @@ struct AddActivityModalView: View {
                         }
                       
                         Button(action: {
-                            let calendar = Calendar.current
-                            let daysToAdd = selectedDay - 1
-                            let finalStartDate = calendar.date(byAdding: .day, value: daysToAdd, to: startTime) ?? startTime
-                            let finalEndDate = calendar.date(byAdding: .day, value: daysToAdd, to: endTime) ?? endTime
-                            
-                            let newActivity = ItineraryActivity(
-                                id: UUID().uuidString,
-                                tripId: trip.id,
-                                name: activityName,
-                                startTime: finalStartDate,
-                                endTime: finalEndDate,
-                                location: location,
-                                type: selectedType
-                            )
-                            
-                            activityviewModel.addActivity(newActivity)
-                            dismiss()
-                        }) {
+                                                    let calendar = Calendar.current
+                                                    
+                                                    // 1. Dapatkan tanggal dasar untuk 'Day' yang dipilih sesuai kalender Trip
+                                                    let targetDate = calendar.date(byAdding: .day, value: selectedDay - 1, to: trip.startDate) ?? trip.startDate
+                                                    
+                                                    // 2. Ambil komponen jam & menit saja dari DatePicker (startTime & endTime)
+                                                    let startComponents = calendar.dateComponents([.hour, .minute], from: startTime)
+                                                    let endComponents = calendar.dateComponents([.hour, .minute], from: endTime)
+                                                    
+                                                    // 3. Gabungkan Tanggal Trip dengan Jam dari DatePicker
+                                                    let finalStartDate = calendar.date(bySettingHour: startComponents.hour ?? 0, minute: startComponents.minute ?? 0, second: 0, of: targetDate) ?? targetDate
+                                                    let finalEndDate = calendar.date(bySettingHour: endComponents.hour ?? 0, minute: endComponents.minute ?? 0, second: 0, of: targetDate) ?? targetDate
+                                                    
+                                                    let newActivity = ItineraryActivity(
+                                                        id: UUID().uuidString,
+                                                        tripId: trip.id,
+                                                        name: activityName,
+                                                        startTime: finalStartDate, // Sekarang tanggalnya pasti sinkron dengan Trip!
+                                                        endTime: finalEndDate,
+                                                        location: location,
+                                                        type: selectedType
+                                                    )
+                                                    
+                                                    activityviewModel.addActivity(newActivity)
+                                                    dismiss()
+                                                }) {
                             Text("Save Activity")
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(.white)
