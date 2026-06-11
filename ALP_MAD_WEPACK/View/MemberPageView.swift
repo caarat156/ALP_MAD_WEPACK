@@ -14,6 +14,11 @@ struct MemberPageView: View {
     // 📢 1. Tambahkan ini agar layar tahu ID aslimu
     var tripViewModel: TripViewModel
     
+    // 💡 PENAMBAHAN 1: Variabel untuk menerima data trip dari halaman sebelumnya
+    var tripId: String
+    var tripName: String
+    var tripDate: String
+    
     @State private var showAddMember = false
     @State private var selectedMember: MemberProgressUI? = nil
     
@@ -64,7 +69,8 @@ struct MemberPageView: View {
         }
         .background(lightGrayBg)
         .sheet(isPresented: $showAddMember) {
-            AddMemberView()
+            // 💡 PENAMBAHAN 2: Gunakan variabel yang sudah dilempar dari atas
+            AddMemberView(tripId: tripId, tripName: tripName, tripDate: tripDate)
         }
         .sheet(item: $selectedMember) { member in
             // 📢 1. Lempar packingViewModel ke dalam layar detail barang
@@ -82,7 +88,8 @@ struct MemberPageView: View {
                 Text("Members")
                     .font(.system(size: 28, weight: .bold))
                 
-                Text("Bali Group Adventure • \(syncedMembers.count) members")
+                // 💡 PENAMBAHAN 3: Nama trip sekarang dinamis, bukan hardcode "Bali Group Adventure" lagi
+                Text("\(tripName) • \(syncedMembers.count) members")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
@@ -251,7 +258,6 @@ struct MemberCardView: View {
             }
             .padding(.horizontal, 16)
             
-            // Warnanya menggunakan background dari Computed Property di MembersModel
             Text(member.statusText)
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(member.themeColor)

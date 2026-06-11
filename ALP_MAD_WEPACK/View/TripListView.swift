@@ -115,10 +115,11 @@ struct TripListView: View {
                 AddTripModalView(tripviewModel: tripViewModel)
             }
             // 💡 PENAMBAHAN 5: Sheet untuk memunculkan view Invitation
-            .sheet(isPresented: $isShowingInvitations) {
-                // TODO: Ganti dengan View Invitation milikmu
-                Text("Daftar Invitation Muncul Di Sini")
-            }
+                        .sheet(isPresented: $isShowingInvitations) {
+                            NotificationView()
+                                // Opsional: Bikin sheet-nya bisa setengah layar atau full
+                                .presentationDetents([.medium, .large])
+                        }
             .onAppear {
                 // Re-fetch ketika view muncul agar memakai UID asli yang sudah siap dari Auth
                 tripViewModel.fetchTrips()

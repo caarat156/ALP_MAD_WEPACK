@@ -107,9 +107,12 @@ struct MainTripView: View {
                 
                 // 📢 PERBAIKAN: Hanya oper packingViewModel saja
                 MemberPageView(
-                                    packingViewModel: packingViewModel,
-                                    tripViewModel: tripViewModel
-                                )
+                    packingViewModel: packingViewModel,
+                    tripViewModel: tripViewModel,
+                    tripId: trip.id,
+                    tripName: trip.name,
+                    tripDate: trip.dateRangeString // 💡 UBAH BAGIAN INI
+                )
                     .tabItem {
                         Image(systemName: "person.2")
                         Text("Members")

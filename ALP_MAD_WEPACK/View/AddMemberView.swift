@@ -5,11 +5,16 @@
 //  Created by student on 29/05/26.
 //
 import SwiftUI
+import FirebaseAuth // 💡 TAMBAHAN: Untuk mengambil nama user yang login
 
 struct AddMemberView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @StateObject private var viewModel = AddMemberViewModel()
+    
+    var tripId: String
+        var tripName: String
+        var tripDate: String
     
     let darkBlue = Color(red: 37/255, green: 45/255, blue: 67/255)
     let lightGrayBg = Color(red: 247/255, green: 248/255, blue: 250/255)
@@ -75,6 +80,9 @@ struct AddMemberView: View {
             }
         }
         .background(Color.white.ignoresSafeArea())
+        .onAppear {
+                    viewModel.loadTripData(id: tripId, name: tripName, dateString: tripDate)
+                }
     }
     
     private var inviteFormSection: some View {
@@ -158,7 +166,10 @@ struct AddMemberView: View {
                 }
                 
                 Button(action: {
-                    viewModel.sendRequest()
+                    // 💡 SOLUSI: Mengambil "displayName" dari user yang login langsung lewat Firebase Auth
+                    let currentName = Auth.auth().currentUser?.displayName ?? "Someone"
+                    
+                    viewModel.sendRequest(currentUserName: currentName)
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Send Request")
@@ -229,6 +240,3 @@ struct AddMemberView: View {
     }
 }
 
-#Preview {
-    AddMemberView()
-}
