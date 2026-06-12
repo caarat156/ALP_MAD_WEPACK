@@ -28,6 +28,6 @@ struct PackingItem: Identifiable {
     var tripId: String
     var name: String
     var category: PackingCategory
-    var isPacked: Bool
+    var packedBy: [String]
     var assignedTo: [String]
 }
