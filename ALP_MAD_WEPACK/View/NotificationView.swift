@@ -113,6 +113,3 @@ struct InvitationCardView: View {
     }
 }
 
-#Preview {
-    NotificationView()
-}

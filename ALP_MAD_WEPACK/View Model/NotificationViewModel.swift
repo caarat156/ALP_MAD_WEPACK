@@ -11,13 +11,27 @@ class NotificationViewModel: ObservableObject {
     }
     
     func fetchInvitations() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        // Tambahkan print ini biar kamu tahu kalau dia gagal karena belum login
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("⚠️ DEBUG: UID nil, tidak ada user yang login saat ini.")
+            return
+        }
         
         db.collection("invitations")
             .whereField("receiverId", isEqualTo: userId)
-            .whereField("stnoatus", isEqualTo: "pending")
-            .addSnapshotListener { snapshot, _ in
-                self.invitations = snapshot?.documents.compactMap { try? $0.data(as: Invitation.self) } ?? []
+            .whereField("status", isEqualTo: "pending")
+            .addSnapshotListener { snapshot, error in
+                
+                // Tangkap error jika permission denied atau Firebase bermasalah
+                if let error = error {
+                    print("⚠️ DEBUG Firebase Error: \(error.localizedDescription)")
+                    return
+                }
+                
+                // 💡 SOLUSI THREAD 1: Pastikan update data @Published terjadi di Main Thread
+                DispatchQueue.main.async {
+                    self.invitations = snapshot?.documents.compactMap { try? $0.data(as: Invitation.self) } ?? []
+                }
             }
     }
     

@@ -15,8 +15,10 @@ struct Invitation: Identifiable, Codable {
     let senderId: String
     let senderName: String
     let receiverId: String
-    let status: InvitationStatus // pending, accepted, declined
-    let timestamp: Date
+    let status: InvitationStatus
+    
+    // 💡 PERBAIKAN: Gunakan @ServerTimestamp dan jadikan Optional (?)
+    @ServerTimestamp var timestamp: Date?
     
     enum InvitationStatus: String, Codable {
         case pending, accepted, declined
