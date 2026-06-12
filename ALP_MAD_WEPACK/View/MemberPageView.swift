@@ -88,7 +88,6 @@ struct MemberPageView: View {
                 Text("Members")
                     .font(.system(size: 28, weight: .bold))
                 
-                // 💡 PENAMBAHAN 3: Nama trip sekarang dinamis, bukan hardcode "Bali Group Adventure" lagi
                 Text("\(tripName) • \(syncedMembers.count) members")
                     .font(.subheadline)
                     .foregroundColor(.gray)
@@ -195,7 +194,6 @@ struct MemberPageView: View {
     }
 }
 
-// MARK: - MemberCardView Component
 struct MemberCardView: View {
     let member: MemberProgressUI
     

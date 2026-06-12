@@ -7,43 +7,38 @@
 
 import Foundation
 
-enum ActivityType: String, Codable, CaseIterable {
-    case transport = "Transport"
-    case food = "Food"
-    case lodging = "Lodging"
-    case leisure = "Leisure"
-    case attraction = "Attraction"
+// 1. PASTIKAN ENUM KAMU ADA ": String, Codable" NYA!
+enum ActivityType: String, Codable {
+    case transport
+    case food
+    case attraction
+    case leisure
     
+    // Properti pembantu untuk ikon jam tangan
     var iconName: String {
         switch self {
-        case .transport: return "airplane"
+        case .transport: return "car.fill"
         case .food: return "fork.knife"
-        case .lodging: return "bed.double.fill"
-        case .leisure: return "beach.umbrella.fill"
-        case .attraction: return "ticket.fill"
+        case .attraction: return "mappin.and.ellipse"
+        case .leisure: return "sparkles"
         }
     }
 }
 
+// 2. PASTIKAN STRUCT UTAMA SEPERTI INI
 struct ItineraryActivity: Identifiable, Codable {
-    var id: String
-    var tripId: String
-    var name: String
-    var startTime: Date      
-    var endTime: Date?
-    var location: String
-    var type: ActivityType
+    let id: String
+    let tripId: String
+    let name: String
+    let startTime: Date
+    let endTime: Date
+    let location: String
+    let type: ActivityType // Ini enum yang di atas tadi
     
+    // Helper string untuk jam aktivitas kamu
     var startTimeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: startTime)
-    }
-    
-    var endTimeString: String? {
-        guard let endTime = endTime else { return nil }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: endTime)
     }
 }

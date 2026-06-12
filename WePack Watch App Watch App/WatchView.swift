@@ -41,38 +41,31 @@ struct WatchView: View {
 struct WatchPackingView: View {
     @ObservedObject var viewModel: PackingViewModel
     
-    var myItems: [PackingItem] {
-        viewModel.packingItems.filter { $0.assignedTo.contains("me") || $0.assignedTo.contains("Everyone") }
-    }
-    
-    var packedCount: Int {
-        myItems.filter { $0.isPacked }.count
-    }
-    
     var body: some View {
         VStack {
             HStack {
-                Text("\(packedCount)/\(myItems.count) Packed")
+                Text("\(viewModel.packedCount)/\(viewModel.myItems.count) Packed")
                     .font(.headline)
                     .foregroundColor(.teal)
                 Spacer()
-                ProgressView(value: Double(packedCount), total: Double(max(myItems.count, 1)))
+                ProgressView(value: Double(viewModel.packedCount), total: Double(max(viewModel.myItems.count, 1)))
                     .progressViewStyle(CircularProgressViewStyle(tint: .teal))
             }
             .padding(.horizontal)
             
             Divider()
             
-            List(myItems) { item in
+            List(viewModel.myItems) { item in
                 Button(action: {
                     viewModel.toggleItemPacked(item: item)
                 }) {
+                    let isPackedByMe = item.packedBy.contains(viewModel.currentUserId)
                     HStack {
-                        Image(systemName: item.isPacked ? "checkmark.circle.fill" : "circle")
-                            .foregroundColor(item.isPacked ? .teal : .gray)
+                        Image(systemName: isPackedByMe ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(isPackedByMe ? .teal : .gray)
                         Text(item.name)
-                            .strikethrough(item.isPacked)
-                            .foregroundColor(item.isPacked ? .gray : .white)
+                            .strikethrough(isPackedByMe)
+                            .foregroundColor(isPackedByMe ? .gray : .white)
                     }
                 }
             }

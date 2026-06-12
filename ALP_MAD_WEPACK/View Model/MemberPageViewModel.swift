@@ -22,35 +22,28 @@ class MemberPageViewModel: ObservableObject {
     var membersAlmostReadyCount: Int {
         return members.filter { $0.progress >= 0.8 }.count
     }
-    // Inisialisasi Database
     private let db = Firestore.firestore()
     
-    // Fungsi untuk menarik data dari Firebase
     func fetchMembersData(tripId: String) {
-        // Asumsi struktur temanmu: koleksi "trips" -> dokumen "tripId" -> koleksi "members"
         db.collection("trips").document(tripId).collection("members").getDocuments { snapshot, error in
             
-            // 1. Cek apakah ada error koneksi
             if let error = error {
                 print("Gagal mengambil data member: \(error.localizedDescription)")
                 return
             }
             
-            // 2. Pastikan datanya tidak kosong
             guard let documents = snapshot?.documents else {
                 print("Tidak ada member di trip ini.")
                 return
             }
             
-            // 3. Ubah data mentah Firebase menjadi array model SwiftUI-mu
             DispatchQueue.main.async {
                 self.members = documents.compactMap { doc -> MemberProgressUI? in
                     let data = doc.data()
                     
-                    // Tarik data dari field Firebase (contoh)
                     let name = data["name"] as? String ?? "Unknown"
                     let initials = data["initials"] as? String ?? ""
-                    let isYou = data["id"] as? String == "USER_CURRENT_ID" // Ganti dengan logika deteksi user login
+                    let isYou = data["id"] as? String == "USER_CURRENT_ID"
                     let packedItems = data["packedItems"] as? Int ?? 0
                     let totalItems = data["totalItems"] as? Int ?? 0
                     
@@ -61,7 +54,7 @@ class MemberPageViewModel: ObservableObject {
                         isYou: isYou,
                         packedItems: packedItems,
                         totalItems: totalItems,
-                        themeColor: Color.blue // Bisa disesuaikan nanti
+                        themeColor: Color.blue
                     )
                 }
             }

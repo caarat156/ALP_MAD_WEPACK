@@ -10,13 +10,11 @@ import SwiftUI
 struct MemberAssignedItemsView: View {
     let member: MemberProgressUI
     
-    // 📢 1. Terima PackingViewModel dari luar agar bisa update ke Firebase
     @ObservedObject var packingViewModel: PackingViewModel
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
-    // 📢 2. Ubah jadi Computed Property agar otomatis update saat ada perubahan di database
     var assignedItems: [PackingItem] {
         packingViewModel.packingItems.filter { item in
             item.assignedTo.contains("Everyone") || item.assignedTo.contains(member.id)
@@ -31,7 +29,6 @@ struct MemberAssignedItemsView: View {
                 phoneLayout
             }
         }
-        // .onAppear dihapus karena assignedItems sekarang terhitung otomatis secara live
     }
     
     private var phoneLayout: some View {
@@ -114,7 +111,6 @@ struct MemberAssignedItemsView: View {
     
     private var listSection: some View {
         VStack(spacing: 0) {
-            // 📢 3. Banner peringatan jika ini BUKAN barang user yang sedang login
             if !member.isYou {
                 Text("💡 You can only view \(member.name)'s checklist.")
                     .font(.system(size: 13, weight: .medium))
@@ -148,7 +144,6 @@ struct MemberAssignedItemsView: View {
                             ForEach(assignedItems, id: \.id) { item in
                                 
                                 Button(action: {
-                                    // 📢 4. Update langsung ke Firebase pakai ViewModel
                                     if member.isYou {
                                         withAnimation {
                                             packingViewModel.toggleItemPacked(item: item)
@@ -182,7 +177,6 @@ struct MemberAssignedItemsView: View {
                                     .cornerRadius(12)
                                     .shadow(color: .black.opacity(0.03), radius: 3, x: 0, y: 2)
                                 }
-                                // 📢 5. Disable animasi klik jika bukan milik user
                                 .disabled(!member.isYou)
                                 .buttonStyle(PlainButtonStyle())
                             }

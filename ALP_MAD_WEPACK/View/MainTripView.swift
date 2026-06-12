@@ -18,7 +18,6 @@ struct MainTripView: View {
     
     @StateObject private var accountViewModel = AccountViewModel()
     
-    // 📢 Otak Utama Packing
     @StateObject private var packingViewModel: PackingViewModel
     
     init(trip: Trip, tripViewModel: TripViewModel) {
@@ -38,7 +37,6 @@ struct MainTripView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // --- HEADER ATAS ---
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
@@ -65,10 +63,8 @@ struct MainTripView: View {
                         Circle()
                             .fill(Color(red: 0.08, green: 0.15, blue: 0.25))
                             .frame(width: 30, height: 30)
-                        // Di MainTripView.swift
 
                         .overlay(
-                            // 📢 Kalau avatarInitials kosong, kasih inisial default seperti "?"
                             Text(!accountViewModel.avatarInitials.isEmpty ? accountViewModel.avatarInitials : "?")
                                 .font(.system(size: 10, weight: .bold))
                                 .foregroundColor(.white)
@@ -80,7 +76,6 @@ struct MainTripView: View {
             
             Divider()
             
-            // --- NAVBAR ---
             TabView {
                 TripDetailOverviewView(
                     trip: trip,
@@ -105,13 +100,12 @@ struct MainTripView: View {
                         Text("Itinerary")
                     }
                 
-                // 📢 PERBAIKAN: Hanya oper packingViewModel saja
                 MemberPageView(
                     packingViewModel: packingViewModel,
                     tripViewModel: tripViewModel,
                     tripId: trip.id,
                     tripName: trip.name,
-                    tripDate: trip.dateRangeString // 💡 UBAH BAGIAN INI
+                    tripDate: trip.dateRangeString 
                 )
                     .tabItem {
                         Image(systemName: "person.2")

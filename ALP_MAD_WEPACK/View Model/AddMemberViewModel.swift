@@ -6,14 +6,14 @@
 import SwiftUI
 import Combine
 import FirebaseFirestore
-import FirebaseAuth // 💡 Jangan lupa import Auth
+import FirebaseAuth
 
 class AddMemberViewModel: ObservableObject {
-    @Published var inviteMethod = 0 // 0 untuk Username, 1 untuk Email
+    @Published var inviteMethod = 0
     @Published var inviteInput = ""
     @Published var members: [GroupMemberUI] = []
     
-    @Published var tripId: String = "" // 💡 PENAMBAHAN 1: Butuh ID Trip untuk undangan
+    @Published var tripId: String = ""
     @Published var tripName: String = ""
     @Published var tripDate: String = ""
     
@@ -23,7 +23,6 @@ class AddMemberViewModel: ObservableObject {
         self.members = []
     }
     
-    // 💡 PERUBAHAN 2: Tambahkan parameter id agar kita tahu trip mana yang sedang dibuka
     func loadTripData(id: String, name: String, dateString: String) {
         self.tripId = id
         self.tripName = name
@@ -50,15 +49,13 @@ class AddMemberViewModel: ObservableObject {
         members.removeAll { $0.id == id }
     }
     
-    // 💡 PERUBAHAN 3: Rombak total fungsi sendRequest agar nyambung ke Firebase
-    func sendRequest(currentUserName: String) { // Butuh nama pengirim untuk notif
+    func sendRequest(currentUserName: String) {
         guard !inviteInput.isEmpty else { return }
         guard let senderId = Auth.auth().currentUser?.uid else { return }
         
         let searchField = inviteMethod == 1 ? "email" : "username"
         let searchValue = inviteMethod == 1 ? inviteInput.lowercased() : "@\(inviteInput.lowercased().replacingOccurrences(of: "@", with: ""))"
         
-        // 1. Cari user di Firestore collection "users"
         db.collection("users")
             .whereField(searchField, isEqualTo: searchValue)
             .getDocuments { [weak self] snapshot, error in
@@ -71,17 +68,14 @@ class AddMemberViewModel: ObservableObject {
                 
                 guard let documents = snapshot?.documents, let userDoc = documents.first else {
                     print("User tidak ditemukan di database!")
-                    // TODO: Tambahkan State untuk memunculkan Alert "User Not Found" ke layar
                     return
                 }
                 
-                // 2. Ambil data asli dari user yang ditemukan
-                let receiverId = userDoc.documentID // Ini UID aslinya User 2!
+                let receiverId = userDoc.documentID
                 let userData = userDoc.data()
                 let receiverName = userData["name"] as? String ?? "New User"
                 let receiverUsername = userData["username"] as? String ?? searchValue
                 
-                // 3. Buat dokumen Invitation untuk dikirim ke Firebase
                 let newInvitation: [String: Any] = [
                     "tripId": self.tripId,
                     "tripName": self.tripName,
@@ -92,18 +86,16 @@ class AddMemberViewModel: ObservableObject {
                     "timestamp": FieldValue.serverTimestamp()
                 ]
                 
-                // 4. Simpan ke Firebase
                 self.db.collection("invitations").addDocument(data: newInvitation) { error in
                     if let error = error {
                         print("Gagal mengirim undangan: \(error.localizedDescription)")
                     } else {
                         print("Berhasil mengirim undangan ke Firebase!")
                         
-                        // 5. Jika sukses di database, baru update UI secara lokal
                         DispatchQueue.main.async {
                             let generatedInitials = String(receiverName.prefix(2)).uppercased()
                             let newMember = GroupMemberUI(
-                                id: receiverId, // Sekarang pakai ID asli dari Firebase
+                                id: receiverId,
                                 name: receiverName,
                                 username: receiverUsername,
                                 initials: generatedInitials,
