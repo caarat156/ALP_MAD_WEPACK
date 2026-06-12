@@ -20,7 +20,6 @@ class AccountViewModel: ObservableObject {
     @Published var editedName: String = ""
     @Published var editedUsername: String = ""
     @Published var editedEmail: String = ""
-    @Published var editedPhone: String = ""
     @Published var editedBio: String = ""
     
     @Published var selectedPhotoItem: PhotosPickerItem? = nil {
@@ -68,7 +67,6 @@ class AccountViewModel: ObservableObject {
                     let fetchedName = data["name"] as? String ?? "No Name"
                     let fetchedUsername = data["username"] as? String ?? "@username"
                     let fetchedEmail = currentUser.email ?? (data["email"] as? String ?? "No Email")
-                    let fetchedPhone = data["phone"] as? String ?? ""
                     let fetchedBio = data["bio"] as? String ?? ""
                     
                     self?.name = fetchedName
@@ -78,7 +76,6 @@ class AccountViewModel: ObservableObject {
                     self?.editedName = fetchedName
                     self?.editedUsername = fetchedUsername.replacingOccurrences(of: "@", with: "")
                     self?.editedEmail = fetchedEmail
-                    self?.editedPhone = fetchedPhone
                     self?.editedBio = fetchedBio
                 }
             }
@@ -95,7 +92,6 @@ class AccountViewModel: ObservableObject {
             "name": editedName,
             "username": finalUsername,
             "email": editedEmail,
-            "phone": editedPhone,
             "bio": editedBio
         ]
         
