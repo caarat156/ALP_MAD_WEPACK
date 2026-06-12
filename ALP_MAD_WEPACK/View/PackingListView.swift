@@ -42,7 +42,7 @@ struct PackingListView: View {
             // Progress header
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("\(viewModel.packedCount) of \(viewModel.myItems.count) items packed")
+                    Text("\(viewModel.packedCount) of \(viewModel.packingItems.count) items packed")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -52,7 +52,7 @@ struct PackingListView: View {
                         .foregroundColor(.blue)
                 }
                 
-                ProgressView(value: Double(viewModel.packedCount), total: Double(max(1, viewModel.myItems.count)))
+                ProgressView(value: Double(viewModel.packedCount), total: Double(max(1, viewModel.packingItems.count)))
                     .tint(.blue)
             }
             .padding()
@@ -75,17 +75,16 @@ struct PackingListView: View {
                         }) {
                             ForEach(categoryItems) { item in
                                 HStack {
-                                    let isPackedByMe = item.packedBy.contains(viewModel.currentUserId)
-                                    Image(systemName: isPackedByMe ? "checkmark.circle.fill" : "circle")
-                                        .foregroundColor(isPackedByMe ? .green : .gray)
+                                    Image(systemName: item.isPacked ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(item.isPacked ? .green : .gray)
                                         .font(.title3)
                                         .onTapGesture {
                                             viewModel.toggleItemPacked(item: item)
                                         }
                                     
                                     Text(item.name)
-                                        .strikethrough(isPackedByMe)
-                                        .foregroundColor(isPackedByMe ? .secondary : .primary)
+                                        .strikethrough(item.isPacked)
+                                        .foregroundColor(item.isPacked ? .secondary : .primary)
                                     
                                     Spacer()
                                     

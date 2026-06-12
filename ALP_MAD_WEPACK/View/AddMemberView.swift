@@ -166,6 +166,7 @@ struct AddMemberView: View {
                 }
                 
                 Button(action: {
+                    // 💡 SOLUSI: Mengambil "displayName" dari user yang login langsung lewat Firebase Auth
                     let currentName = Auth.auth().currentUser?.displayName ?? "Someone"
                     
                     viewModel.sendRequest(currentUserName: currentName)

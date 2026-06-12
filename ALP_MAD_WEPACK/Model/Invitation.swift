@@ -16,6 +16,8 @@ struct Invitation: Identifiable, Codable {
     let senderName: String
     let receiverId: String
     let status: InvitationStatus
+    
+    // 💡 PERBAIKAN: Gunakan @ServerTimestamp dan jadikan Optional (?)
     @ServerTimestamp var timestamp: Date?
     
     enum InvitationStatus: String, Codable {

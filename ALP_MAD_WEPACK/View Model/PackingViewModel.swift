@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import FirebaseFirestore
-import FirebaseAuth
 
 class PackingViewModel: ObservableObject {
     @Published var packingItems: [PackingItem] = []
@@ -34,21 +33,13 @@ class PackingViewModel: ObservableObject {
         fetchTripMembers()
     }
     
-    var currentUserId: String {
-        Auth.auth().currentUser?.uid ?? ""
-    }
-    
-    var myItems: [PackingItem] {
-        packingItems.filter { $0.assignedTo.contains("Everyone") || $0.assignedTo.contains(currentUserId) }
-    }
-    
     var packedCount: Int {
-        myItems.filter { $0.packedBy.contains(currentUserId) }.count
+        packingItems.filter { $0.isPacked }.count
     }
     
     var progressPercentage: Int {
-        guard !myItems.isEmpty else { return 0 }
-        return Int(Double(packedCount) / Double(myItems.count) * 100)
+        guard !packingItems.isEmpty else { return 0 }
+        return Int(Double(packedCount) / Double(packingItems.count) * 100)
     }
     
     func fetchPackingItems() {
@@ -71,7 +62,7 @@ class PackingViewModel: ObservableObject {
                         tripId: data["tripId"] as? String ?? "",
                         name: data["name"] as? String ?? "",
                         category: PackingCategory(rawValue: categoryString) ?? .clothing,
-                        packedBy: data["packedBy"] as? [String] ?? [],
+                        isPacked: data["isPacked"] as? Bool ?? false,
                         assignedTo: data["assignedTo"] as? [String] ?? []
                     )
                 }
@@ -109,17 +100,9 @@ class PackingViewModel: ObservableObject {
     
     func toggleItemPacked(item: PackingItem) {
         guard let id = item.id else { return }
-        let uid = currentUserId
+        let newStatus = !item.isPacked
         
-        if item.packedBy.contains(uid) {
-            db.collection("packing_items").document(id).updateData([
-                "packedBy": FieldValue.arrayRemove([uid])
-            ])
-        } else {
-            db.collection("packing_items").document(id).updateData([
-                "packedBy": FieldValue.arrayUnion([uid])
-            ])
-        }
+        db.collection("packing_items").document(id).updateData(["isPacked": newStatus])
     }
     
     func toggleMemberSelection(id: String) {
@@ -140,7 +123,7 @@ class PackingViewModel: ObservableObject {
             "tripId": trip.id,
             "name": trimmedName,
             "category": selectedCategory.rawValue,
-            "packedBy": [],
+            "isPacked": false,
             "assignedTo": finalAssignees
         ]
         
