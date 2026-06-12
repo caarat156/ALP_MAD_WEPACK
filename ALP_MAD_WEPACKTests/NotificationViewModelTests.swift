@@ -11,6 +11,7 @@ import FirebaseAuth
 import FirebaseFirestore
 @testable import ALP_MAD_WEPACK // Sesuaikan nama project-mu
 
+@MainActor
 final class NotificationViewModelTests: XCTestCase {
     
     override class func setUp() {
@@ -51,7 +52,7 @@ final class NotificationViewModelTests: XCTestCase {
             senderId: "user1",
             senderName: "Budi",
             receiverId: "user2",
-            status: Invitation.InvitationStatus(rawValue: "pending") ?? <#default value#>,
+            status: .pending, // <--- SUDAH DIPERBAIKI DI SINI (langsung pakai .pending)
             timestamp: Date()
         )
         

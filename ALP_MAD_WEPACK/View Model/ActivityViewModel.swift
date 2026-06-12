@@ -78,4 +78,18 @@ class ActivityViewModel {
             return activityDayNumber == dayNumber
         }
     }
+    
+    func getDayNumber(for activityDate: Date, tripStartDate: Date) -> Int {
+        let calendar = Calendar.current
+        let startOfTrip = calendar.startOfDay(for: tripStartDate)
+        let startOfActivity = calendar.startOfDay(for: activityDate)
+        let components = calendar.dateComponents([.day], from: startOfTrip, to: startOfActivity)
+        return (components.day ?? 0) + 1
+    }
+
+    // Fungsi grouping yang bisa dipanggil langsung oleh View
+    func getActivitiesGroupedByDay(forTrip trip: Trip) -> [Int: [ItineraryActivity]] {
+        let activitiesForThisTrip = activities.filter { $0.tripId == trip.id }
+        return Dictionary(grouping: activitiesForThisTrip) { getDayNumber(for: $0.startTime, tripStartDate: trip.startDate) }
+    }
 }

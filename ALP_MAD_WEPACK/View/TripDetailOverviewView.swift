@@ -11,20 +11,14 @@ struct TripDetailOverviewView: View {
     let trip: Trip
     var tripViewModel: TripViewModel
     var activityViewModel: ActivityViewModel
-    
-    // 📢 1. Inject ViewModel yang menangani data packing
     @ObservedObject var packingViewModel: PackingViewModel
-
     @Environment(\.horizontalSizeClass) var sizeClass
     
-    // 📢 2. Computed Properties untuk menghitung statistik barang otomatis
         var packedItemsCount: Int {
-            // Pakai packingItems sesuai dengan nama di PackingViewModel
             packingViewModel.packingItems.filter { $0.tripId == trip.id && $0.isPacked }.count
         }
         
         var totalItemsCount: Int {
-            // Pakai packingItems sesuai dengan nama di PackingViewModel
             packingViewModel.packingItems.filter { $0.tripId == trip.id }.count
         }
         
@@ -86,58 +80,46 @@ struct TripDetailOverviewView: View {
                         let totalDays = (Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: trip.startDate), to: Calendar.current.startOfDay(for: trip.endDate)).day ?? 0) + 1
                         MiniStatCard(value: "\(totalDays)", label: "Days planned")
                     }
-                    
                     // 4. ITINERARY PREVIEW
                     VStack(alignment: .leading, spacing: 14) {
                         HStack {
-                            Text("Upcoming Activities")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
+                            Text("Upcoming Activities").font(.system(size: 16, weight: .bold))
                             Spacer()
                             NavigationLink(destination: ItineraryView(tripViewModel: tripViewModel, activityViewModel: activityViewModel, trip: trip)) {
-                                HStack(spacing: 4) {
-                                    Text("See all")
-                                        .font(.system(size: 13, weight: .bold))
-                                    Image(systemName: "arrow.right")
-                                        .font(.system(size: 11, weight: .bold))
-                                }
-                                .foregroundColor(.blue)
+                                Text("See all").font(.system(size: 13, weight: .bold)).foregroundColor(.blue)
                             }
                         }
                         
                         VStack(alignment: .leading, spacing: 16) {
-                            let previewActivities = activityViewModel.activities
-                                .filter { $0.tripId == trip.id }
-                                .sorted { $0.startTime < $1.startTime }
-                                .prefix(3)
+                            // AMBIL DATA DARI VIEWMODEL
+                            let grouped = activityViewModel.getActivitiesGroupedByDay(forTrip: trip)
+                            let sortedDays = grouped.keys.sorted()
                             
-                            if previewActivities.isEmpty {
-                                Text("No activities planned yet.")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(.gray)
-                                    .padding(.vertical, 8)
+                            if sortedDays.isEmpty {
+                                Text("No activities planned yet.").font(.system(size: 13)).foregroundColor(.gray)
                             } else {
-                                ForEach(previewActivities) { activity in
-                                    HStack(alignment: .top, spacing: 14) {
-                                        Text(activity.startTimeString)
-                                            .font(.system(size: 13, weight: .bold))
-                                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                            .frame(width: 45, alignment: .leading)
+                                // LOOPING BERDASARKAN HARI
+                                ForEach(sortedDays, id: \.self) { day in
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Day \(day)")
+                                            .font(.system(size: 12, weight: .black))
+                                            .foregroundColor(.gray)
                                         
-                                        Circle()
-                                            .fill(activity.type == .transport ? Color.blue : (activity.type == .food ? Color.orange : Color.teal))
-                                            .frame(width: 8, height: 8)
-                                            .padding(.top, 5)
-                                        
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(activity.name)
-                                                .font(.system(size: 14, weight: .bold))
-                                                .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.25))
-                                            Text(activity.location)
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.gray)
+                                        // LOOPING AKTIVITAS DI HARI ITU
+                                        ForEach(grouped[day]?.sorted(by: { $0.startTime < $1.startTime }) ?? []) { activity in
+                                            HStack(alignment: .top, spacing: 14) {
+                                                Text(activity.startTimeString).font(.system(size: 13, weight: .bold))
+                                                    .frame(width: 45, alignment: .leading)
+                                                
+                                                Circle().fill(Color.blue.opacity(0.7)).frame(width: 8, height: 8).padding(.top, 5)
+                                                
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Text(activity.name).font(.system(size: 14, weight: .bold))
+                                                    Text(activity.location).font(.system(size: 12)).foregroundColor(.gray)
+                                                }
+                                                Spacer()
+                                            }
                                         }
-                                        Spacer()
                                     }
                                 }
                             }
